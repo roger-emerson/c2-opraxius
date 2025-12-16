@@ -1,0 +1,26 @@
+{
+  "name": "@esg/api-workers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "wrangler deploy --dry-run --outdir=dist",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "drizzle-orm": "^0.37.0",
+    "postgres": "^3.4.5",
+    "@upstash/redis": "^1.34.0",
+    "jose": "^5.9.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.93.0",
+    "eslint": "^9.17.0"
+  }
+}
+

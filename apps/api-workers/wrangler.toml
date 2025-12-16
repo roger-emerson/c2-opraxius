@@ -1,0 +1,20 @@
+# Cloudflare Workers configuration for ESG Command Center API
+name = "esg-api-staging"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "staging"
+
+# Hyperdrive - PostgreSQL connection pooling at the edge
+# After running: wrangler hyperdrive create esg-staging-db --connection-string="<your-supabase-url>"
+# Uncomment and add your Hyperdrive ID:
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "<your-hyperdrive-id>"
+
+# For development without Hyperdrive, use environment variable:
+# DATABASE_URL = "postgresql://user:pass@host:5432/database"
+
