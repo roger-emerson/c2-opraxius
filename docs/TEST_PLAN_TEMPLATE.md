@@ -1,7 +1,7 @@
 # ESG Command Center - Test Plan
 
 > **Status:** Draft  
-> **Author:** Claude Agent (Debug Mode)  
+> **Author:** Claude Agent  
 > **Last Updated:** [TIMESTAMP]
 
 ---
@@ -129,7 +129,5 @@
 ### A. Test Case Details
 <!-- Detailed test cases go in separate files under /tests/ -->
 
-### B. Debug Session Notes
-<!-- Agent: Reference .debug/ files for reasoning chain -->
 
 
