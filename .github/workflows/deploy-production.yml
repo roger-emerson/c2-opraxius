@@ -1,8 +1,8 @@
-name: Deploy to Cloudflare Staging
+name: Deploy to Cloudflare Production
 
 on:
   push:
-    branches: [staging]
+    branches: [main]
 
 env:
   NODE_VERSION: '20'
@@ -12,7 +12,7 @@ jobs:
   migrate-db:
     name: Run Database Migrations
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
   deploy-api:
     name: Deploy API to Workers
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     needs: migrate-db
     steps:
       - name: Checkout code
@@ -59,7 +59,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/api-workers
-          command: deploy -c wrangler.staging.toml
+          command: deploy
           secrets: |
             DATABASE_URL
             JWT_SECRET
@@ -75,7 +75,7 @@ jobs:
   deploy-web:
     name: Deploy Web to Pages
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     needs: deploy-api
     steps:
       - name: Checkout code
@@ -98,20 +98,20 @@ jobs:
         run: npm run pages:build
         working-directory: apps/web
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.STAGING_API_URL }}
+          NEXT_PUBLIC_API_URL: ${{ vars.PRODUCTION_API_URL }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/.vercel/output/static --project-name=esg-web-staging
+          command: pages deploy apps/web/.vercel/output/static --project-name=esg-web-production
 
   # Post-deployment verification
   verify-deployment:
     name: Verify Deployment
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     needs: [deploy-api, deploy-web]
     steps:
       - name: Wait for deployment propagation
@@ -119,7 +119,7 @@ jobs:
 
       - name: Check API health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.STAGING_API_URL }}/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.PRODUCTION_API_URL }}/health)
           if [ "$response" != "200" ]; then
             echo "API health check failed with status: $response"
             exit 1
@@ -128,10 +128,9 @@ jobs:
 
       - name: Check Web health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.STAGING_WEB_URL }})
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ vars.PRODUCTION_WEB_URL }})
           if [ "$response" != "200" ]; then
             echo "Web health check failed with status: $response"
             exit 1
           fi
           echo "Web health check passed!"
-

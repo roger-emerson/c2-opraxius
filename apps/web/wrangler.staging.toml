@@ -1,5 +1,5 @@
-# Cloudflare Pages configuration for ESG Command Center Web - PRODUCTION
-name = "esg-web-production"
+# Cloudflare Pages configuration for ESG Command Center Web - STAGING
+name = "esg-web-staging"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
@@ -8,5 +8,4 @@ pages_build_output_dir = ".vercel/output/static"
 # or via GitHub Actions secrets
 
 # Custom domain configured in Cloudflare Pages dashboard
-# opraxius.com + www.opraxius.com
-
+# staging.opraxius.com

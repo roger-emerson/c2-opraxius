@@ -364,6 +364,85 @@ ci: add GitHub Actions for Cloudflare deploy
 
 ---
 
+## CI/CD Deployment Strategy
+
+### Branch → Deployment Mapping
+
+```
+develop  → No CI/CD (local development only)
+staging  → Cloudflare Staging (auto-deploy)
+main     → Cloudflare Production (manual approval required)
+```
+
+### Cloudflare Deployments
+
+**Staging Environment** (auto-deploy on push to `staging`):
+- **API**: `esg-api-staging` Worker
+  - Custom domain: `api.staging.opraxius.com`
+  - Wrangler config: `apps/api-workers/wrangler.staging.toml`
+  - GitHub Actions: `.github/workflows/deploy-staging.yml`
+- **Web**: `esg-web-staging` Pages
+  - Custom domain: `staging.opraxius.com`
+  - Wrangler config: `apps/web/wrangler.staging.toml`
+  - GitHub Actions: `.github/workflows/deploy-staging.yml`
+
+**Production Environment** (manual approval on push to `main`):
+- **API**: `esg-api-production` Worker
+  - Custom domain: `api.opraxius.com`
+  - Wrangler config: `apps/api-workers/wrangler.toml`
+  - GitHub Actions: `.github/workflows/deploy-production.yml`
+- **Web**: `esg-web-production` Pages
+  - Custom domains: `opraxius.com` + `www.opraxius.com`
+  - Wrangler config: `apps/web/wrangler.toml`
+  - GitHub Actions: `.github/workflows/deploy-production.yml`
+
+### GitHub Environments
+
+**`staging` environment**:
+- No protection rules (auto-deploy)
+- Variables:
+  - `STAGING_API_URL`: https://api.staging.opraxius.com
+  - `STAGING_WEB_URL`: https://staging.opraxius.com
+- Secrets: DATABASE_URL, JWT_SECRET, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+
+**`production` environment**:
+- Requires 1+ manual approvals before deployment
+- Variables:
+  - `PRODUCTION_API_URL`: https://api.opraxius.com
+  - `PRODUCTION_WEB_URL`: https://opraxius.com
+- Secrets: (separate from staging) DATABASE_URL, JWT_SECRET, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+
+### Deployment Workflow
+
+```bash
+# Local development (no deployment)
+git checkout develop
+# Work and test locally
+
+# Deploy to staging
+git checkout staging
+git merge develop
+git push origin staging  # Triggers GitHub Actions → Cloudflare Staging
+
+# Test at https://staging.opraxius.com and https://api.staging.opraxius.com
+
+# Deploy to production (requires manual approval)
+git checkout main
+git merge staging
+git tag v1.0.0
+git push origin main --tags  # Triggers GitHub Actions → Awaits approval → Cloudflare Production
+```
+
+### CI/CD Pipeline Steps
+
+Each deployment runs:
+1. **Database Migrations** - Run `drizzle-kit push` on target database
+2. **Deploy API** - Deploy Workers with secrets injection
+3. **Deploy Web** - Build Next.js with `@cloudflare/next-on-pages`, deploy to Pages
+4. **Verify Deployment** - Health checks on API and Web URLs
+
+---
+
 ## Development Commands
 
 ```bash
