@@ -1,0 +1,29 @@
+{
+  "name": "@esg/gis",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "import": "tsx src/cli/importer.ts"
+  },
+  "dependencies": {
+    "@esg/shared": "workspace:*",
+    "@esg/database": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "@types/geojson": "^7946.0.14"
+  }
+}

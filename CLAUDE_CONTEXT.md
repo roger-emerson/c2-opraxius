@@ -1,355 +1,740 @@
-# ESG Command Center - Context for Claude
+# Claude Context for ESG Command Center
 
-**Last Updated**: December 15, 2025
-**Current Phase**: Phase 1 Complete (100%)
-**Next Phase**: Phase 2 - 3D Map & Interaction
+> This document provides comprehensive context for AI assistants (Claude, etc.) working on this project. It includes project state, systematic documentation approach, and continuation guidelines.
 
 ---
 
-## 📍 Project Status
+## Project Overview
 
-### Completed ✅
-- Turborepo monorepo structure (2 apps, 6 packages)
-- PostgreSQL 15 + PostGIS 3.4 database
-- Redis 7 cache
-- Drizzle ORM with 7 tables
-- Auth0 + NextAuth.js authentication
-- RBAC system (10 roles, 8 workcenters, granular permissions)
-- Fastify REST API (9 endpoints)
-- Next.js 15 frontend
-- Docker Compose development environment
-- Complete documentation (6 markdown files)
-
-### In Progress ⏳
-- None (Phase 1 fully complete)
-
-### Next Up 🎯
-- Phase 2: Interactive 3D venue map with Three.js
-- GeoJSON import CLI tool
-- Clickable 3D objects
-- Detail panels
+**ESG Command Center** - Festival Management Dashboard for Insomniac Events
+- **Repository**: `/Users/roger/Desktop/Projects/esg-commandcenter`
+- **Current Phase**: Phase 2 Complete
+- **Status**: Ready for testing and Phase 3 planning
 
 ---
 
-## 🗂️ Project Structure
+## Systematic Documentation Approach
 
+### Phase Completion Documentation Pattern
+
+For each completed phase, we create a dedicated completion document following this pattern:
+
+1. **PHASEx_COMPLETE.md** - Comprehensive phase completion summary
+2. **Content Structure**:
+   - ✅ What Was Built (detailed feature list)
+   - 📊 Critical Files Created (with file paths)
+   - 🎯 Success Criteria Met (checklist)
+   - 🚀 How to Run/Use (step-by-step guides)
+   - 📖 What Works Now (functional inventory)
+   - 🎉 What's Next (preview of next phase)
+   - 📊 Statistics (files, LOC, features count)
+
+3. **Purpose**:
+   - Preserves exact state at phase completion
+   - Enables easy project continuation in new sessions
+   - Documents what was built, how to use it, and what's next
+   - Provides context for future AI assistants or team members
+
+### Completed Phase Documents
+
+- ✅ **PHASE1_COMPLETE.md** - Core Infrastructure completion
+  - Turborepo monorepo
+  - PostgreSQL + PostGIS + Redis
+  - Auth0 + NextAuth.js authentication
+  - RBAC system (10 roles, 8 workcenters)
+  - REST API (events, tasks, venues)
+
+- ✅ **PHASE2_COMPLETE.md** - 3D Map & Interaction completion
+  - GIS package with coordinate conversion
+  - GeoJSON parser and CLI import tool
+  - Three.js 3D map components
+  - Interactive features (rotate, zoom, click)
+  - Detail panel with task integration
+  - Dashboard layout
+
+### Ongoing Reference Document
+
+- **README.md** - Single source of truth (consolidated from all phase docs)
+  - Quick start guide
+  - Complete technology stack
+  - Development workflow
+  - All implemented features
+  - API documentation
+  - Troubleshooting
+
+---
+
+## Current State
+
+### ✅ Phase 1: Core Infrastructure (Complete)
+
+**Infrastructure**:
+- Turborepo monorepo (2 apps: web, api + 6 packages: shared, database, gis, ui, auth, etc.)
+- Docker Compose (PostgreSQL 15 + PostGIS 3.4 + Redis 7)
+- TypeScript strict mode across all packages
+- Makefile for development commands
+
+**Database** (7 tables with PostGIS):
 ```
-/Users/roger/Desktop/Projects/esg-commandcenter/
-├── apps/
-│   ├── web/                 # Next.js 15 frontend (port 3000)
-│   └── api/                 # Fastify backend (port 3001)
-├── packages/
-│   ├── shared/              # TypeScript types (20+ types)
-│   ├── database/            # Drizzle ORM (7 tables)
-│   ├── ui/                  # (ready for Phase 3)
-│   ├── auth/                # (ready for future)
-│   └── gis/                 # (ready for Phase 2)
-├── docker-compose.yml       # PostgreSQL + Redis
-├── Makefile                 # Development commands
-└── [6 documentation files]
+events              # Festival events with venue boundaries
+users               # Auth0 SSO users with RBAC
+venue_features      # GIS data (Point/Polygon/LineString geometry)
+tasks               # Task management with dependencies
+workcenters         # 8 department tracking
+activity_feed       # Real-time activity log
+ai_chat_history     # Claude conversations (Phase 4)
 ```
 
----
+**Authentication & RBAC**:
+- Auth0 + NextAuth.js (SSO)
+- 10 roles (admin, operations_lead, production_lead, security_lead, workforce_lead, vendor_lead, sponsor_lead, marketing_lead, finance_lead, viewer)
+- 8 workcenters (Operations, Production, Security, Workforce, Vendors, Sponsors, Marketing, Finance)
+- Granular permission system: `{ resource, action, workcenter? }`
+- RBAC middleware (backend: Fastify) and hooks (frontend: React)
 
-## 🔑 Key Files (Critical for Understanding)
+**REST API** (Fastify on port 3001):
+```
+GET    /health               # Health check
+GET    /api/events           # List events (RBAC filtered)
+POST   /api/events           # Create event (admin only)
+GET    /api/tasks            # List tasks (filtered by workcenters)
+POST   /api/tasks            # Create task (permissions required)
+PATCH  /api/tasks/:id        # Update task
+GET    /api/venues           # List venue features (RBAC filtered)
+POST   /api/venues           # Create venue feature
+```
 
-### Database Schema
-- `packages/database/src/schema/index.ts` - All 7 tables
-- `packages/database/init.sql` - SQL initialization
+### ✅ Phase 2: 3D Map & Interaction (Complete)
 
-### Authentication & RBAC
-- `apps/web/src/lib/auth.ts` - NextAuth + Auth0 config
-- `apps/api/src/services/rbac.service.ts` - RBAC logic
-- `apps/api/src/middleware/auth.middleware.ts` - JWT auth
-- `apps/api/src/middleware/rbac.middleware.ts` - Permission checks
-- `apps/web/src/hooks/useAuth.ts` - Frontend RBAC hooks
-
-### API Endpoints
-- `apps/api/src/server.ts` - Fastify server
-- `apps/api/src/routes/events.routes.ts` - Events API
-- `apps/api/src/routes/tasks.routes.ts` - Tasks API (RBAC filtered)
-- `apps/api/src/routes/venues.routes.ts` - Venues API (RBAC filtered)
-
-### Shared Types
-- `packages/shared/src/types/venue.types.ts` - 17 venue feature types, GeoJSON
-- `packages/shared/src/types/task.types.ts` - Task management
-- `packages/shared/src/types/user.types.ts` - Users, roles, permissions
-- `packages/shared/src/constants/workcenters.ts` - 8 workcenters
-- `packages/shared/src/constants/roles.ts` - 10 roles with permissions
-
----
-
-## 🗄️ Database Schema (7 Tables)
-
-1. **events** - Festival events (EDC Las Vegas, EDC Orlando)
-   - PostGIS geometry for venue boundaries
-
-2. **users** - User management
-   - Auth0 SSO integration
-   - Roles and workcenter access arrays
-   - JSONB permissions
-
-3. **venue_features** - GIS data
-   - PostGIS geometry (Point, Polygon, LineString)
-   - 17 feature types (stage, gate, vendor_booth, etc.)
-   - Workcenter access control
-
-4. **tasks** - Task management
-   - Critical path tracking
-   - Dependencies array
-   - Workcenter assignment
-   - RBAC filtering
-
-5. **workcenters** - 8 departments
-   - Operations, Production, Security, Workforce, Vendors, Sponsors, Marketing, Finance
-   - Completion percentage tracking
-
-6. **activity_feed** - Real-time activity log
-   - Task updates, status changes
-   - Filterable by workcenter
-
-7. **ai_chat_history** - Claude conversations (Phase 4)
-   - RBAC context logging
-
----
-
-## 🔐 RBAC System
-
-### 10 Roles
-- `admin` - Full access
-- `operations_lead`, `production_lead`, `security_lead`, `workforce_lead`
-- `vendor_lead`, `sponsor_lead`, `marketing_lead`, `finance_lead`
-- `viewer` - Read-only
-
-### 8 Workcenters
-- Operations, Production, Security, Workforce
-- Vendors, Sponsors, Marketing, Finance
-
-### Permission Model
+**GIS Package** (`packages/gis`):
 ```typescript
-{
-  resource: 'tasks' | 'venue_features' | 'events' | 'users',
-  action: 'create' | 'read' | 'update' | 'delete',
-  workcenter?: string  // Optional scope
+// Coordinate conversion (lat/lng ↔ Three.js 3D space)
+latLngToVector3(lat, lng, altitude, scaleFactor)
+vector3ToLatLng(vector, scaleFactor)
+calculateBounds(coordinates)
+
+// GeoJSON parsing with type inference
+parseGeoJSON(geojson, eventId, defaultType, defaultWorkcenter)
+validateGeoJSON(data)
+getGeoJSONStats(geojson)
+
+// CLI import tool
+npm run import -- -f FILE.geojson -e EVENT_ID [--dry-run] [--type TYPE] [--workcenter WC]
+```
+
+**3D Map Components** (`apps/web/src/components/map/`):
+```
+VenueMap3D.tsx          # Main Three.js scene with OrbitControls
+VenueObject.tsx         # Renders Point/Polygon/LineString as 3D geometry
+FeatureDetailPanel.tsx  # Slide-out detail panel with tasks
+```
+
+**Key Features**:
+- Interactive 3D scene (rotate, pan, zoom)
+- Color coding: pending=gray, in_progress=yellow, completed=green, blocked=red
+- Hover effects (orange highlight)
+- Click → detail panel
+- Geometry: Point → Box, Polygon → ExtrudeGeometry, LineString → TubeGeometry
+- Lighting and shadows
+- Task fetching via React Query
+
+**Dashboard** (`apps/web/src/app/(dashboard)/`):
+```
+layout.tsx      # Protected dashboard shell with sidebar
+page.tsx        # Dashboard home with quick actions
+map/page.tsx    # Full-screen 3D map view
+```
+
+### 🚧 Phase 3: Workcenters & Dashboards (Next)
+
+Planned:
+- 8 specialized workcenter pages
+- Overall Readiness progress bar
+- Critical Items panel
+- Workstream Progress bars
+- Real-time Activity Feed (Pusher/Socket.IO)
+- Task CRUD operations
+- Task dependencies and critical path visualization
+
+---
+
+## File Structure
+
+```
+esg-commandcenter/
+├── apps/
+│   ├── web/                            # Next.js 15 frontend
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── (dashboard)/       # Protected routes
+│   │   │   │   │   ├── layout.tsx
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   └── map/page.tsx
+│   │   │   │   ├── auth/              # Auth pages
+│   │   │   │   └── api/auth/          # NextAuth routes
+│   │   │   ├── components/
+│   │   │   │   └── map/               # 3D map components
+│   │   │   ├── hooks/                 # RBAC hooks
+│   │   │   └── lib/                   # Auth config
+│   │   └── package.json
+│   └── api/                            # Fastify backend
+│       ├── src/
+│       │   ├── routes/                # API routes
+│       │   ├── services/              # Business logic + RBAC
+│       │   ├── middleware/            # Auth & RBAC middleware
+│       │   └── server.ts
+│       └── package.json
+├── packages/
+│   ├── shared/                         # Shared types & constants
+│   │   ├── src/
+│   │   │   ├── types/                 # TypeScript types
+│   │   │   └── constants/             # Workcenters, roles
+│   │   └── package.json
+│   ├── database/                       # Drizzle ORM
+│   │   ├── src/schema/                # 7 table schemas
+│   │   └── drizzle.config.ts
+│   └── gis/                            # GeoJSON utilities
+│       ├── src/
+│       │   ├── coordinates.ts         # Lat/lng conversion
+│       │   ├── geojson-parser.ts      # Parser + validator
+│       │   └── cli/importer.ts        # Import CLI
+│       └── package.json
+├── docker-compose.yml                  # PostgreSQL + PostGIS + Redis
+├── Makefile                            # Development commands
+├── README.md                           # Consolidated documentation (single source of truth)
+├── PHASE1_COMPLETE.md                  # Phase 1 completion summary
+├── PHASE2_COMPLETE.md                  # Phase 2 completion summary
+└── CLAUDE_CONTEXT.md                   # This file
+```
+
+---
+
+## Technology Stack
+
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 18 + TypeScript 5
+- **3D**: Three.js 0.171 + React Three Fiber 8.17 + Drei 9.117
+- **Styling**: Tailwind CSS 3 + Shadcn/ui
+- **State**: Zustand + React Query (TanStack Query)
+- **Icons**: Lucide React
+- **Auth**: NextAuth.js 4 + Auth0
+
+### Backend
+- **Runtime**: Node.js 18+ with TypeScript (ESM)
+- **Framework**: Fastify 5
+- **Database**: PostgreSQL 15 + PostGIS 3.4
+- **ORM**: Drizzle ORM
+- **Cache**: Redis 7
+- **Auth**: JWT + Auth0
+
+### Infrastructure
+- **Dev**: Docker Compose
+- **Monorepo**: Turborepo
+- **Staging**: Cloudflare Workers (Phase 2 compatible)
+- **Production**: AWS (ECS, RDS, ElastiCache, S3) - Phase 6
+
+---
+
+## How to Continue Work (For AI Assistants)
+
+### Starting a New Session
+
+1. **Read the README.md first** - It's the consolidated single source of truth
+2. **Check current phase** - See "Implementation Roadmap" section
+3. **Review relevant PHASEx_COMPLETE.md** - Understand what's been built
+4. **Read this file** (CLAUDE_CONTEXT.md) - Get project context
+
+### Working on Next Phase
+
+1. **Check Implementation Roadmap in README.md** for next phase goals
+2. **Follow the phase completion pattern**:
+   - Build features incrementally
+   - Test as you go
+   - Document critical files created
+   - Track success criteria
+   - Create PHASEx_COMPLETE.md when done
+3. **Update README.md** with new features (consolidate info)
+
+### Maintaining Documentation
+
+- **README.md**: Always keep updated as single source of truth
+- **PHASEx_COMPLETE.md**: Create when phase is done (preserve snapshot)
+- **CLAUDE_CONTEXT.md**: Update with major architectural changes
+- **Phase-specific docs**: Only create when absolutely necessary (prefer README)
+
+---
+
+## Git Branching Strategy
+
+### Branch Structure
+
+```
+main                    # Production-ready code (protected)
+├── staging             # Pre-production testing (auto-deploys to Cloudflare)
+├── develop             # Integration branch for features (local dev + testing)
+└── feature/*           # Individual feature branches
+```
+
+### Branch Purposes
+
+1. **`main`** - Production Branch
+   - Protected branch (requires PR approval)
+   - Deployed to AWS production environment (Phase 6)
+   - Only merge from `staging` after full QA
+   - Tagged releases (semantic versioning)
+
+2. **`staging`** - Pre-Production Branch
+   - Auto-deploys to Cloudflare Workers via GitHub Actions
+   - Full integration testing environment
+   - Merge from `develop` when features are complete
+   - CI/CD runs full test suite before deployment
+
+3. **`develop`** - Development Branch
+   - Default branch for local development
+   - Runs on local dev server (MacBook)
+   - Integration point for all features
+   - Merge feature branches here first
+
+4. **`feature/*`** - Feature Branches
+   - Created from `develop` for each new feature/phase
+   - Examples: `feature/phase-3-workcenters`, `feature/ai-integration`
+   - Deleted after merge into `develop`
+
+### Workflow
+
+```bash
+# Start new feature (from develop)
+git checkout develop
+git pull origin develop
+git checkout -b feature/phase-3-workcenters
+
+# Work on feature
+git add .
+git commit -m "feat: implement workcenter pages"
+git push origin feature/phase-3-workcenters
+
+# Merge to develop (local testing)
+git checkout develop
+git merge feature/phase-3-workcenters
+git push origin develop
+
+# When ready for staging (Cloudflare deployment)
+git checkout staging
+git merge develop
+git push origin staging  # Triggers GitHub Actions → Cloudflare
+
+# When ready for production
+git checkout main
+git merge staging
+git tag v1.0.0
+git push origin main --tags  # Triggers GitHub Actions → AWS
+```
+
+### Commit Message Convention
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add new feature (Phase X completion)
+fix: bug fix in RBAC middleware
+docs: update README with Phase 2 guide
+refactor: reorganize GIS package structure
+test: add unit tests for GeoJSON parser
+chore: update dependencies
+ci: add GitHub Actions for Cloudflare deploy
+```
+
+### Protection Rules
+
+**main** (production):
+- Require PR approval (1+ reviewer)
+- Require status checks to pass
+- Require up-to-date branches
+- No force push
+- No deletion
+
+**staging** (pre-production):
+- Require status checks to pass
+- No force push
+
+**develop** (integration):
+- Optional protections
+- Allow force push for maintainers
+
+---
+
+## Development Commands
+
+```bash
+# Installation
+make install              # Install all dependencies
+
+# Database
+make db-up                # Start PostgreSQL + PostGIS + Redis
+make db-down              # Stop databases
+make db-reset             # Drop and recreate database
+cd packages/database && npm run db:studio  # Open Drizzle Studio (localhost:4983)
+
+# Development servers
+cd apps/api && npm run dev     # Start API (localhost:3001)
+cd apps/web && npm run dev     # Start frontend (localhost:3000)
+make dev                       # Start everything
+
+# GeoJSON import
+cd packages/gis
+npm run import -- -f FILE.geojson -e EVENT_ID [--dry-run]
+
+# Utilities
+make lint                 # Run linters
+make test                 # Run tests
+make clean                # Clean build artifacts
+```
+
+---
+
+## Key Environment Variables
+
+```env
+# Database
+DATABASE_URL=postgresql://esg:esg@localhost:5432/esg_commandcenter
+REDIS_URL=redis://localhost:6379
+
+# Auth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=<random_secret>
+AUTH0_CLIENT_ID=<your_client_id>
+AUTH0_CLIENT_SECRET=<your_client_secret>
+AUTH0_ISSUER_BASE_URL=https://<your-tenant>.auth0.com
+
+# API
+NEXT_PUBLIC_API_URL=http://localhost:3001
+JWT_SECRET=<random_secret>
+```
+
+---
+
+## Critical Implementation Patterns
+
+### RBAC Enforcement
+
+**Backend** (Fastify middleware):
+```typescript
+import { requireAuth, requirePermission, requireWorkcenterAccess } from './middleware/rbac.middleware';
+
+fastify.get('/api/tasks', {
+  preHandler: [requireAuth, requirePermission('tasks', 'read')]
+}, handler);
+
+fastify.post('/api/tasks', {
+  preHandler: [requireAuth, requireWorkcenterAccess(['operations', 'production'])]
+}, handler);
+```
+
+**Frontend** (React hooks):
+```typescript
+import { useAuth, usePermission, useWorkcenterAccess } from '@/hooks/useAuth';
+
+const { user, isAuthenticated } = useAuth();
+const canCreate = usePermission('tasks', 'create', 'operations');
+const hasAccess = useWorkcenterAccess('operations');
+```
+
+### GeoJSON Import Pattern
+
+```bash
+# Preview import
+npm run import -- -f cpns.geojson -e EVENT_ID --dry-run
+
+# Import with defaults
+npm run import -- -f plazas.geojson -e EVENT_ID --type zone --workcenter operations
+```
+
+### 3D Object Rendering
+
+```typescript
+// Point → Box
+if (geometry.type === 'Point') {
+  return <boxGeometry args={[width, height, depth]} />;
+}
+
+// Polygon → ExtrudeGeometry
+if (geometry.type === 'Polygon') {
+  const shape = new THREE.Shape(/* coordinates */);
+  return <extrudeGeometry args={[shape, { depth: height }]} />;
+}
+
+// LineString → TubeGeometry
+if (geometry.type === 'LineString') {
+  const curve = new THREE.CatmullRomCurve3(/* points */);
+  return <tubeGeometry args={[curve, segments, radius]} />;
 }
 ```
 
 ---
 
-## 🚀 How to Run
+## Common Issues & Solutions
 
-### Start Everything
+### Port conflicts
 ```bash
-cd /Users/roger/Desktop/Projects/esg-commandcenter
-
-# Databases (already running)
-make db-up
-
-# Terminal 1: API
-cd apps/api && npm run dev
-
-# Terminal 2: Web
-cd apps/web && npm run dev
+lsof -ti:3000 | xargs kill  # Frontend
+lsof -ti:3001 | xargs kill  # API
 ```
 
-### Verify Running
-- Frontend: http://localhost:3000
-- API Health: http://localhost:3001/health
-- Database: PostgreSQL on port 5432, Redis on port 6379
+### Database issues
+```bash
+make db-reset               # Nuclear option
+docker exec -it esg-postgres psql -U esg -d esg_commandcenter  # Manual access
+```
+
+### TypeScript errors
+```bash
+cd packages/shared && npm run build    # Build shared types first
+cd packages/database && npm run build  # Build database types
+```
+
+### Auth0 not configured
+The app works without Auth0 in local dev! Mock auth is used. Only needed for real SSO.
 
 ---
 
-## 📊 API Endpoints
+## Success Metrics
 
-All routes protected with JWT auth and RBAC:
+### Phase 1 (Complete)
+- ✅ Full stack runs with `make dev`
+- ✅ Auth0 SSO working
+- ✅ RBAC filtering working
+- ✅ All API endpoints protected
 
-```
-GET  /health                    # Health check (no auth)
-GET  /api/events                # List events
-GET  /api/events/:id            # Get event
-POST /api/events                # Create event (admin)
-GET  /api/tasks                 # List tasks (RBAC filtered)
-GET  /api/tasks/:id             # Get task
-POST /api/tasks                 # Create task (workcenter permission)
-PATCH /api/tasks/:id            # Update task (workcenter permission)
-GET  /api/venues                # List venue features (RBAC filtered)
-GET  /api/venues/:id            # Get venue feature
-POST /api/venues                # Create venue feature
-```
+### Phase 2 (Complete)
+- ✅ 3D map renders and is interactive
+- ✅ GeoJSON import works
+- ✅ Click → detail panel functional
+- ✅ Color coding by status working
+- ✅ Cloudflare Workers compatible
 
----
-
-## 🎨 Tech Stack
-
-### Frontend
-- Next.js 15 (App Router)
-- React 18 + TypeScript
-- Three.js (installed, ready for Phase 2)
-- Tailwind CSS + Shadcn/ui
-- NextAuth.js + Auth0
-- React Query (TanStack Query)
-- Zustand
-
-### Backend
-- Node.js + Fastify
-- PostgreSQL 15 + PostGIS 3.4
-- Drizzle ORM
-- Redis 7
-- JWT authentication
-- TypeScript (ESM)
-
-### Infrastructure
-- Docker + Docker Compose
-- Turborepo (monorepo)
-- Makefile
+### Phase 3 (Planned)
+- Task CRUD operations working
+- Real-time activity feed functional
+- 8 workcenter pages operational
+- Overall readiness dashboard accurate
 
 ---
 
-## 🎯 Phase 2 Plan (Next Steps)
+## Next Steps for AI Assistant
 
-**Goal**: Interactive 3D venue map
+When continuing this project:
 
-**Key Deliverables**:
-1. Three.js + React Three Fiber scene
-2. GeoJSON import CLI tool
-3. Clickable 3D objects (stages, gates, booths)
-4. Detail panels on click
-5. 2D/3D map toggle
-6. Performance optimization (instancing, LOD)
-
-**Critical Files to Create**:
-- `apps/web/src/components/map/VenueMap3D.tsx`
-- `apps/web/src/components/map/VenueObject.tsx`
-- `packages/gis/src/geojson-importer.ts`
-- `packages/gis/src/coordinates.ts`
-
-**Reference Data**: `/Users/roger/Desktop/Projects/innovate-GIS-data` (Burning Man GIS)
+1. **Always start by reading README.md** - It's the consolidated source of truth
+2. **Check the current phase status** in Implementation Roadmap section
+3. **Review the relevant PHASEx_COMPLETE.md** for detailed context
+4. **Follow the systematic documentation approach**:
+   - Work incrementally
+   - Test frequently
+   - Document as you go
+   - Create phase completion doc when done
+   - Update README.md with consolidated info
+5. **Maintain the pattern**: Each phase gets its own completion document
 
 ---
 
-## 🐛 Known Issues / Notes
+## Documentation Philosophy
 
-- Auth0 credentials in `.env` are placeholders (works without SSO for dev)
-- API uses mock user data if no Auth0 token provided
-- PostGIS 3.4 is working and verified
-- All 7 database tables created and indexed
-- No security vulnerabilities in npm packages
+### Single Source of Truth: README.md
+- Consolidated, comprehensive, always up-to-date
+- First place to look for any information
+- Contains all implemented features, how to use them, troubleshooting
 
----
+### Phase Completion Snapshots: PHASEx_COMPLETE.md
+- Preserves exact state at phase completion
+- Detailed "what was built" inventory
+- How to run/use the phase features
+- Success criteria checklist
+- Statistics and metrics
+- What's next preview
 
-## 📖 Documentation Files
+### Context for Continuity: CLAUDE_CONTEXT.md (this file)
+- Project overview and systematic approach
+- Current state summary
+- How to continue work
+- Critical patterns and practices
+- Environment setup
 
-1. **START_HERE.md** - Quick start guide
-2. **PHASE1_COMPLETE.md** - Detailed Phase 1 summary
-3. **QUICKSTART.md** - 5-minute setup
-4. **README.md** - Full project docs
-5. **IMPLEMENTATION_PLAN.md** - 6-phase architecture
-6. **SETUP_COMPLETE.md** - Setup status
-7. **CLAUDE_CONTEXT.md** - This file (for next Claude session)
-
----
-
-## 💬 Prompts for Next Claude Session
-
-### To Continue Phase 2:
-```
-I'm working on the ESG Command Center festival management dashboard.
-Phase 1 (core infrastructure, auth, RBAC, API) is complete.
-
-Please read CLAUDE_CONTEXT.md to understand the current state.
-
-I'm ready to start Phase 2: Interactive 3D venue map with Three.js.
-
-The plan is in IMPLEMENTATION_PLAN.md under "Phase 2".
-
-Let's begin by creating the VenueMap3D component.
-```
-
-### To Review Current State:
-```
-Please review the ESG Command Center project at:
-/Users/roger/Desktop/Projects/esg-commandcenter
-
-Read CLAUDE_CONTEXT.md for full context.
-
-I want to understand the current RBAC implementation.
-```
-
-### To Add Features:
-```
-I have the ESG Command Center running (see CLAUDE_CONTEXT.md for context).
-
-I want to add [specific feature] to [workcenter/component].
-
-Please help me implement this.
-```
+### Why This Approach?
+1. **Easy project resumption** - AI assistants can quickly understand state
+2. **Clear progress tracking** - Each phase completion is documented
+3. **Knowledge preservation** - Implementation details don't get lost
+4. **Reduced redundancy** - Consolidate into README, preserve snapshots in phase docs
+5. **Better collaboration** - Team members or AI can pick up work seamlessly
 
 ---
 
-## 🎓 Architecture Decisions
+## Project Statistics (Current)
 
-### Why Turborepo?
-- Shared TypeScript types across apps
-- Faster builds with caching
-- Easy dependency management
-
-### Why Drizzle ORM?
-- Better TypeScript inference than Prisma
-- More control over queries
-- Excellent PostGIS support
-
-### Why Fastify?
-- Better performance than Express
-- Native TypeScript support
-- Plugin ecosystem
-
-### Why NextAuth.js?
-- Best Auth0 integration for Next.js
-- Flexible callback system
-- Built-in session management
-
-### Why Three.js?
-- Most mature WebGL library
-- Massive ecosystem
-- React Three Fiber for declarative 3D
-
----
-
-## 📊 Statistics
-
+- **Packages**: 6 (2 apps + 4 shared packages)
+- **Database Tables**: 7 with PostGIS support
+- **API Endpoints**: 9 protected routes
+- **TypeScript Types**: 20+
+- **Feature Types**: 17 venue feature types
+- **Workcenters**: 8 departments
+- **Roles**: 10 role definitions
+- **3D Components**: 3 (VenueMap3D, VenueObject, FeatureDetailPanel)
 - **Files Created**: 80+
 - **Lines of Code**: ~5,000+
-- **TypeScript Types**: 20+
-- **API Endpoints**: 9
-- **Database Tables**: 7
-- **Roles**: 10
-- **Workcenters**: 8
-- **Venue Feature Types**: 17
 
 ---
 
-## ✅ Phase 1 Completion Checklist
+---
 
-- [x] Monorepo structure
-- [x] Database schema
-- [x] PostGIS enabled
-- [x] Auth0 + NextAuth.js
-- [x] RBAC system
-- [x] API routes
-- [x] Frontend providers
-- [x] RBAC hooks
-- [x] Docker setup
-- [x] Documentation
-- [x] Dependencies installed
-- [x] Database initialized
-- [x] All tests passing
+## Reusable Systematic Approach Template
 
-**Status**: ✅ PHASE 1 COMPLETE - Ready for Phase 2
+This section describes how to adapt this documentation pattern for other projects.
+
+### For New Projects: Initial Setup
+
+1. **Create Core Documentation Files**:
+   ```
+   README.md              # Single source of truth
+   CLAUDE_CONTEXT.md      # AI assistant context (this template)
+   .env.example           # Environment variables template
+   ```
+
+2. **Customize CLAUDE_CONTEXT.md**:
+   ```markdown
+   # Project Overview
+   - Repository location
+   - Current phase/milestone
+   - Status summary
+
+   # Systematic Approach
+   - Phase completion documentation pattern
+   - Branching strategy (main/staging/develop/feature/*)
+   - Commit conventions
+
+   # Current State
+   - What's been built (by phase)
+   - Tech stack
+   - File structure
+
+   # How to Continue Work
+   - Starting a new session
+   - Working on next phase
+   - Documentation maintenance
+
+   # Critical Patterns
+   - Project-specific implementations
+   - Common issues & solutions
+   ```
+
+3. **Set Up Branching**:
+   ```bash
+   git checkout -b develop
+   git push -u origin develop
+
+   git checkout -b staging
+   git push -u origin staging
+
+   git checkout develop
+   ```
+
+### For Multi-Phase Projects: Phase Workflow
+
+**At Phase Start**:
+1. Create feature branch: `feature/phase-N-name`
+2. Work incrementally
+3. Update README.md as you build
+
+**At Phase End**:
+1. Create `PHASEN_COMPLETE.md` with:
+   - ✅ What Was Built
+   - 📊 Critical Files Created
+   - 🎯 Success Criteria Met
+   - 🚀 How to Run/Use
+   - 📖 What Works Now
+   - 🎉 What's Next
+   - 📊 Statistics
+
+2. Update README.md:
+   - Consolidate phase features into main docs
+   - Update roadmap with completed phase
+
+3. Update CLAUDE_CONTEXT.md:
+   - Mark phase as complete
+   - Update "Current State" section
+   - Add any new critical patterns
+
+4. Merge workflow:
+   ```bash
+   git checkout develop
+   git merge feature/phase-N-name
+   git push origin develop
+
+   # When tested and ready
+   git checkout staging
+   git merge develop
+   git push origin staging  # Auto-deploys to Cloudflare
+   ```
+
+### Suggestions for Future Improvements
+
+1. **Automation Opportunities**:
+   - Script to generate PHASEN_COMPLETE.md template
+   - Pre-commit hooks to enforce commit conventions
+   - Auto-generate README table of contents
+   - CI/CD pipeline templates
+
+2. **Enhanced Documentation**:
+   - Architecture decision records (ADRs)
+   - API documentation (OpenAPI/Swagger)
+   - Component storybook for UI
+   - Performance benchmarks per phase
+
+3. **AI Assistant Optimization**:
+   - **Context Priming**: Start new sessions with "Read README.md, CLAUDE_CONTEXT.md, and PHASEN_COMPLETE.md"
+   - **Incremental Updates**: Update docs as you build, not at the end
+   - **Clear Handoffs**: When context limit is near, create a handoff document with current TODO and blockers
+   - **Code References**: Use file:line format in docs for easy navigation
+
+4. **Branching Enhancements**:
+   - `hotfix/*` branches for emergency fixes
+   - `release/*` branches for release preparation
+   - GitHub Actions for auto-labeling PRs
+   - Automated changelog generation
+
+5. **Testing Integration**:
+   - Add test coverage to phase completion docs
+   - Document critical test cases
+   - Include test commands in README
+
+### Template for Other Projects
+
+Save this structure to reuse:
+
+```
+project-name/
+├── README.md                    # Consolidated docs (quick start, features, API, troubleshooting)
+├── CLAUDE_CONTEXT.md            # AI assistant context (phases, branching, patterns)
+├── IMPLEMENTATION_PLAN.md       # Full technical architecture (6-phase roadmap)
+├── PHASE1_COMPLETE.md           # Phase 1 snapshot
+├── PHASE2_COMPLETE.md           # Phase 2 snapshot
+├── .env.example                 # Environment template
+└── .github/
+    └── workflows/
+        ├── staging.yml          # Auto-deploy to Cloudflare
+        └── production.yml       # Deploy to AWS
+```
+
+### Key Principles
+
+1. **Documentation as Code**: Treat docs like code - version controlled, reviewed, updated
+2. **Single Source of Truth**: README.md is always authoritative
+3. **Phase Snapshots**: PHASEx_COMPLETE.md preserves exact state
+4. **Clear Branching**: develop → staging → main with automation
+5. **Systematic Approach**: Repeat pattern for every phase
+6. **AI-Friendly**: Make it easy for AI to understand and continue work
 
 ---
 
-**Project**: ESG Command Center - Festival Management Dashboard
-**Client**: Insomniac Events (EDC Las Vegas, EDC Orlando)
-**Developer**: Roger Emerson
-**AI Assistant**: Claude Sonnet 4.5
-**Date**: December 15, 2025
+**Last Updated**: Phase 2 Completion - December 2025
+**Status**: Ready for Phase 3 - Workcenters & Dashboards
+**Next Session**: Begin Phase 3 implementation
