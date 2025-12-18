@@ -118,7 +118,7 @@ function inferFeatureCategory(featureType: VenueFeatureType, props: any): VenueF
   }
 
   // Map feature types to workcenters
-  const categoryMap: Record<string, string> = {
+  const categoryMap: Record<string, VenueFeatureCategory> = {
     stage: 'production',
     sound_booth: 'production',
     gate: 'security',
