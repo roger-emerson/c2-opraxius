@@ -24,7 +24,9 @@ jobs:
           cache: 'npm'
 
       - name: Install root dependencies
-        run: npm ci
+        run: |
+          npm install -g npm@10.2.4
+          npm ci
 
       - name: Run migrations
         run: npx drizzle-kit push
@@ -49,7 +51,9 @@ jobs:
           cache: 'npm'
 
       - name: Install root dependencies
-        run: npm ci
+        run: |
+          npm install -g npm@10.2.4
+          npm ci
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
@@ -86,7 +90,9 @@ jobs:
           cache: 'npm'
 
       - name: Install root dependencies
-        run: npm ci
+        run: |
+          npm install -g npm@10.2.4
+          npm ci
 
       - name: Build with @cloudflare/next-on-pages
         run: npm run pages:build
