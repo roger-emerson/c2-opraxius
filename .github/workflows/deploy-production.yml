@@ -94,6 +94,9 @@ jobs:
           npm install -g npm@10.2.4
           npm ci
 
+      - name: Build workspace packages
+        run: npm run build --workspace=@esg/shared --workspace=@esg/database --workspace=@esg/gis
+
       - name: Build with @cloudflare/next-on-pages
         run: npm run pages:build
         working-directory: apps/web
