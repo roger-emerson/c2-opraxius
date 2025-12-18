@@ -735,34 +735,57 @@ cd apps/api && npm run dev
 cd apps/web && npm run dev
 ```
 
-### Staging (Cloudflare Workers)
+### Staging (Cloudflare) - **✅ Configured**
 
-Phase 2 is fully Cloudflare Workers compatible:
+**Branch:** `staging`
+**Auto-deploys on:** Push to `staging` branch
+**URLs:**
+- Web: https://staging.opraxius.com
+- API: https://api.staging.opraxius.com
+
+```bash
+# Deploy to staging
+git checkout staging
+git merge develop
+git push origin staging  # Triggers GitHub Actions
+```
+
+**What happens:**
+1. Database migrations run on staging database
+2. API deploys to `esg-api-staging` Worker
+3. Web builds with @cloudflare/next-on-pages and deploys to `esg-web-staging` Pages
+4. Health checks verify deployment
+
+### Production (Cloudflare) - **✅ Configured**
+
+**Branch:** `main`
+**Deploys on:** Push to `main` branch (requires manual approval)
+**URLs:**
+- Web: https://opraxius.com
+- API: https://api.opraxius.com
+
+```bash
+# Deploy to production
+git checkout main
+git merge staging
+git tag v1.0.0
+git push origin main --tags  # Waits for manual approval
+```
+
+**What happens:**
+1. GitHub Actions workflow starts and waits for approval
+2. Approve in GitHub Actions UI
+3. Database migrations run on production database
+4. API deploys to `esg-api-production` Worker
+5. Web builds and deploys to `esg-web-production` Pages
+6. Health checks verify deployment
+
+**Requirements:**
+- Cloudflare Workers compatible (Phase 2+)
 - Client-side rendering only (Three.js)
 - `'use client'` directive in all 3D components
 - Edge runtime compatible
 - No Node.js APIs in frontend
-
-```bash
-# Build for production
-npm run build
-
-# Deploy to Cloudflare Pages
-wrangler pages publish .next
-```
-
-### Production (AWS)
-
-AWS infrastructure (Phase 6):
-- ECS for container orchestration
-- RDS for PostgreSQL + PostGIS
-- ElastiCache for Redis
-- S3 for static assets
-- CloudFront for CDN
-
-```bash
-npm run deploy:production
-```
 
 ---
 

@@ -11,10 +11,10 @@ For detailed project context, current status, and architecture decisions, see **
 ## Quick Reference
 
 ### Key Documentation
-- `CLAUDE_CONTEXT.md` - Full project context and status
+- `CLAUDE_CONTEXT.md` - Full project context, systematic approach, and CI/CD setup
+- `README.md` - Single source of truth (quick start, features, API, deployment)
+- `PHASE1_COMPLETE.md` + `PHASE2_COMPLETE.md` - Phase completion snapshots
 - `IMPLEMENTATION_PLAN.md` - 6-phase architecture roadmap
-- `QUICKSTART.md` - 5-minute setup guide
-- `README.md` - Complete project documentation
 
 ### Project Structure
 ```
@@ -54,7 +54,9 @@ cd apps/web && npm run dev
 
 ## Current Status
 
-**Phase 1**: Complete (infrastructure, auth, RBAC, API)  
-**Phase 2**: Next (Interactive 3D venue map with Three.js)
+**Phase 1**: ✅ Complete (infrastructure, auth, RBAC, API)
+**Phase 2**: ✅ Complete (3D map with Three.js, GeoJSON import, dashboard)
+**CI/CD**: ✅ Configured (Cloudflare staging + production)
+**Phase 3**: 🚧 Next (Workcenters & dashboards)
 
-See `CLAUDE_CONTEXT.md` for detailed status and next steps.
+See `CLAUDE_CONTEXT.md` for detailed status and deployment instructions.
