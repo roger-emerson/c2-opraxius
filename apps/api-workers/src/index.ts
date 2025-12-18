@@ -16,6 +16,24 @@ const app = new Hono<AppBindings>();
 app.use('*', logger());
 app.use('*', secureHeaders());
 
+// Request tracing middleware for debugging
+app.use('*', async (c, next) => {
+  const requestId = crypto.randomUUID().slice(0, 8);
+  const startTime = Date.now();
+  
+  // Log incoming request
+  console.log(`📥 [${requestId}] ${c.req.method} ${c.req.path}`);
+  
+  // Add request ID to response headers for correlation
+  c.header('X-Request-ID', requestId);
+  
+  await next();
+  
+  // Log response with timing
+  const duration = Date.now() - startTime;
+  console.log(`📤 [${requestId}] ${c.res.status} ${duration}ms`);
+});
+
 // CORS configuration
 app.use('*', cors({
   origin: [
@@ -72,10 +90,28 @@ app.notFound((c) => {
   return c.json({ error: 'Not found', path: c.req.path }, 404);
 });
 
-// Error handler
+// Error handler with enhanced debugging
 app.onError((err, c) => {
-  console.error('Unhandled error:', err);
-  return c.json({ error: 'Internal server error' }, 500);
+  const requestId = crypto.randomUUID().slice(0, 8);
+  const errorInfo = {
+    requestId,
+    message: err.message,
+    name: err.name,
+    stack: err.stack,
+    path: c.req.path,
+    method: c.req.method,
+    timestamp: new Date().toISOString(),
+    env: c.env.ENVIRONMENT || 'unknown',
+  };
+  
+  // Log structured error for wrangler tail
+  console.error('🔴 [ERROR]', JSON.stringify(errorInfo, null, 2));
+  
+  return c.json({ 
+    error: 'Internal server error',
+    requestId, // Include for tracking in logs
+    timestamp: errorInfo.timestamp,
+  }, 500);
 });
 
 // Export for Cloudflare Workers
