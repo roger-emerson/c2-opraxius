@@ -17,8 +17,8 @@
     "import": "tsx src/cli/importer.ts"
   },
   "dependencies": {
-    "@esg/shared": "workspace:*",
-    "@esg/database": "workspace:*"
+    "@esg/shared": "*",
+    "@esg/database": "*"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
