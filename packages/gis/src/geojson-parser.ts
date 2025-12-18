@@ -1,5 +1,5 @@
 import type { Feature, FeatureCollection, Geometry, Point, LineString, Polygon } from 'geojson';
-import type { VenueFeature, VenueFeatureType } from '@esg/shared';
+import type { VenueFeature, VenueFeatureType, VenueFeatureCategory } from '@esg/shared';
 
 /**
  * Parse a GeoJSON FeatureCollection and convert to venue features
@@ -112,7 +112,7 @@ function inferFeatureType(props: any, defaultType: VenueFeatureType): VenueFeatu
 /**
  * Infer feature category (workcenter) from feature type
  */
-function inferFeatureCategory(featureType: VenueFeatureType, props: any): string | undefined {
+function inferFeatureCategory(featureType: VenueFeatureType, props: any): VenueFeatureCategory | undefined {
   if (props.featureCategory || props.feature_category) {
     return props.featureCategory || props.feature_category;
   }
@@ -142,9 +142,15 @@ function inferFeatureCategory(featureType: VenueFeatureType, props: any): string
 function convertGeometry(geometry: Geometry): object {
   // PostGIS uses GeoJSON format, so we can pass through
   // But ensure it's properly formatted
+  if (geometry.type === 'GeometryCollection') {
+    return {
+      type: geometry.type,
+      geometries: geometry.geometries,
+    };
+  }
   return {
     type: geometry.type,
-    coordinates: geometry.coordinates,
+    coordinates: (geometry as Point | LineString | Polygon).coordinates,
   };
 }
 
@@ -261,7 +267,7 @@ export function getGeoJSONStats(geojson: FeatureCollection): {
 function extractAllCoordinates(geometry: Geometry): number[][] {
   const coords: number[][] = [];
 
-  function extract(coords: any) {
+  function extract(coords: any): number[][] {
     if (Array.isArray(coords)) {
       if (typeof coords[0] === 'number') {
         // This is a coordinate pair [lng, lat]
@@ -274,5 +280,9 @@ function extractAllCoordinates(geometry: Geometry): number[][] {
     return [];
   }
 
-  return extract(geometry.coordinates);
+  if (geometry.type === 'GeometryCollection') {
+    return geometry.geometries.flatMap(extractAllCoordinates);
+  }
+
+  return extract((geometry as Point | LineString | Polygon).coordinates);
 }

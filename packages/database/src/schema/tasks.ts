@@ -1,9 +1,9 @@
-import { pgTable, uuid, varchar, timestamp, text, jsonb, decimal, boolean, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, text, jsonb, decimal, boolean, index, type PgColumn } from 'drizzle-orm/pg-core';
 import { events } from './events';
 import { venueFeatures } from './venues';
 import { users } from './users';
 
-export const tasks = pgTable('tasks', {
+export const tasks: any = pgTable('tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
   eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: 'cascade' }),
   venueFeatureId: uuid('venue_feature_id').references(() => venueFeatures.id, { onDelete: 'set null' }),

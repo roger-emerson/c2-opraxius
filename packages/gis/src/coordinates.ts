@@ -88,24 +88,24 @@ export function calculateBounds(coordinates: number[][]): {
 export function calculateCenter(coordinates: any): { lat: number; lng: number } {
   const flatCoords: number[][] = [];
 
-  function flatten(coords: any) {
+  function flatten(coords: any): void {
     if (Array.isArray(coords[0])) {
       if (typeof coords[0][0] === 'number') {
-        // This is a coordinate pair
-        flatCoords.push(coords as number[][]);
+        // This is an array of coordinate pairs
+        coords.forEach((coord: number[]) => flatCoords.push(coord));
       } else {
         // Nested array, recurse
         coords.forEach(flatten);
       }
     } else if (typeof coords[0] === 'number') {
       // Single coordinate pair
-      flatCoords.push([coords]);
+      flatCoords.push(coords as number[]);
     }
   }
 
   flatten(coordinates);
 
-  const bounds = calculateBounds(flatCoords.flat());
+  const bounds = calculateBounds(flatCoords);
   return bounds.center;
 }
 
