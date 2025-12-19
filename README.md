@@ -1,4 +1,4 @@
-# ESG Command Center
+# C2 Command Center
 
 Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, etc.)
 
@@ -27,7 +27,7 @@ Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, 
 
 ## Overview
 
-The ESG Command Center is an internal command and control dashboard providing a single pane of glass for managing large-scale festival operations across multiple offices and departments.
+The C2 Command Center is an internal command and control dashboard providing a single pane of glass for managing large-scale festival operations across multiple offices and departments.
 
 ### Key Features
 
@@ -53,8 +53,8 @@ The ESG Command Center is an internal command and control dashboard providing a 
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/roger-emerson/esg-commandcenter.git
-cd esg-commandcenter
+git clone https://github.com/roger-emerson/c2-opraxius.git
+cd c2-opraxius
 
 # 2. Install dependencies
 npm install
@@ -113,7 +113,7 @@ npm run dev
 ## Project Structure
 
 ```
-esg-commandcenter/
+c2-opraxius/
 ├── apps/
 │   ├── web/                      # Next.js frontend
 │   │   ├── src/
@@ -326,13 +326,13 @@ npm run db:seed
 npm install -D <package> -w root
 
 # Add to web app
-npm install <package> -w @esg/web
+npm install <package> -w @c2/web
 
 # Add to API
-npm install <package> -w @esg/api
+npm install <package> -w @c2/api
 
 # Add to shared package
-npm install <package> -w @esg/shared
+npm install <package> -w @c2/shared
 ```
 
 ---
@@ -753,7 +753,7 @@ git push origin staging  # Triggers GitHub Actions
 **What happens:**
 1. Database migrations run on staging database
 2. API deploys to `c2-api-staging` Worker
-3. Web builds with @cloudflare/next-on-pages and deploys to `esg-web-staging` Pages
+3. Web builds with @cloudflare/next-on-pages and deploys to `c2-web-staging` Pages
 4. Health checks verify deployment
 
 ### Production (Cloudflare) - **✅ Configured**
@@ -777,7 +777,7 @@ git push origin main --tags  # Waits for manual approval
 2. Approve in GitHub Actions UI
 3. Database migrations run on production database
 4. API deploys to `c2-api-production` Worker
-5. Web builds and deploys to `esg-web-production` Pages
+5. Web builds and deploys to `c2-web-production` Pages
 6. Health checks verify deployment
 
 **Requirements:**
@@ -881,7 +881,7 @@ make db-up
 
 ```bash
 # Connect to container
-docker exec -it esg-postgres psql -U esg -d esg_commandcenter
+docker exec -it c2-postgres psql -U esg -d c2_commandcenter
 
 # Enable PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;
@@ -930,7 +930,7 @@ See `.env.example` for required environment variables.
 **Required**:
 ```env
 # Database
-DATABASE_URL=postgresql://esg:esg@localhost:5432/esg_commandcenter
+DATABASE_URL=postgresql://c2:esg@localhost:5432/c2_commandcenter
 REDIS_URL=redis://localhost:6379
 
 # NextAuth

@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { Permission } from '@esg/shared';
+import type { Permission } from '@c2/shared';
 import { RBACService } from '../services/rbac.service.js';
 import type { AuthenticatedRequest } from './auth.middleware.js';
 

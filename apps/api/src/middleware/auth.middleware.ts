@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
-import type { User } from '@esg/shared';
+import type { User } from '@c2/shared';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 

@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import Auth0Provider from 'next-auth/providers/auth0';
-import type { User, UserRole } from '@esg/shared';
+import type { User, UserRole } from '@c2/shared';
 
 // Extend NextAuth types
 declare module 'next-auth' {

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { db, events } from '@esg/database';
+import { db, events } from '@c2/database';
 import { eq } from 'drizzle-orm';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import { requirePermission } from '../middleware/rbac.middleware.js';

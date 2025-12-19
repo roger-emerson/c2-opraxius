@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { useMemo } from 'react';
-import type { Permission } from '@esg/shared';
+import type { Permission } from '@c2/shared';
 
 export function useAuth() {
   const { data: session, status } = useSession();

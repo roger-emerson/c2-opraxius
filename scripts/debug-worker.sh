@@ -1,15 +1,15 @@
 #!/bin/bash
-# Debug script for ESG Command Center Cloudflare Workers
+# Debug script for C2 Command Center Cloudflare Workers
 # Usage: ./scripts/debug-worker.sh [staging|production]
 
 set -e
 
 ENVIRONMENT=${1:-staging}
-WORKER_NAME="esg-api-${ENVIRONMENT}"
+WORKER_NAME="c2-api-${ENVIRONMENT}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-echo "🔍 ESG Command Center Worker Debugger"
+echo "🔍 C2 Command Center Worker Debugger"
 echo "======================================"
 echo "Environment: $ENVIRONMENT"
 echo "Worker: $WORKER_NAME"

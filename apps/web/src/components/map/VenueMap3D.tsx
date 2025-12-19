@@ -3,7 +3,7 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, Grid } from '@react-three/drei';
 import { Suspense, useState } from 'react';
-import type { VenueFeature } from '@esg/shared';
+import type { VenueFeature } from '@c2/shared';
 import { VenueObject } from './VenueObject';
 import { FeatureDetailPanel } from './FeatureDetailPanel';
 

@@ -3,7 +3,7 @@ import type { Env } from './lib/db';
 import type { Database } from './lib/db';
 import type { CacheService } from './lib/redis';
 
-// User types (matching @esg/shared)
+// User types (matching @c2/shared)
 export type UserRole =
   | 'admin'
   | 'operations_lead'

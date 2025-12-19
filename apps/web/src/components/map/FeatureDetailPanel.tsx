@@ -1,7 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
-import type { VenueFeature } from '@esg/shared';
+import type { VenueFeature } from '@c2/shared';
 import { useQuery } from '@tanstack/react-query';
 
 interface FeatureDetailPanelProps {

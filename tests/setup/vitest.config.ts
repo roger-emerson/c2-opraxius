@@ -66,10 +66,10 @@ export default defineConfig({
   // Path aliases (match tsconfig)
   resolve: {
     alias: {
-      '@esg/shared': path.resolve(__dirname, '../../packages/shared/src'),
-      '@esg/database': path.resolve(__dirname, '../../packages/database/src'),
-      '@esg/api': path.resolve(__dirname, '../../apps/api/src'),
-      '@esg/web': path.resolve(__dirname, '../../apps/web/src'),
+      '@c2/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      '@c2/database': path.resolve(__dirname, '../../packages/database/src'),
+      '@c2/api': path.resolve(__dirname, '../../apps/api/src'),
+      '@c2/web': path.resolve(__dirname, '../../apps/web/src'),
     },
   },
 });

@@ -3,8 +3,8 @@
 import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { VenueFeature } from '@esg/shared';
-import { pointToVector3, polygonToVectors, lineStringToVectors } from '@esg/gis';
+import type { VenueFeature } from '@c2/shared';
+import { pointToVector3, polygonToVectors, lineStringToVectors } from '@c2/gis';
 
 interface VenueObjectProps {
   feature: VenueFeature;

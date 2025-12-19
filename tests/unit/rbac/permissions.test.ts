@@ -19,7 +19,7 @@ import {
 } from '../../fixtures/test-data';
 
 // TODO: Import actual RBAC service when available
-// import { RBACService, hasPermission, canAccessWorkcenter } from '@esg/api/services/rbac.service';
+// import { RBACService, hasPermission, canAccessWorkcenter } from '@c2/api/services/rbac.service';
 
 // ============================================================
 // MOCK RBAC SERVICE (until real service is connected)

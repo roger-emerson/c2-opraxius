@@ -1,6 +1,6 @@
-# ESG Command Center - Cloudflare Deployment Guide
+# C2 Command Center - Cloudflare Deployment Guide
 
-This guide walks you through deploying the ESG Command Center to Cloudflare (Workers + Pages) with Supabase for PostgreSQL + PostGIS and Upstash for Redis.
+This guide walks you through deploying the C2 Command Center to Cloudflare (Workers + Pages) with Supabase for PostgreSQL + PostGIS and Upstash for Redis.
 
 ## Architecture Overview
 
@@ -74,7 +74,7 @@ wrangler login
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
 2. Click **New Project**
 3. Fill in:
-   - **Name**: `esg-commandcenter-staging`
+   - **Name**: `c2-opraxius-staging`
    - **Database Password**: Generate a strong password and save it
    - **Region**: Choose closest to your users
 4. Click **Create new project**
@@ -106,7 +106,7 @@ postgresql://postgres.xxxxx:YOUR_PASSWORD@aws-0-us-east-1.pooler.supabase.com:54
 1. Go to [Upstash Console](https://console.upstash.com)
 2. Click **Create Database**
 3. Fill in:
-   - **Name**: `esg-commandcenter-staging`
+   - **Name**: `c2-opraxius-staging`
    - **Region**: Choose closest to Cloudflare edge
    - **Type**: Regional
 4. Click **Create**
@@ -169,7 +169,7 @@ Go to **Variables** tab:
 | Variable Name | Value |
 |---------------|-------|
 | `STAGING_API_URL` | `https://c2-api-staging.<account>.workers.dev` |
-| `STAGING_WEB_URL` | `https://esg-web-staging.pages.dev` |
+| `STAGING_WEB_URL` | `https://c2-web-staging.pages.dev` |
 
 ---
 
@@ -177,7 +177,7 @@ Go to **Variables** tab:
 
 ```bash
 # Navigate to project
-cd /Users/roger/Desktop/Projects/esg-commandcenter
+cd /Users/roger/Desktop/Projects/c2-opraxius
 
 # Make sure you're on deploy/staging branch
 git checkout deploy/staging
@@ -216,7 +216,7 @@ curl https://c2-api-staging.<your-subdomain>.workers.dev/health
 
 Open in browser:
 ```
-https://esg-web-staging.pages.dev
+https://c2-web-staging.pages.dev
 ```
 
 ---

@@ -1,8 +1,8 @@
 {
-  "name": "esg-commandcenter",
+  "name": "c2-opraxius",
   "version": "1.0.0",
   "private": true,
-  "description": "ESG Command Center - Festival Management Dashboard for Insomniac",
+  "description": "C2 Command Center - Festival Management Dashboard for Insomniac",
   "workspaces": [
     "apps/*",
     "packages/*"

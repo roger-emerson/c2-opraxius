@@ -1,5 +1,5 @@
-# Cloudflare Pages configuration for ESG Command Center Web - PRODUCTION
-name = "esg-web-production"
+# Cloudflare Pages configuration for C2 Command Center Web - PRODUCTION
+name = "c2-web-production"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"

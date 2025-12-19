@@ -1,5 +1,5 @@
 import type { Feature, FeatureCollection, Geometry, Point, LineString, Polygon } from 'geojson';
-import type { VenueFeature, VenueFeatureType, VenueFeatureCategory } from '@esg/shared';
+import type { VenueFeature, VenueFeatureType, VenueFeatureCategory } from '@c2/shared';
 
 /**
  * Parse a GeoJSON FeatureCollection and convert to venue features

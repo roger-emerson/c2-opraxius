@@ -1,5 +1,5 @@
 {
-  "name": "@esg/database",
+  "name": "@c2/database",
   "version": "1.0.0",
   "private": true,
   "type": "module",

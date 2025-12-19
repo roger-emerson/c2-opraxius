@@ -1,5 +1,5 @@
-import type { Permission, UserRole, User } from '@esg/shared';
-import { ROLES } from '@esg/shared';
+import type { Permission, UserRole, User } from '@c2/shared';
+import { ROLES } from '@c2/shared';
 
 export class RBACService {
   /**

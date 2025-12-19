@@ -1,5 +1,5 @@
-# Cloudflare Pages configuration for ESG Command Center Web - STAGING
-name = "esg-web-staging"
+# Cloudflare Pages configuration for C2 Command Center Web - STAGING
+name = "c2-web-staging"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"

@@ -1,7 +1,7 @@
 .PHONY: help install dev db-up db-down db-reset db-migrate db-seed test lint clean
 
 help:
-	@echo "ESG Command Center - Makefile Commands"
+	@echo "C2 Command Center - Makefile Commands"
 	@echo ""
 	@echo "  make install       Install all dependencies"
 	@echo "  make dev           Start development environment"

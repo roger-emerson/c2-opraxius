@@ -14,8 +14,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "@esg/shared": ["../../packages/shared/src"],
-      "@esg/database": ["../../packages/database/src"]
+      "@c2/shared": ["../../packages/shared/src"],
+      "@c2/database": ["../../packages/database/src"]
     }
   },
   "include": ["src/**/*.ts"],

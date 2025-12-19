@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { VenueMap3D } from '@/components/map/VenueMap3D';
-import type { VenueFeature } from '@esg/shared';
+import type { VenueFeature } from '@c2/shared';
 
 export default function MapPage() {
   // Fetch venue features

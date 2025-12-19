@@ -1,8 +1,8 @@
-# Claude Code Agent Instructions - ESG Command Center
+# Claude Code Agent Instructions - C2 Command Center
 
 ## Project Overview
 
-**ESG Command Center** is a festival management dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando).
+**C2 Command Center** is a festival management dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando).
 
 For detailed project context, current status, and architecture decisions, see **CLAUDE_CONTEXT.md**.
 
@@ -11,10 +11,9 @@ For detailed project context, current status, and architecture decisions, see **
 ## Quick Reference
 
 ### Key Documentation
-- `CLAUDE_CONTEXT.md` - Full project context, systematic approach, and CI/CD setup
-- `README.md` - Single source of truth (quick start, features, API, deployment)
-- `PHASE1_COMPLETE.md` + `PHASE2_COMPLETE.md` - Phase completion snapshots
-- `IMPLEMENTATION_PLAN.md` - 6-phase architecture roadmap
+- `CLAUDE_CONTEXT.md` - Full project context, architecture, and CI/CD setup
+- `README.md` - Quick start, features, API reference, deployment
+- `DEPLOYMENT.md` - Cloudflare deployment configuration
 
 ### Project Structure
 ```
@@ -38,7 +37,7 @@ packages/
 
 ### Running the Project
 ```bash
-cd /Users/roger/Desktop/Projects/esg-commandcenter
+cd /Users/roger/Desktop/Projects/c2-opraxius
 
 # Start databases
 make db-up

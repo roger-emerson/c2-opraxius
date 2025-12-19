@@ -1,5 +1,5 @@
 {
-  "name": "@esg/gis",
+  "name": "@c2/gis",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -17,8 +17,8 @@
     "import": "tsx src/cli/importer.ts"
   },
   "dependencies": {
-    "@esg/shared": "*",
-    "@esg/database": "*"
+    "@c2/shared": "*",
+    "@c2/database": "*"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

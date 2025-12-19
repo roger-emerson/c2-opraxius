@@ -1,4 +1,4 @@
-# Claude Context for ESG Command Center
+# Claude Context for C2 Command Center
 
 > This document provides comprehensive context for AI assistants (Claude, etc.) working on this project. It includes project state, systematic documentation approach, and continuation guidelines.
 
@@ -6,8 +6,8 @@
 
 ## Project Overview
 
-**ESG Command Center** - Festival Management Dashboard for Insomniac Events
-- **Repository**: `/Users/roger/Desktop/Projects/esg-commandcenter`
+**C2 Command Center** - Festival Management Dashboard for Insomniac Events
+- **Repository**: `/Users/roger/Desktop/Projects/c2-opraxius`
 - **Current Phase**: Phase 2 Complete
 - **Status**: Ready for testing and Phase 3 planning
 
@@ -161,7 +161,7 @@ Planned:
 ## File Structure
 
 ```
-esg-commandcenter/
+c2-opraxius/
 ├── apps/
 │   ├── web/                            # Next.js 15 frontend
 │   │   ├── src/
@@ -381,7 +381,7 @@ main     → Cloudflare Production (manual approval required)
   - Custom domain: `api.staging.opraxius.com`
   - Wrangler config: `apps/api-workers/wrangler.staging.toml`
   - GitHub Actions: `.github/workflows/deploy-staging.yml`
-- **Web**: `esg-web-staging` Pages
+- **Web**: `c2-web-staging` Pages
   - Custom domain: `staging.opraxius.com`
   - Wrangler config: `apps/web/wrangler.staging.toml`
   - GitHub Actions: `.github/workflows/deploy-staging.yml`
@@ -391,7 +391,7 @@ main     → Cloudflare Production (manual approval required)
   - Custom domain: `api.opraxius.com`
   - Wrangler config: `apps/api-workers/wrangler.toml`
   - GitHub Actions: `.github/workflows/deploy-production.yml`
-- **Web**: `esg-web-production` Pages
+- **Web**: `c2-web-production` Pages
   - Custom domains: `opraxius.com` + `www.opraxius.com`
   - Wrangler config: `apps/web/wrangler.toml`
   - GitHub Actions: `.github/workflows/deploy-production.yml`
@@ -476,7 +476,7 @@ make clean                # Clean build artifacts
 
 ```env
 # Database
-DATABASE_URL=postgresql://esg:esg@localhost:5432/esg_commandcenter
+DATABASE_URL=postgresql://c2:esg@localhost:5432/c2_commandcenter
 REDIS_URL=redis://localhost:6379
 
 # Auth
@@ -563,7 +563,7 @@ lsof -ti:3001 | xargs kill  # API
 ### Database issues
 ```bash
 make db-reset               # Nuclear option
-docker exec -it esg-postgres psql -U esg -d esg_commandcenter  # Manual access
+docker exec -it c2-postgres psql -U esg -d c2_commandcenter  # Manual access
 ```
 
 ### TypeScript errors

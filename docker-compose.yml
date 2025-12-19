@@ -3,24 +3,24 @@ version: '3.8'
 services:
   postgres:
     image: postgis/postgis:15-3.4
-    container_name: esg-postgres
+    container_name: c2-postgres
     environment:
-      POSTGRES_USER: esg
+      POSTGRES_USER: c2
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: esg_commandcenter
+      POSTGRES_DB: c2_commandcenter
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U esg"]
+      test: ["CMD-SHELL", "pg_isready -U c2"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: esg-redis
+    container_name: c2-redis
     ports:
       - "6379:6379"
     volumes:

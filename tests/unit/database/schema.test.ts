@@ -10,8 +10,8 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { testEvents, testUsers, testVenueFeatures, testTasks, testWorkcenters } from '../../fixtures/test-data';
 
 // TODO: Import actual database client when available
-// import { db } from '@esg/database';
-// import { events, users, venueFeatures, tasks, workcenters, activityFeed, aiChatHistory } from '@esg/database/schema';
+// import { db } from '@c2/database';
+// import { events, users, venueFeatures, tasks, workcenters, activityFeed, aiChatHistory } from '@c2/database/schema';
 
 describe('Database Schema Tests', () => {
   

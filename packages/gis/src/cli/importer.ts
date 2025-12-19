@@ -16,7 +16,7 @@
 import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 import { parseGeoJSON, validateGeoJSON, getGeoJSONStats } from '../geojson-parser.js';
-import { db, venueFeatures } from '@esg/database';
+import { db, venueFeatures } from '@c2/database';
 
 interface CLIOptions {
   file?: string;
