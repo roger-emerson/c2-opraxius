@@ -168,7 +168,7 @@ Go to **Variables** tab:
 
 | Variable Name | Value |
 |---------------|-------|
-| `STAGING_API_URL` | `https://esg-api-staging.<account>.workers.dev` |
+| `STAGING_API_URL` | `https://c2-api-staging.<account>.workers.dev` |
 | `STAGING_WEB_URL` | `https://esg-web-staging.pages.dev` |
 
 ---
@@ -206,7 +206,7 @@ git push -u origin deploy/staging
 
 ```bash
 # Health check
-curl https://esg-api-staging.<your-subdomain>.workers.dev/health
+curl https://c2-api-staging.<your-subdomain>.workers.dev/health
 
 # Expected response:
 # {"status":"ok","timestamp":"2024-12-16T...","environment":"staging"}
@@ -242,7 +242,7 @@ DATABASE_URL="your-supabase-url" npx drizzle-kit push
 
 1. Check Cloudflare Workers logs:
    ```bash
-   wrangler tail --name esg-api-staging
+   wrangler tail --name c2-api-staging
    ```
 2. Verify DATABASE_URL is correct
 3. Verify Hyperdrive ID is set in wrangler.toml

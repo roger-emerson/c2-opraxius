@@ -752,7 +752,7 @@ git push origin staging  # Triggers GitHub Actions
 
 **What happens:**
 1. Database migrations run on staging database
-2. API deploys to `esg-api-staging` Worker
+2. API deploys to `c2-api-staging` Worker
 3. Web builds with @cloudflare/next-on-pages and deploys to `esg-web-staging` Pages
 4. Health checks verify deployment
 
@@ -776,7 +776,7 @@ git push origin main --tags  # Waits for manual approval
 1. GitHub Actions workflow starts and waits for approval
 2. Approve in GitHub Actions UI
 3. Database migrations run on production database
-4. API deploys to `esg-api-production` Worker
+4. API deploys to `c2-api-production` Worker
 5. Web builds and deploys to `esg-web-production` Pages
 6. Health checks verify deployment
 

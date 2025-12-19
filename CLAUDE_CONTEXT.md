@@ -377,7 +377,7 @@ main     → Cloudflare Production (manual approval required)
 ### Cloudflare Deployments
 
 **Staging Environment** (auto-deploy on push to `staging`):
-- **API**: `esg-api-staging` Worker
+- **API**: `c2-api-staging` Worker
   - Custom domain: `api.staging.opraxius.com`
   - Wrangler config: `apps/api-workers/wrangler.staging.toml`
   - GitHub Actions: `.github/workflows/deploy-staging.yml`
@@ -387,7 +387,7 @@ main     → Cloudflare Production (manual approval required)
   - GitHub Actions: `.github/workflows/deploy-staging.yml`
 
 **Production Environment** (manual approval on push to `main`):
-- **API**: `esg-api-production` Worker
+- **API**: `c2-api-production` Worker
   - Custom domain: `api.opraxius.com`
   - Wrangler config: `apps/api-workers/wrangler.toml`
   - GitHub Actions: `.github/workflows/deploy-production.yml`
