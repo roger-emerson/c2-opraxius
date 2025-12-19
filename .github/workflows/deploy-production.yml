@@ -109,7 +109,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/.vercel/output/static --project-name=esg-web-production
+          command: pages deploy apps/web/.vercel/output/static --project-name=c2-web-production
 
   # Post-deployment verification
   verify-deployment:
