@@ -5,7 +5,7 @@ export default defineConfig({
   out: './migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgresql://esg:password@localhost:5432/esg_commandcenter',
+    url: process.env.DATABASE_URL || 'postgresql://c2:password@localhost:5432/c2_commandcenter',
   },
   verbose: true,
   strict: true,
