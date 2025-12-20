@@ -761,7 +761,7 @@ git push origin staging  # Triggers GitHub Actions
 **Branch:** `main`
 **Deploys on:** Push to `main` branch (requires manual approval)
 **URLs:**
-- Web: https://opraxius.com
+- Web: https://dashboard.opraxius.com
 - API: https://api.opraxius.com
 
 ```bash
@@ -786,6 +786,13 @@ git push origin main --tags  # Waits for manual approval
 - `'use client'` directive in all 3D components
 - Edge runtime compatible
 - No Node.js APIs in frontend
+
+**Security:**
+- ✅ Hostname blocking middleware prevents access to default `*.pages.dev` and `*.workers.dev` URLs
+- ✅ Only custom domains are accessible (staging.opraxius.com, dashboard.opraxius.com, api.staging.opraxius.com, api.opraxius.com)
+- ✅ CORS configured for custom domains only
+- ✅ Next.js middleware blocks unauthorized hostnames at edge
+- ✅ Hono middleware blocks unauthorized hostnames in API workers
 
 ---
 
@@ -881,7 +888,7 @@ make db-up
 
 ```bash
 # Connect to container
-docker exec -it c2-postgres psql -U esg -d c2_commandcenter
+docker exec -it c2-postgres psql -U c2 -d c2_commandcenter
 
 # Enable PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;
@@ -930,7 +937,7 @@ See `.env.example` for required environment variables.
 **Required**:
 ```env
 # Database
-DATABASE_URL=postgresql://c2:esg@localhost:5432/c2_commandcenter
+DATABASE_URL=postgresql://c2:password@localhost:5432/c2_commandcenter
 REDIS_URL=redis://localhost:6379
 
 # NextAuth

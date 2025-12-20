@@ -8,8 +8,8 @@
 
 **C2 Command Center** - Festival Management Dashboard for Insomniac Events
 - **Repository**: `/Users/roger/Desktop/Projects/c2-opraxius`
-- **Current Phase**: Phase 2 Complete
-- **Status**: Ready for testing and Phase 3 planning
+- **Current Phase**: Phase 2 Complete + C2 Rebrand Complete
+- **Status**: Production-ready on Cloudflare, custom domains configured, ready for Phase 3
 
 ---
 
@@ -392,7 +392,7 @@ main     → Cloudflare Production (manual approval required)
   - Wrangler config: `apps/api-workers/wrangler.toml`
   - GitHub Actions: `.github/workflows/deploy-production.yml`
 - **Web**: `c2-web-production` Pages
-  - Custom domains: `opraxius.com` + `www.opraxius.com`
+  - Custom domain: `dashboard.opraxius.com`
   - Wrangler config: `apps/web/wrangler.toml`
   - GitHub Actions: `.github/workflows/deploy-production.yml`
 
@@ -409,7 +409,7 @@ main     → Cloudflare Production (manual approval required)
 - Requires 1+ manual approvals before deployment
 - Variables:
   - `PRODUCTION_API_URL`: https://api.opraxius.com
-  - `PRODUCTION_WEB_URL`: https://opraxius.com
+  - `PRODUCTION_WEB_URL`: https://dashboard.opraxius.com
 - Secrets: (separate from staging) DATABASE_URL, JWT_SECRET, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
 
 ### Deployment Workflow
@@ -431,6 +431,8 @@ git checkout main
 git merge staging
 git tag v1.0.0
 git push origin main --tags  # Triggers GitHub Actions → Awaits approval → Cloudflare Production
+
+# Test at https://dashboard.opraxius.com and https://api.opraxius.com
 ```
 
 ### CI/CD Pipeline Steps
@@ -476,7 +478,7 @@ make clean                # Clean build artifacts
 
 ```env
 # Database
-DATABASE_URL=postgresql://c2:esg@localhost:5432/c2_commandcenter
+DATABASE_URL=postgresql://c2:password@localhost:5432/c2_commandcenter
 REDIS_URL=redis://localhost:6379
 
 # Auth
@@ -563,7 +565,7 @@ lsof -ti:3001 | xargs kill  # API
 ### Database issues
 ```bash
 make db-reset               # Nuclear option
-docker exec -it c2-postgres psql -U esg -d c2_commandcenter  # Manual access
+docker exec -it c2-postgres psql -U c2 -d c2_commandcenter  # Manual access
 ```
 
 ### TypeScript errors
@@ -860,10 +862,65 @@ git push origin main --tags  # Waits for manual approval, then deploys to opraxi
 ### Deployment Verification
 After each deployment, verify:
 - **Staging**: https://staging.opraxius.com | https://api.staging.opraxius.com/health
-- **Production**: https://opraxius.com | https://api.opraxius.com/health
+- **Production**: https://dashboard.opraxius.com | https://api.opraxius.com/health
 
 ---
 
-**Last Updated**: CI/CD Setup - December 18, 2025
-**Status**: Phase 2 Complete + CI/CD Configured
-**Next**: Test staging/production deployments, then begin Phase 3 - Workcenters & Dashboards
+## C2 Rebrand Complete
+
+**Completed**: December 19, 2025
+
+### ✅ Rebrand Summary
+- Full rename from ESG Command Center → C2 Command Center
+- Repository renamed: `esg-commandcenter` → `c2-opraxius`
+- Git remote updated to new repository URL
+- Docker containers renamed: `c2-postgres`, `c2-redis`
+- Database credentials updated: `c2:password@localhost:5432/c2_commandcenter`
+- All package names updated to `@c2/*` namespace
+- Cloudflare Projects renamed to `c2-*` naming convention
+- API name updated: "C2 Command Center API"
+
+### ✅ Custom Domain Configuration
+- **Staging Web**: `staging.opraxius.com` (c2-web-staging Pages)
+- **Production Web**: `dashboard.opraxius.com` (c2-web-production Pages)
+- **Staging API**: `api.staging.opraxius.com` (c2-api-staging Worker)
+- **Production API**: `api.opraxius.com` (c2-api-production Worker)
+
+### ✅ Hostname Blocking Middleware
+Implemented defense-in-depth security to block default Cloudflare URLs:
+
+**Frontend** ([apps/web/src/middleware.ts](apps/web/src/middleware.ts)):
+- Next.js middleware blocks access to `*.pages.dev` URLs
+- Returns 404 for unauthorized hostnames
+- Only allows: `staging.opraxius.com`, `dashboard.opraxius.com`, `localhost`
+
+**Backend** ([apps/api-workers/src/index.ts:19-34](apps/api-workers/src/index.ts#L19-L34)):
+- Hono middleware blocks access to `*.workers.dev` URLs
+- Returns 404 for unauthorized hostnames
+- Only allows: `api.staging.opraxius.com`, `api.opraxius.com`, `localhost`
+
+**CORS Updated** ([apps/api-workers/src/index.ts:56-60](apps/api-workers/src/index.ts#L56-L60)):
+- Origin whitelist updated to custom domains only
+- Removed old `esg-web-staging.pages.dev` reference
+- Added: `staging.opraxius.com`, `dashboard.opraxius.com`
+
+### Files Modified
+- `apps/web/src/middleware.ts` (created)
+- `apps/api-workers/src/index.ts` (hostname middleware + CORS + API name)
+- `apps/web/wrangler.toml` (production URL comment)
+- `packages/database/drizzle.config.ts` (database credentials)
+- `docker-compose.yml` (container names + credentials)
+- `turbo.json` (Turbo 2.0 migration: pipeline → tasks)
+- `apps/api/tsconfig.json` (path aliases, removed rootDir)
+
+### Deployment Status
+- ✅ Changes pushed to `staging` branch
+- ✅ Middleware deployed and active
+- ✅ Default URLs blocked at edge and application level
+- ✅ Custom domains configured in Cloudflare Dashboard
+
+---
+
+**Last Updated**: C2 Rebrand Complete - December 19, 2025
+**Status**: Phase 2 Complete + C2 Rebrand + Hostname Security
+**Next**: Begin Phase 3 - Workcenters & Dashboards
