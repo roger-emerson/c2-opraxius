@@ -1,8 +1,12 @@
 # C2 Command Center
 
+> **For AI Assistants**: Start with [CLAUDE_CONTEXT.md](CLAUDE_CONTEXT.md) for project context
+> **For Documentation**: See [docs/INDEX.md](docs/INDEX.md) for complete documentation index
+
 Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, etc.)
 
-> **Current Status**: Phase 2 Complete - Interactive 3D map with GeoJSON import ready for testing
+> **Current Status**: Phase 2 Code Complete - 3D map deployed, awaiting data import and end-to-end testing
+> **Architecture**: See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system diagrams and dependency maps
 
 ---
 
@@ -197,7 +201,7 @@ c2-opraxius/
 - JWT authentication middleware
 - Permission-based route protection
 
-### ✅ Phase 2: 3D Map & Interaction (Complete)
+### ⚠️ Phase 2: 3D Map & Interaction (Code Complete, Needs Testing)
 
 **GIS Package** (`packages/gis`):
 - Coordinate conversion (lat/lng ↔ Three.js 3D space)
@@ -807,7 +811,7 @@ git push origin main --tags  # Waits for manual approval
 - RBAC middleware and hooks
 - REST API (events, tasks, venues)
 
-### ✅ Phase 2: 3D Map & Interaction (Weeks 4-6) - Complete
+### ⚠️ Phase 2: 3D Map & Interaction (Weeks 4-6) - Code Complete
 
 - Three.js + React Three Fiber scene
 - GeoJSON import CLI tool
@@ -815,6 +819,7 @@ git push origin main --tags  # Waits for manual approval
 - Click interactions and detail panel
 - Dashboard layout and navigation
 - Color coding and hover effects
+- **Needs**: Data import to staging, end-to-end testing
 
 ### 🚧 Phase 3: Workcenters & Dashboards (Weeks 7-10)
 
@@ -982,4 +987,4 @@ For questions or issues, contact the development team or create an issue in the 
 
 **For**: Insomniac Events - Festival Management Dashboard
 
-**Status**: Phase 2 Complete - Ready for Testing
+**Status**: Phase 2 Code Complete - Awaiting data import for testing

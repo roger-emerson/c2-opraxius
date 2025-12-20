@@ -1,0 +1,32 @@
+name: Validate Documentation Links
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+      - 'scripts/validate-docs.sh'
+  push:
+    branches: [main, staging, develop]
+    paths:
+      - '**.md'
+      - 'scripts/validate-docs.sh'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  validate-links:
+    name: Check Markdown Links
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make validation script executable
+        run: chmod +x scripts/validate-docs.sh
+
+      - name: Validate documentation links
+        run: ./scripts/validate-docs.sh
+
+      - name: Report status
+        if: success()
+        run: echo "✅ All documentation links are valid!"
