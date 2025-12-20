@@ -16,6 +16,23 @@ const app = new Hono<AppBindings>();
 app.use('*', logger());
 app.use('*', secureHeaders());
 
+// Hostname blocking middleware - only allow custom domains
+app.use('*', async (c, next) => {
+  const hostname = new URL(c.req.url).hostname;
+
+  const allowedDomains = [
+    'api.staging.opraxius.com',
+    'api.opraxius.com',
+    'localhost', // for local development
+  ];
+
+  if (!allowedDomains.includes(hostname)) {
+    return c.text('Not Found', 404);
+  }
+
+  await next();
+});
+
 // Request tracing middleware for debugging
 app.use('*', async (c, next) => {
   const requestId = crypto.randomUUID().slice(0, 8);
@@ -38,8 +55,8 @@ app.use('*', async (c, next) => {
 app.use('*', cors({
   origin: [
     'http://localhost:3000',
-    'https://esg-web-staging.pages.dev',
-    // Add your custom domain here when ready
+    'https://staging.opraxius.com',
+    'https://dashboard.opraxius.com',
   ],
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -74,7 +91,7 @@ app.get('/health', (c) => {
 // API version endpoint
 app.get('/', (c) => {
   return c.json({
-    name: 'ESG Command Center API',
+    name: 'C2 Command Center API',
     version: '1.0.0',
     environment: c.env.ENVIRONMENT || 'unknown',
   });
