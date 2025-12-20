@@ -1,0 +1,140 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Main Stage",
+        "type": "stage",
+        "workcenter": "production",
+        "capacity": 50000,
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-115.1729, 36.2720],
+          [-115.1725, 36.2720],
+          [-115.1725, 36.2716],
+          [-115.1729, 36.2716],
+          [-115.1729, 36.2720]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Circuit Grounds",
+        "type": "stage",
+        "workcenter": "production",
+        "capacity": 30000,
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-115.1735, 36.2715],
+          [-115.1731, 36.2715],
+          [-115.1731, 36.2711],
+          [-115.1735, 36.2711],
+          [-115.1735, 36.2715]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cosmic Meadow",
+        "type": "stage",
+        "workcenter": "production",
+        "capacity": 25000,
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-115.1723, 36.2710],
+          [-115.1719, 36.2710],
+          [-115.1719, 36.2706],
+          [-115.1723, 36.2706],
+          [-115.1723, 36.2710]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Main Entrance",
+        "type": "entrance",
+        "workcenter": "security",
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-115.1727, 36.2724]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "VIP Entrance",
+        "type": "entrance",
+        "workcenter": "security",
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-115.1732, 36.2724]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Security Perimeter North",
+        "type": "fence",
+        "workcenter": "security",
+        "status": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-115.1740, 36.2725],
+          [-115.1715, 36.2725]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Food Court Plaza",
+        "type": "plaza",
+        "workcenter": "operations",
+        "capacity": 5000,
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-115.1728, 36.2718],
+          [-115.1726, 36.2718],
+          [-115.1726, 36.2716],
+          [-115.1728, 36.2716],
+          [-115.1728, 36.2718]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "First Aid Station 1",
+        "type": "medical",
+        "workcenter": "operations",
+        "status": "active"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-115.1730, 36.2713]
+      }
+    }
+  ]
+}

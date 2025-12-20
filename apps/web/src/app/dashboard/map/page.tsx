@@ -9,10 +9,13 @@ export default function MapPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['venueFeatures'],
     queryFn: async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/venues`
-      );
-      if (!response.ok) throw new Error('Failed to fetch venue features');
+      // Use public endpoint for map visualization (no auth required)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/venues/public`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch venue features: ${response.status} ${response.statusText}`);
+      }
       return response.json();
     },
   });

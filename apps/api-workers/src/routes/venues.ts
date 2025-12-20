@@ -7,7 +7,29 @@ import { venueFeatures } from '../lib/schema';
 
 const venuesRoutes = new Hono<AppBindings>();
 
-// Apply auth middleware to all routes
+// Public endpoint for map visualization (no auth required)
+// This allows the 3D map to load venue features without authentication
+venuesRoutes.get('/public', async (c) => {
+  try {
+    const db = c.get('db');
+    const eventId = c.req.query('eventId');
+
+    let query = db.select().from(venueFeatures);
+
+    if (eventId) {
+      query = query.where(eq(venueFeatures.eventId, eventId)) as typeof query;
+    }
+
+    const features = await query;
+
+    return c.json({ features });
+  } catch (error) {
+    console.error('Failed to fetch public venue features:', error);
+    return c.json({ error: 'Failed to fetch venue features' }, 500);
+  }
+});
+
+// Apply auth middleware to protected routes
 venuesRoutes.use('/*', authMiddleware);
 
 // Get venue features (filtered by user's workcenter access)
