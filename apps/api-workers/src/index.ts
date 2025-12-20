@@ -18,13 +18,22 @@ app.use('*', secureHeaders());
 
 // Hostname blocking middleware - only allow custom domains
 app.use('*', async (c, next) => {
-  const hostname = new URL(c.req.url).hostname;
+  const url = new URL(c.req.url);
+  const hostname = url.hostname;
+  const path = url.pathname;
+  const userAgent = c.req.header('user-agent') || '';
 
   const allowedDomains = [
     'api.staging.opraxius.com',
     'api.opraxius.com',
     'localhost', // for local development
   ];
+
+  // Allow health checks from CI/CD tools (GitHub Actions, curl, etc.)
+  // This enables deployment verification while maintaining security for other endpoints
+  if (path === '/health' && (userAgent.includes('curl') || userAgent.includes('GitHub'))) {
+    return next();
+  }
 
   if (!allowedDomains.includes(hostname)) {
     return c.text('Not Found', 404);
