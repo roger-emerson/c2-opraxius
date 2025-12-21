@@ -1,5 +1,8 @@
 'use client';
 
+// Required for Cloudflare Pages deployment
+export const runtime = 'edge';
+
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, useCallback } from 'react';
