@@ -42,7 +42,6 @@ async function main() {
       endDate: new Date('2025-05-18T23:59:59Z'),
       status: 'planning',
       venueBounds: null, // PostGIS geometry (optional for now)
-      venueLocation: null, // PostGIS geography (optional for now)
     }).returning();
 
     console.log('✓ Test event created successfully!\n');
