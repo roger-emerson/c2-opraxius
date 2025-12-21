@@ -85,36 +85,33 @@
 - [`src/schema/venues.ts`](../../packages/database/src/schema/venues.ts) - GIS features schema
 - [`src/schema/tasks.ts`](../../packages/database/src/schema/tasks.ts) - Tasks schema
 - [`src/schema/workcenters.ts`](../../packages/database/src/schema/workcenters.ts) - Workcenters schema
-- [`src/schema/activity-feed.ts`](../../packages/database/src/schema/activity-feed.ts) - Activity log schema
+- [`src/schema/activity.ts`](../../packages/database/src/schema/activity.ts) - Activity log schema
 - [`drizzle.config.ts`](../../packages/database/drizzle.config.ts) - Drizzle ORM configuration
 
 ### Shared Types Package (`packages/shared/`)
-- [`src/types/api.ts`](../../packages/shared/src/types/api.ts) - API request/response types
-- [`src/types/auth.ts`](../../packages/shared/src/types/auth.ts) - Authentication types
-- [`src/types/database.ts`](../../packages/shared/src/types/database.ts) - Database entity types
+- `src/types/event.types.ts` - Event type definitions
+- `src/types/task.types.ts` - Task type definitions
+- `src/types/user.types.ts` - User and auth type definitions
+- `src/types/venue.types.ts` - Venue type definitions
 - [`src/constants/roles.ts`](../../packages/shared/src/constants/roles.ts) - Role definitions
 - [`src/constants/workcenters.ts`](../../packages/shared/src/constants/workcenters.ts) - Workcenter definitions
-- [`src/constants/permissions.ts`](../../packages/shared/src/constants/permissions.ts) - Permission matrix
 
 ### API Backend (`apps/api/`)
 - [`src/server.ts`](../../apps/api/src/server.ts) - Fastify server setup
-- [`src/routes/events.ts`](../../apps/api/src/routes/events.ts) - Events API routes
-- [`src/routes/tasks.ts`](../../apps/api/src/routes/tasks.ts) - Tasks API routes
-- [`src/routes/venues.ts`](../../apps/api/src/routes/venues.ts) - Venues API routes
-- [`src/services/events.service.ts`](../../apps/api/src/services/events.service.ts) - Events business logic
-- [`src/services/tasks.service.ts`](../../apps/api/src/services/tasks.service.ts) - Tasks business logic
-- [`src/services/auth.service.ts`](../../apps/api/src/services/auth.service.ts) - Auth service with RBAC
+- [`src/routes/events.routes.ts`](../../apps/api/src/routes/events.routes.ts) - Events API routes
+- [`src/routes/tasks.routes.ts`](../../apps/api/src/routes/tasks.routes.ts) - Tasks API routes
+- [`src/routes/venues.routes.ts`](../../apps/api/src/routes/venues.routes.ts) - Venues API routes
+- [`src/services/rbac.service.ts`](../../apps/api/src/services/rbac.service.ts) - RBAC business logic
 - [`src/middleware/auth.middleware.ts`](../../apps/api/src/middleware/auth.middleware.ts) - JWT validation
 - [`src/middleware/rbac.middleware.ts`](../../apps/api/src/middleware/rbac.middleware.ts) - RBAC enforcement
 
 ### Web Frontend (`apps/web/`)
-- [`src/app/(../../apps/web/src/app/(dashboard))/layout.tsx`](../../apps/web/src/app/(../../apps/web/src/app/(dashboard))/layout.tsx) - Protected dashboard shell
-- [`src/app/(../../apps/web/src/app/(dashboard))/page.tsx`](../../apps/web/src/app/(../../apps/web/src/app/(dashboard))/page.tsx) - Dashboard home
+- [`src/app/(dashboard)/layout.tsx`](../../apps/web/src/app/dashboard/layout.tsx) - Protected dashboard shell
+- [`src/app/(dashboard)/page.tsx`](../../apps/web/src/app/dashboard/page.tsx) - Dashboard home
 - [`src/app/auth/signin/page.tsx`](../../apps/web/src/app/auth/signin/page.tsx) - Sign-in page
-- [`src/app/api/auth/[...nextauth]/route.ts`](../../apps/web/src/app/api/auth/[...nextauth]/route.ts) - NextAuth config
 - [`src/hooks/useAuth.ts`](../../apps/web/src/hooks/useAuth.ts) - Auth hooks with RBAC
 - [`src/lib/auth.ts`](../../apps/web/src/lib/auth.ts) - NextAuth configuration
-- [`next.config.mjs`](../../apps/web/next.config.mjs) - Next.js configuration
+- [`next.config.ts`](../../apps/web/next.config.ts) - Next.js configuration
 
 ---
 

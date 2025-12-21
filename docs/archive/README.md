@@ -111,7 +111,7 @@ mv docs/PHASE2_COMPLETE.md docs/archive/phase2/PHASE2_COMPLETE.md
 # 2. Add archive header to document
 # Add at top:
 # > **ARCHIVED**: This document describes Phase 2 (completed DATE)
-# > **Current Phase**: See [../PHASEX_COMPLETE.md](PHASE3_COMPLETE.md)
+# > **Current Phase**: See ../PHASEX_COMPLETE.md (link to current phase doc)
 
 # 3. Update all references
 # - Update CLAUDE_CONTEXT.md
@@ -119,7 +119,7 @@ mv docs/PHASE2_COMPLETE.md docs/archive/phase2/PHASE2_COMPLETE.md
 # - Update any cross-references
 
 # 4. Run validation
-../scripts/validate-docs.sh
+./scripts/validate-docs.sh
 
 # 5. Update this README.md
 # - Add to "Current Archives" section
