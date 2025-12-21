@@ -121,7 +121,7 @@ npm run import -- -f examples/test-venue.geojson -e test-event-001
 
 ### Step 3: Verify End-to-End
 
-1. Open https://staging.opraxius.com/dashboard/map
+1. Open https://staging.web.opraxius.com/dashboard/map
 2. Verify 3D map renders with features
 3. Test interactions:
    - Rotate: Left-click and drag
@@ -141,11 +141,11 @@ npm run import -- -f examples/test-venue.geojson -e test-event-001
 ```bash
 #!/bin/bash
 # Test API returns data
-curl -s https://api.staging.opraxius.com/api/venues/public | jq '.features | length'
+curl -s https://staging.api.opraxius.com/api/venues/public | jq '.features | length'
 # Expected: 8 (number of features)
 
 # Test map page loads
-curl -s -o /dev/null -w "%{http_code}" https://staging.opraxius.com/dashboard/map
+curl -s -o /dev/null -w "%{http_code}" https://staging.web.opraxius.com/dashboard/map
 # Expected: 200
 ```
 

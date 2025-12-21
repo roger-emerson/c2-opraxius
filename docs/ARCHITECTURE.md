@@ -53,8 +53,9 @@ This document provides comprehensive architectural diagrams and dependency maps 
 │   │ • Auth UI     │   │       │       │   │ • RBAC        │   │
 │   └───────────────┘   │       │       │   └───────┬───────┘   │
 │                       │       │       │           │           │
-│ staging.opraxius.com  │       │       │   api.staging.        │
-│ dashboard.opraxius.com│       │       │   opraxius.com        │
+│ staging.web.          │       │       │   staging.api.        │
+│ opraxius.com          │       │       │   opraxius.com        │
+│ dashboard.opraxius.com│       │       │                       │
 └───────────────────────┘       │       └───────────┼───────────┘
                                 │                   │
                                 │       ┌───────────▼───────────┐
@@ -119,10 +120,10 @@ This document provides comprehensive architectural diagrams and dependency maps 
                     │  │           STAGING                 │   │
                     │  │                                   │   │
                     │  │  Workers: c2-api-staging         │   │
-                    │  │  → api.staging.opraxius.com      │   │
+                    │  │  → staging.api.opraxius.com      │   │
                     │  │                                   │   │
                     │  │  Pages: c2-web-staging           │   │
-                    │  │  → staging.opraxius.com          │   │
+                    │  │  → staging.web.opraxius.com      │   │
                     │  └──────────────────────────────────┘   │
                     │                                          │
                     │  ┌──────────────────────────────────┐   │
@@ -391,8 +392,8 @@ This document provides comprehensive architectural diagrams and dependency maps 
 
 | Variable | Staging | Production | Value |
 |----------|---------|------------|-------|
-| `STAGING_API_URL` | ✅ | ❌ | `https://api.staging.opraxius.com` |
-| `STAGING_WEB_URL` | ✅ | ❌ | `https://staging.opraxius.com` |
+| `STAGING_API_URL` | ✅ | ❌ | `https://staging.api.opraxius.com` |
+| `STAGING_WEB_URL` | ✅ | ❌ | `https://staging.web.opraxius.com` |
 | `PRODUCTION_API_URL` | ❌ | ✅ | `https://api.opraxius.com` |
 | `PRODUCTION_WEB_URL` | ❌ | ✅ | `https://dashboard.opraxius.com` |
 
@@ -445,8 +446,8 @@ This document provides comprehensive architectural diagrams and dependency maps 
 │                         STAGING (CLOUDFLARE)                                │
 │                                                                             │
 │  Domains:                                                                   │
-│  ├── staging.opraxius.com          → c2-web-staging (Pages)                │
-│  └── api.staging.opraxius.com      → c2-api-staging (Workers)              │
+│  ├── staging.web.opraxius.com      → c2-web-staging (Pages)                │
+│  └── staging.api.opraxius.com      → c2-api-staging (Workers)              │
 │                                                                             │
 │  Branch: staging                                                            │
 │  Deploy: Auto on push                                                       │
@@ -535,9 +536,9 @@ This document provides comprehensive architectural diagrams and dependency maps 
 ## Quick Reference URLs
 
 ### Staging
-- **Web**: https://staging.opraxius.com
-- **API**: https://api.staging.opraxius.com
-- **Health**: https://api.staging.opraxius.com/health
+- **Web**: https://staging.web.opraxius.com
+- **API**: https://staging.api.opraxius.com
+- **Health**: https://staging.api.opraxius.com/health
 
 ### Production
 - **Web**: https://dashboard.opraxius.com

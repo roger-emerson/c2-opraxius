@@ -8,5 +8,6 @@ pages_build_output_dir = ".vercel/output/static"
 # or via GitHub Actions secrets
 
 # Custom domain configured in Cloudflare Pages dashboard
-# dashboard.opraxius.com
+# Production custom domain: dashboard.opraxius.com (configured in Cloudflare Pages dashboard)
+# Staging: staging.web.opraxius.com | Development: dev.web.opraxius.com
 

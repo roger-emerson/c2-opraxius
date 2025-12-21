@@ -24,9 +24,10 @@ app.use('*', async (c, next) => {
   const userAgent = c.req.header('user-agent') || '';
 
   const allowedDomains = [
-    'api.staging.opraxius.com',
-    'api.opraxius.com',
-    'localhost', // for local development
+    'dev.api.opraxius.com',      // development environment
+    'staging.api.opraxius.com',  // staging environment
+    'api.opraxius.com',          // production environment
+    'localhost',                 // local development
   ];
 
   // Allow health checks from CI/CD tools (GitHub Actions, curl, etc.)
@@ -63,9 +64,10 @@ app.use('*', async (c, next) => {
 // CORS configuration
 app.use('*', cors({
   origin: [
-    'http://localhost:3000',
-    'https://staging.opraxius.com',
-    'https://dashboard.opraxius.com',
+    'http://localhost:3000',              // local development
+    'https://dev.web.opraxius.com',       // development environment
+    'https://staging.web.opraxius.com',   // staging environment
+    'https://dashboard.opraxius.com',     // production environment
   ],
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

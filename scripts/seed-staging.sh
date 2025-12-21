@@ -68,4 +68,4 @@ cd ../gis
 npm run import -- -f examples/test-venue.geojson -e "$EVENT_ID"
 
 echo -e "\n${GREEN}✅ Staging database seeded successfully!${NC}"
-echo -e "\nYou can now view the map at: ${BLUE}https://staging.opraxius.com/dashboard/map${NC}\n"
+echo -e "\nYou can now view the map at: ${BLUE}https://staging.web.opraxius.com/dashboard/map${NC}\n"

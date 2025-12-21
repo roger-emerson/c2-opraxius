@@ -31,7 +31,7 @@
 6. Wait ~2-3 minutes for completion
 
 Then:
-7. Open: https://staging.opraxius.com/dashboard/map
+7. Open: https://staging.web.opraxius.com/dashboard/map
 8. Verify map shows 8 features in 3D
 9. Test interactions (rotate, zoom, click)
 
@@ -52,7 +52,7 @@ This will:
 - Import 8 GeoJSON features
 - Verify via API
 
-Then test at: https://staging.opraxius.com/dashboard/map
+Then test at: https://staging.web.opraxius.com/dashboard/map
 
 ### Method 3: Manual (Step by Step)
 
@@ -62,7 +62,7 @@ See [STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md) for detailed ma
 
 ## 📋 What to Test After Seeding
 
-Visit: https://staging.opraxius.com/dashboard/map
+Visit: https://staging.web.opraxius.com/dashboard/map
 
 Expected behaviors:
 
@@ -124,7 +124,7 @@ New files to help you:
 
 ```bash
 # Check if API returns data
-curl -s https://api.staging.opraxius.com/api/venues/public | jq .
+curl -s https://staging.api.opraxius.com/api/venues/public | jq .
 
 # Expected: Array of 8 features
 # If empty: Re-run seed script
@@ -140,7 +140,7 @@ curl -s https://api.staging.opraxius.com/api/venues/public | jq .
 
 1. Check camera distance in [VenueMap3D.tsx](../apps/web/src/components/map/VenueMap3D.tsx#L8)
 2. Verify coordinate conversion in [coordinates.ts](../packages/gis/src/coordinates.ts)
-3. Check feature data: `curl https://api.staging.opraxius.com/api/venues/public | jq '.[0]'`
+3. Check feature data: `curl https://staging.api.opraxius.com/api/venues/public | jq '.[0]'`
 
 ---
 
@@ -163,10 +163,10 @@ export DATABASE_URL="postgresql://..."
 ../../scripts/seed-staging-api.sh
 
 # Verify data via API
-curl https://api.staging.opraxius.com/api/venues/public | jq '. | length'
+curl https://staging.api.opraxius.com/api/venues/public | jq '. | length'
 
 # Check staging health
-curl https://api.staging.opraxius.com/health
+curl https://staging.api.opraxius.com/health
 
 # Run seed manually
 cd packages/database
@@ -187,6 +187,6 @@ DATABASE_URL="..." npm run import -- -f examples/test-venue.geojson -e <EVENT_ID
 
 ---
 
-**Bottom line:** Run the GitHub Actions "Seed Staging Database" workflow, then test the map at staging.opraxius.com/dashboard/map.
+**Bottom line:** Run the GitHub Actions "Seed Staging Database" workflow, then test the map at staging.web.opraxius.com/dashboard/map.
 
 That's it! 🎉

@@ -77,7 +77,7 @@ jobs:
           sleep 5
 
           echo "Fetching venue features from API..."
-          RESPONSE=$(curl -s https://api.staging.opraxius.com/api/venues/public)
+          RESPONSE=$(curl -s https://staging.api.opraxius.com/api/venues/public)
 
           FEATURE_COUNT=$(echo "$RESPONSE" | jq '. | length')
           echo "Features imported: $FEATURE_COUNT"
@@ -97,7 +97,7 @@ jobs:
           echo "✅ Staging database seeded successfully!"
           echo ""
           echo "Next steps:"
-          echo "1. Open: https://staging.opraxius.com/dashboard/map"
+          echo "1. Open: https://staging.web.opraxius.com/dashboard/map"
           echo "2. Verify the map renders with features"
           echo "3. Test interactions (rotate, zoom, click)"
           echo "4. Take screenshots for documentation"

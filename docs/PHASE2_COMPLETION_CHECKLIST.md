@@ -86,12 +86,12 @@ See [STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md) for detailed ma
 
 ### Step 2: Verify the Map
 
-1. Open: https://staging.opraxius.com/dashboard/map
+1. Open: https://staging.web.opraxius.com/dashboard/map
 2. Expected: Map loads and displays 8 features in 3D
 
 If the map doesn't load:
 - Check browser console for errors
-- Verify API returns data: `curl https://api.staging.opraxius.com/api/venues/public`
+- Verify API returns data: `curl https://staging.api.opraxius.com/api/venues/public`
 - Check Network tab in DevTools
 
 ### Step 3: Test Interactions
@@ -216,7 +216,7 @@ Phase 2 is **COMPLETE** when:
 - API authentication issues
 
 **Solutions:**
-1. Check API: `curl https://api.staging.opraxius.com/api/venues/public`
+1. Check API: `curl https://staging.api.opraxius.com/api/venues/public`
 2. Check browser console for errors
 3. Verify public endpoint doesn't require auth
 4. Re-import test data

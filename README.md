@@ -1,12 +1,8 @@
 # C2 Command Center
 
-> **For AI Assistants**: Start with [CLAUDE_CONTEXT.md](CLAUDE_CONTEXT.md) for project context
-> **For Documentation**: See [docs/INDEX.md](docs/INDEX.md) for complete documentation index
-
 Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, etc.)
 
-> **Current Status**: Phase 2 Code Complete - 3D map deployed, awaiting data import and end-to-end testing
-> **Architecture**: See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system diagrams and dependency maps
+> **Current Status**: Phase 2 Complete - Interactive 3D map with GeoJSON import ready for testing
 
 ---
 
@@ -201,7 +197,7 @@ c2-opraxius/
 - JWT authentication middleware
 - Permission-based route protection
 
-### ⚠️ Phase 2: 3D Map & Interaction (Code Complete, Needs Testing)
+### ✅ Phase 2: 3D Map & Interaction (Complete)
 
 **GIS Package** (`packages/gis`):
 - Coordinate conversion (lat/lng ↔ Three.js 3D space)
@@ -284,34 +280,11 @@ npm run dev
 make dev
 ```
 
-**Local URLs**:
+**URLs**:
 - Frontend: http://localhost:3000
 - API: http://localhost:3001
 - Database: localhost:5432
 - Redis: localhost:6379
-
-### Cloud Development (Recommended)
-
-The `develop` branch automatically deploys to Cloudflare infrastructure for cloud-based development and testing.
-
-**Cloud URLs**:
-- Web: https://dev.web.opraxius.com
-- API: https://dev.api.opraxius.com
-
-Simply push to the `develop` branch to trigger automatic deployment:
-
-```bash
-git checkout develop
-git add .
-git commit -m "feat: your changes"
-git push origin develop  # Triggers automatic deployment
-```
-
-This enables:
-- Testing with production-like infrastructure
-- Sharing preview URLs with team members
-- Testing integrations and API endpoints in a real environment
-- No local setup required for frontend-only changes
 
 ### Makefile Commands
 
@@ -750,30 +723,6 @@ Click any 3D object to view:
 
 ## Deployment
 
-### Development (Cloudflare) - **✅ Configured**
-
-**Branch:** `develop`
-**Auto-deploys on:** Push to `develop` branch
-**URLs:**
-- Web: https://dev.web.opraxius.com
-- API: https://dev.api.opraxius.com
-
-```bash
-# Deploy to development
-git checkout develop
-git add .
-git commit -m "feat: your changes"
-git push origin develop  # Triggers GitHub Actions
-```
-
-**What happens:**
-1. Database migrations run on shared staging database
-2. API deploys to `c2-api-development` Worker
-3. Web builds with @cloudflare/next-on-pages and deploys to `c2-web-development` Pages
-4. Health checks verify deployment
-
-**Note:** Development environment shares database and secrets with staging for simplicity.
-
 ### Local Development
 
 ```bash
@@ -786,17 +735,13 @@ cd apps/api && npm run dev
 cd apps/web && npm run dev
 ```
 
-**Local URLs:**
-- Web: http://localhost:3000
-- API: http://localhost:3001
-
 ### Staging (Cloudflare) - **✅ Configured**
 
 **Branch:** `staging`
 **Auto-deploys on:** Push to `staging` branch
 **URLs:**
-- Web: https://staging.opraxius.com
-- API: https://api.staging.opraxius.com
+- Web: https://staging.web.opraxius.com
+- API: https://staging.api.opraxius.com
 
 ```bash
 # Deploy to staging
@@ -844,7 +789,7 @@ git push origin main --tags  # Waits for manual approval
 
 **Security:**
 - ✅ Hostname blocking middleware prevents access to default `*.pages.dev` and `*.workers.dev` URLs
-- ✅ Only custom domains are accessible (dev.web.opraxius.com, dev.api.opraxius.com, staging.opraxius.com, dashboard.opraxius.com, api.staging.opraxius.com, api.opraxius.com)
+- ✅ Only custom domains are accessible (staging.web.opraxius.com, dashboard.opraxius.com, staging.api.opraxius.com, api.opraxius.com)
 - ✅ CORS configured for custom domains only
 - ✅ Next.js middleware blocks unauthorized hostnames at edge
 - ✅ Hono middleware blocks unauthorized hostnames in API workers
@@ -862,7 +807,7 @@ git push origin main --tags  # Waits for manual approval
 - RBAC middleware and hooks
 - REST API (events, tasks, venues)
 
-### ⚠️ Phase 2: 3D Map & Interaction (Weeks 4-6) - Code Complete
+### ✅ Phase 2: 3D Map & Interaction (Weeks 4-6) - Complete
 
 - Three.js + React Three Fiber scene
 - GeoJSON import CLI tool
@@ -870,7 +815,6 @@ git push origin main --tags  # Waits for manual approval
 - Click interactions and detail panel
 - Dashboard layout and navigation
 - Color coding and hover effects
-- **Needs**: Data import to staging, end-to-end testing
 
 ### 🚧 Phase 3: Workcenters & Dashboards (Weeks 7-10)
 
@@ -1038,4 +982,4 @@ For questions or issues, contact the development team or create an issue in the 
 
 **For**: Insomniac Events - Festival Management Dashboard
 
-**Status**: Phase 2 Code Complete - Awaiting data import for testing
+**Status**: Phase 2 Complete - Ready for Testing

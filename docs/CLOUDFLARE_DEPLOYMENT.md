@@ -10,12 +10,12 @@ The C2 Command Center uses a split deployment strategy:
 
 - **API**: Deployed to Cloudflare Workers
   - Framework: Hono
-  - Custom domains: `dev.api.opraxius.com`, `api.staging.opraxius.com`, `api.opraxius.com`
+  - Custom domains: `staging.api.opraxius.com`, `api.opraxius.com`
   - Deployment: Via GitHub Actions using `wrangler deploy`
 
 - **Web**: Deployed to Cloudflare Pages
   - Framework: Next.js with `@cloudflare/next-on-pages`
-  - Custom domains: `dev.web.opraxius.com`, `staging.opraxius.com`, `dashboard.opraxius.com`
+  - Custom domains: `staging.web.opraxius.com`, `dashboard.opraxius.com`
   - Deployment: Via GitHub Actions using `wrangler pages deploy`
 
 ## Prerequisites
@@ -37,8 +37,7 @@ The C2 Command Center uses a split deployment strategy:
 
 ### 1. Create Worker Projects
 
-Create Worker projects in Cloudflare Dashboard:
-- `c2-api-development` (for development environment)
+Create two Worker projects in Cloudflare Dashboard:
 - `c2-api-staging` (for staging environment)
 - `c2-api-production` (for production environment)
 
@@ -48,8 +47,7 @@ For each Worker:
 
 1. Go to **Workers & Pages** → Select your worker → **Settings** → **Domains & Routes**
 2. Add custom domain:
-   - Development: `dev.api.opraxius.com`
-   - Staging: `api.staging.opraxius.com`
+   - Staging: `staging.api.opraxius.com`
    - Production: `api.opraxius.com`
 
 ### 3. Set Environment Variables
@@ -90,8 +88,7 @@ npx wrangler deploy --config apps/api-workers/wrangler.staging.toml
 app.use('*', async (c, next) => {
   const hostname = url.hostname;
   const allowedDomains = [
-    'dev.api.opraxius.com',
-    'api.staging.opraxius.com',
+    'staging.api.opraxius.com',
     'api.opraxius.com',
     'localhost',
   ];
@@ -116,8 +113,7 @@ if (path === '/health' && (userAgent.includes('curl') || userAgent.includes('Git
 
 ### 1. Create Pages Projects
 
-Create Pages projects in Cloudflare Dashboard:
-- `c2-web-development`
+Create two Pages projects in Cloudflare Dashboard:
 - `c2-web-staging`
 - `c2-web-production`
 
@@ -127,7 +123,6 @@ Create Pages projects in Cloudflare Dashboard:
 
 1. Go to **Workers & Pages** → Your Pages project → **Settings** → **Builds & deployments**
 2. Under **Production branch**, set:
-   - `c2-web-development`: Production branch = `develop`
    - `c2-web-staging`: Production branch = `staging`
    - `c2-web-production`: Production branch = `main`
 
@@ -153,15 +148,7 @@ Add CNAME records pointing to Pages deployment:
 
 ```
 Type: CNAME
-Name: dev.web
-Target: c2-web-development.pages.dev
-Proxy status: Proxied (orange cloud)
-TTL: Auto
-```
-
-```
-Type: CNAME
-Name: staging
+Name: staging.web
 Target: c2-web-staging.pages.dev
 Proxy status: Proxied (orange cloud)
 TTL: Auto
@@ -181,7 +168,7 @@ For each Pages project, add the custom domain:
 
 1. Go to **Workers & Pages** → Your Pages project → **Custom domains**
 2. Click **Set up a custom domain**
-3. Enter domain (e.g., `dev.web.opraxius.com`, `staging.opraxius.com`, `dashboard.opraxius.com`)
+3. Enter domain (e.g., `staging.web.opraxius.com`)
 4. Click **Continue** → **Activate domain**
 5. Wait for status to show **Active** (green indicator)
 
@@ -260,15 +247,13 @@ The deployment workflow has 4 sequential jobs:
 
 4. **Verify Deployment**
    - Waits 30s for propagation
-   - Checks API health: `curl https://api.staging.opraxius.com/health`
-   - Checks Web health: `curl https://staging.opraxius.com`
+   - Checks API health: `curl https://staging.api.opraxius.com/health`
+   - Checks Web health: `curl https://staging.web.opraxius.com`
    - Fails deployment if either returns non-200 status
 
-### Deployment Workflows
+### Deployment Workflow
 
-- **Development**: [`.github/workflows/deploy-development.yml`](../.github/workflows/deploy-development.yml) - Deploys `develop` branch
-- **Staging**: [`.github/workflows/deploy-staging.yml`](../.github/workflows/deploy-staging.yml) - Deploys `staging` branch
-- **Production**: [`.github/workflows/deploy-production.yml`](../.github/workflows/deploy-production.yml) - Deploys `main` branch
+See [`.github/workflows/deploy-staging.yml`](../.github/workflows/deploy-staging.yml) for complete workflow.
 
 Key steps for Pages deployment:
 
@@ -358,13 +343,13 @@ See [GITHUB_CLI_REFERENCE.md](GITHUB_CLI_REFERENCE.md) for complete command refe
 
 ```bash
 # Test API health
-curl -I https://api.staging.opraxius.com/health
+curl -I https://staging.api.opraxius.com/health
 
 # Test web homepage
-curl -I https://staging.opraxius.com
+curl -I https://staging.web.opraxius.com
 
 # Test with specific user agent (simulates GitHub Actions)
-curl -H "User-Agent: GitHub-Hookshot" https://api.staging.opraxius.com/health
+curl -H "User-Agent: GitHub-Hookshot" https://staging.api.opraxius.com/health
 ```
 
 ### Check Cloudflare Logs
@@ -377,59 +362,21 @@ curl -H "User-Agent: GitHub-Hookshot" https://api.staging.opraxius.com/health
 
 ```bash
 # Check DNS CNAME record
-dig staging.opraxius.com
+dig staging.web.opraxius.com
 
 # Check DNS with specific nameserver
-dig @1.1.1.1 staging.opraxius.com
+dig @1.1.1.1 staging.web.opraxius.com
 
 # Trace DNS propagation
-nslookup staging.opraxius.com
+nslookup staging.web.opraxius.com
 ```
 
 ## Environment-Specific Configuration
 
-### Development Environment
-
-- **API Domain**: `dev.api.opraxius.com`
-- **Web Domain**: `dev.web.opraxius.com`
-- **Branch**: `develop`
-- **Database**: Shared staging database instance
-- **Worker**: `c2-api-development`
-- **Pages Project**: `c2-web-development`
-- **Auto-deploys on**: Push to `develop` branch
-- **Secrets**: Shares staging secrets (DATABASE_URL, JWT_SECRET, etc.)
-
-**Setup Steps:**
-
-1. **Create Worker Project:**
-   - Go to Cloudflare Dashboard → Workers & Pages
-   - Create new Worker: `c2-api-development`
-   - Configure custom domain: `dev.api.opraxius.com`
-
-2. **Create Pages Project:**
-   - Go to Cloudflare Dashboard → Workers & Pages
-   - Create new Pages project: `c2-web-development`
-   - Set production branch: `develop`
-   - Configure custom domain: `dev.web.opraxius.com`
-   - Add Node.js compatibility flag: `nodejs_compat`
-
-3. **Configure DNS:**
-   - Add CNAME record: `dev.api.opraxius.com` → `c2-api-development.<account>.workers.dev`
-   - Add CNAME record: `dev.web.opraxius.com` → `c2-web-development.pages.dev`
-   - Ensure proxy status is enabled (orange cloud)
-
-4. **Set Environment Variables:**
-   - Development environment shares secrets with staging
-   - No additional configuration needed if staging is already configured
-
-**Deployment:**
-- Automatic on push to `develop` branch
-- See [`.github/workflows/deploy-development.yml`](../.github/workflows/deploy-development.yml) for workflow details
-
 ### Staging Environment
 
-- **API Domain**: `api.staging.opraxius.com`
-- **Web Domain**: `staging.opraxius.com`
+- **API Domain**: `staging.api.opraxius.com`
+- **Web Domain**: `staging.web.opraxius.com`
 - **Branch**: `staging`
 - **Database**: Staging database instance
 - **Worker**: `c2-api-staging`

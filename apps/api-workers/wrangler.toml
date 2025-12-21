@@ -35,5 +35,6 @@ head_sampling_rate = 1
 # DATABASE_URL = "postgresql://user:pass@host:5432/database"
 
 # Routes will be configured via Cloudflare dashboard
-# Custom domain: api.opraxius.com
+# Production custom domain: api.opraxius.com (configured in Cloudflare dashboard)
+# Staging: staging.api.opraxius.com | Development: dev.api.opraxius.com
 

@@ -48,7 +48,7 @@ This script will:
 ✅ Staging database seeded successfully!
 
 Next steps:
-1. Open: https://staging.opraxius.com/dashboard/map
+1. Open: https://staging.web.opraxius.com/dashboard/map
 2. Verify the map renders with 8 features
 3. Test interactions (rotate, zoom, click)
 4. Take screenshots for documentation
@@ -81,7 +81,7 @@ DATABASE_URL="<your-staging-db-url>" npm run import -- \
 ### Step 3: Verify import
 
 ```bash
-curl -s https://api.staging.opraxius.com/api/venues/public | jq .
+curl -s https://staging.api.opraxius.com/api/venues/public | jq .
 ```
 
 You should see 8 features returned.
@@ -153,7 +153,7 @@ After seeding, verify the data is loaded:
 ### 1. Check API endpoint
 
 ```bash
-curl -s https://api.staging.opraxius.com/api/venues/public | jq '. | length'
+curl -s https://staging.api.opraxius.com/api/venues/public | jq '. | length'
 ```
 
 Expected: `8`
@@ -161,14 +161,14 @@ Expected: `8`
 ### 2. Check individual feature
 
 ```bash
-curl -s https://api.staging.opraxius.com/api/venues/public | jq '.[0]'
+curl -s https://staging.api.opraxius.com/api/venues/public | jq '.[0]'
 ```
 
 Expected: Feature object with name, type, geometry, etc.
 
 ### 3. Open the 3D map
 
-Visit: https://staging.opraxius.com/dashboard/map
+Visit: https://staging.web.opraxius.com/dashboard/map
 
 Expected behavior:
 - Map loads without errors
@@ -206,7 +206,7 @@ Check:
 ### Map shows "Loading..." forever
 
 Check:
-1. API returns data: `curl https://api.staging.opraxius.com/api/venues/public`
+1. API returns data: `curl https://staging.api.opraxius.com/api/venues/public`
 2. Browser console for errors
 3. Network tab shows successful API call
 
@@ -216,7 +216,7 @@ Check:
 
 Once data is imported:
 
-1. ✅ **Test the 3D map** - Open staging.opraxius.com/dashboard/map
+1. ✅ **Test the 3D map** - Open staging.web.opraxius.com/dashboard/map
 2. ✅ **Test interactions** - Rotate, zoom, click features
 3. ✅ **Verify detail panel** - Click a feature and check the detail panel appears
 4. ✅ **Take screenshots** - Document the working map

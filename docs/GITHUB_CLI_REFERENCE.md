@@ -188,8 +188,8 @@ gh run view <run-id> --job=<job-id> --log
 ```bash
 # Wait for deployment and check health
 gh run watch <run-id> && \
-  curl -I https://api.staging.opraxius.com/health && \
-  curl -I https://staging.opraxius.com
+  curl -I https://staging.api.opraxius.com/health && \
+  curl -I https://staging.web.opraxius.com
 ```
 
 ### Monitor Both Staging and Production
@@ -209,8 +209,8 @@ echo "=== PRODUCTION ===" && \
 gh run view <run-id> --json conclusion --jq '.conclusion'
 
 # 2. Verify health endpoints
-curl -f https://api.staging.opraxius.com/health
-curl -f https://staging.opraxius.com
+curl -f https://staging.api.opraxius.com/health
+curl -f https://staging.web.opraxius.com
 
 # 3. Check logs for errors
 gh run view <run-id> --log | grep -i error || echo "No errors found"
@@ -235,7 +235,7 @@ alias deploy-watch-staging='gh run watch $(gh run list --workflow="Deploy to Clo
 alias deploy-watch-prod='gh run watch $(gh run list --workflow="Deploy to Cloudflare Production" --limit 1 --json databaseId --jq ".[0].databaseId")'
 
 # Check health endpoints
-alias health-check='echo "API:" && curl -f https://api.staging.opraxius.com/health && echo "\nWeb:" && curl -f https://staging.opraxius.com'
+alias health-check='echo "API:" && curl -f https://staging.api.opraxius.com/health && echo "\nWeb:" && curl -f https://staging.web.opraxius.com'
 ```
 
 ## Troubleshooting

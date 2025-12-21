@@ -41,7 +41,7 @@ fi
 # Ensure we're in the right directory
 cd "$(dirname "$0")/.."
 
-STAGING_API_URL="https://api.staging.opraxius.com"
+STAGING_API_URL="https://staging.api.opraxius.com"
 
 echo -e "${GREEN}Step 1: Check API health${NC}"
 HEALTH=$(curl -s "$STAGING_API_URL/health")
@@ -98,7 +98,7 @@ echo -e "Features imported: ${BLUE}$FEATURE_COUNT${NC}"
 
 echo -e "\n${GREEN}✅ Staging database seeded successfully!${NC}"
 echo -e "\n${BLUE}Next steps:${NC}"
-echo -e "1. Open: ${GREEN}https://staging.opraxius.com/dashboard/map${NC}"
+echo -e "1. Open: ${GREEN}https://staging.web.opraxius.com/dashboard/map${NC}"
 echo -e "2. Verify the map renders with $FEATURE_COUNT features"
 echo -e "3. Test interactions (rotate, zoom, click)"
 echo -e "4. Take screenshots for documentation\n"
