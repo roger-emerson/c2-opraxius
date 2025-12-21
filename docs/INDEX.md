@@ -73,12 +73,15 @@
 
 **External Resources:**
 - GitHub Repository: https://github.com/roger-emerson/c2-opraxius
+- Development Web: https://dev.web.opraxius.com
+- Development API: https://dev.api.opraxius.com
 - Staging Web: https://staging.opraxius.com
 - Staging API: https://api.staging.opraxius.com
 - Production Web: https://dashboard.opraxius.com
 - Production API: https://api.opraxius.com
 
 **Workflows:**
+- [Deploy Development](../.github/workflows/deploy-development.yml)
 - [Deploy Staging](../.github/workflows/deploy-staging.yml)
 - [Deploy Production](../.github/workflows/deploy-production.yml)
 - [Seed Staging Database](../.github/workflows/seed-staging.yml)

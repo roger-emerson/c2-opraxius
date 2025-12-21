@@ -284,11 +284,34 @@ npm run dev
 make dev
 ```
 
-**URLs**:
+**Local URLs**:
 - Frontend: http://localhost:3000
 - API: http://localhost:3001
 - Database: localhost:5432
 - Redis: localhost:6379
+
+### Cloud Development (Recommended)
+
+The `develop` branch automatically deploys to Cloudflare infrastructure for cloud-based development and testing.
+
+**Cloud URLs**:
+- Web: https://dev.web.opraxius.com
+- API: https://dev.api.opraxius.com
+
+Simply push to the `develop` branch to trigger automatic deployment:
+
+```bash
+git checkout develop
+git add .
+git commit -m "feat: your changes"
+git push origin develop  # Triggers automatic deployment
+```
+
+This enables:
+- Testing with production-like infrastructure
+- Sharing preview URLs with team members
+- Testing integrations and API endpoints in a real environment
+- No local setup required for frontend-only changes
 
 ### Makefile Commands
 
@@ -727,6 +750,30 @@ Click any 3D object to view:
 
 ## Deployment
 
+### Development (Cloudflare) - **✅ Configured**
+
+**Branch:** `develop`
+**Auto-deploys on:** Push to `develop` branch
+**URLs:**
+- Web: https://dev.web.opraxius.com
+- API: https://dev.api.opraxius.com
+
+```bash
+# Deploy to development
+git checkout develop
+git add .
+git commit -m "feat: your changes"
+git push origin develop  # Triggers GitHub Actions
+```
+
+**What happens:**
+1. Database migrations run on shared staging database
+2. API deploys to `c2-api-development` Worker
+3. Web builds with @cloudflare/next-on-pages and deploys to `c2-web-development` Pages
+4. Health checks verify deployment
+
+**Note:** Development environment shares database and secrets with staging for simplicity.
+
 ### Local Development
 
 ```bash
@@ -738,6 +785,10 @@ make db-up
 cd apps/api && npm run dev
 cd apps/web && npm run dev
 ```
+
+**Local URLs:**
+- Web: http://localhost:3000
+- API: http://localhost:3001
 
 ### Staging (Cloudflare) - **✅ Configured**
 
@@ -793,7 +844,7 @@ git push origin main --tags  # Waits for manual approval
 
 **Security:**
 - ✅ Hostname blocking middleware prevents access to default `*.pages.dev` and `*.workers.dev` URLs
-- ✅ Only custom domains are accessible (staging.opraxius.com, dashboard.opraxius.com, api.staging.opraxius.com, api.opraxius.com)
+- ✅ Only custom domains are accessible (dev.web.opraxius.com, dev.api.opraxius.com, staging.opraxius.com, dashboard.opraxius.com, api.staging.opraxius.com, api.opraxius.com)
 - ✅ CORS configured for custom domains only
 - ✅ Next.js middleware blocks unauthorized hostnames at edge
 - ✅ Hono middleware blocks unauthorized hostnames in API workers

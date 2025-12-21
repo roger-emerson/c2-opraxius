@@ -86,11 +86,19 @@ c2-opraxius/
 ## Branching & Deployment
 
 ```
-develop  → Local development (no CI/CD)
+develop  → Auto-deploys to Cloudflare development
     ↓
 staging  → Auto-deploys to Cloudflare staging
     ↓
 main     → Deploys to production (requires approval)
+```
+
+**Deploy to development:**
+```bash
+git checkout develop
+git add .
+git commit -m "feat: your changes"
+git push origin develop  # Triggers GitHub Actions
 ```
 
 **Deploy to staging:**
@@ -104,6 +112,7 @@ git push origin staging  # Triggers GitHub Actions
 | Environment | Web | API |
 |------------|-----|-----|
 | Local | http://localhost:3000 | http://localhost:3001 |
+| Development | https://dev.web.opraxius.com | https://dev.api.opraxius.com |
 | Staging | https://staging.opraxius.com | https://api.staging.opraxius.com |
 | Production | https://dashboard.opraxius.com | https://api.opraxius.com |
 
