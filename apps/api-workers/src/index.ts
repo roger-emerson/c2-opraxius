@@ -8,6 +8,7 @@ import { createRedis, CacheService } from './lib/redis';
 import { eventsRoutes } from './routes/events';
 import { tasksRoutes } from './routes/tasks';
 import { venuesRoutes } from './routes/venues';
+import { activityRoutes } from './routes/activity';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
@@ -112,6 +113,7 @@ app.get('/', (c) => {
 app.route('/api/events', eventsRoutes);
 app.route('/api/tasks', tasksRoutes);
 app.route('/api/venues', venuesRoutes);
+app.route('/api/activity', activityRoutes);
 
 // 404 handler
 app.notFound((c) => {

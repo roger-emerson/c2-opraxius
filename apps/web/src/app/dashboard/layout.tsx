@@ -36,7 +36,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">ESG Command Center</h1>
+          <h1 className="text-2xl font-bold text-gray-900">C2 Command Center</h1>
           <p className="text-sm text-gray-600 mt-1">Festival Management</p>
         </div>
 

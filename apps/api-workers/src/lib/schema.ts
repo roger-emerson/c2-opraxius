@@ -83,6 +83,26 @@ export const tasks = pgTable('tasks', {
   dueDateIdx: index('idx_tasks_due_date').on(table.dueDate),
 }));
 
+// Activity feed table
+export const activityFeed = pgTable('activity_feed', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 50 }).notNull(),
+  message: text('message').notNull(),
+  userId: uuid('user_id').references(() => users.id),
+  userName: varchar('user_name', { length: 255 }),
+  workcenter: varchar('workcenter', { length: 50 }),
+  taskId: uuid('task_id').references(() => tasks.id, { onDelete: 'set null' }),
+  taskTitle: varchar('task_title', { length: 500 }),
+  metadata: jsonb('metadata').default({}).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  eventIdIdx: index('idx_activity_event').on(table.eventId),
+  typeIdx: index('idx_activity_type').on(table.type),
+  workcenterIdx: index('idx_activity_workcenter').on(table.workcenter),
+  createdAtIdx: index('idx_activity_created_at').on(table.createdAt),
+}));
+
 // Type exports
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
@@ -92,4 +112,6 @@ export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+export type Activity = typeof activityFeed.$inferSelect;
+export type NewActivity = typeof activityFeed.$inferInsert;
 

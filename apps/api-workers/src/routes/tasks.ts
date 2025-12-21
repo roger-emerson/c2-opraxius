@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import type { AppBindings } from '../types';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission, RBACService } from '../middleware/rbac';
@@ -19,14 +19,21 @@ tasksRoutes.get(
       const db = c.get('db');
       const user = c.get('user');
       const eventId = c.req.query('eventId');
+      const workcenter = c.req.query('workcenter');
 
-      let query = db.select().from(tasks);
-
-      if (eventId) {
-        query = query.where(eq(tasks.eventId, eventId)) as typeof query;
+      let allTasks;
+      
+      if (eventId && workcenter) {
+        allTasks = await db.select().from(tasks).where(
+          and(eq(tasks.eventId, eventId), eq(tasks.workcenter, workcenter))
+        );
+      } else if (eventId) {
+        allTasks = await db.select().from(tasks).where(eq(tasks.eventId, eventId));
+      } else if (workcenter) {
+        allTasks = await db.select().from(tasks).where(eq(tasks.workcenter, workcenter));
+      } else {
+        allTasks = await db.select().from(tasks);
       }
-
-      const allTasks = await query;
 
       // Filter tasks by user's workcenter access
       const filteredTasks = RBACService.filterTasksByWorkcenter(user, allTasks);
@@ -141,6 +148,36 @@ tasksRoutes.patch('/:id', async (c) => {
   } catch (error) {
     console.error('Failed to update task:', error);
     return c.json({ error: 'Failed to update task' }, 500);
+  }
+});
+
+// Delete task
+tasksRoutes.delete('/:id', async (c) => {
+  try {
+    const db = c.get('db');
+    const user = c.get('user');
+    const id = c.req.param('id');
+
+    // Get existing task
+    const existingTask = await db.select().from(tasks).where(eq(tasks.id, id)).limit(1);
+
+    if (existingTask.length === 0) {
+      return c.json({ error: 'Task not found' }, 404);
+    }
+
+    // Check if user can delete task in this workcenter
+    if (existingTask[0].workcenter && !RBACService.canDeleteTask(user, existingTask[0].workcenter)) {
+      return c.json({
+        error: `You do not have permission to delete tasks in ${existingTask[0].workcenter} workcenter`,
+      }, 403);
+    }
+
+    await db.delete(tasks).where(eq(tasks.id, id));
+
+    return c.json({ success: true, message: 'Task deleted' });
+  } catch (error) {
+    console.error('Failed to delete task:', error);
+    return c.json({ error: 'Failed to delete task' }, 500);
   }
 });
 

@@ -105,6 +105,13 @@ export class RBACService {
   static canUpdateTask(user: User, taskWorkcenter: string): boolean {
     return this.canAccessWorkcenterResource(user, 'tasks', 'update', taskWorkcenter);
   }
+
+  /**
+   * Check if user can delete a task
+   */
+  static canDeleteTask(user: User, taskWorkcenter: string): boolean {
+    return this.canAccessWorkcenterResource(user, 'tasks', 'delete', taskWorkcenter);
+  }
 }
 
 /**
