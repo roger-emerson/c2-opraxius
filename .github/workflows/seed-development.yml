@@ -1,0 +1,104 @@
+name: Seed Development Database
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      force:
+        description: 'Force re-import even if event exists'
+        required: false
+        default: 'false'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  seed-database:
+    name: Import Test Data to Development
+    runs-on: ubuntu-latest
+    environment: staging  # Uses staging environment secrets (same database for now)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: |
+          npm install -g npm@10.2.4
+          npm ci
+
+      - name: Build workspace packages
+        run: |
+          npm run build --workspace=@c2/shared
+          npm run build --workspace=@c2/database
+          npm run build --workspace=@c2/gis
+
+      - name: Create test event
+        id: create-event
+        run: npm run db:seed
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Get event ID
+        id: get-event-id
+        run: |
+          EVENT_ID=$(npx tsx -e "
+          import { db, events } from './dist/index.js';
+          import { eq } from 'drizzle-orm';
+          const result = await db.select().from(events).where(eq(events.slug, 'test-event-001')).limit(1);
+          if (result.length > 0) {
+            console.log(result[0].id);
+            process.exit(0);
+          }
+          process.exit(1);
+          ")
+          echo "event_id=$EVENT_ID" >> $GITHUB_OUTPUT
+          echo "Event ID: $EVENT_ID"
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Import GeoJSON test data
+        run: |
+          npm run import -- -f examples/test-venue.geojson -e ${{ steps.get-event-id.outputs.event_id }}
+        working-directory: packages/gis
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Verify import via API
+        run: |
+          echo "Waiting for API to be ready..."
+          sleep 5
+
+          echo "Fetching venue features from API..."
+          RESPONSE=$(curl -s ${{ vars.DEVELOPMENT_API_URL }}/api/venues/public)
+
+          FEATURE_COUNT=$(echo "$RESPONSE" | jq '. | length')
+          echo "Features imported: $FEATURE_COUNT"
+
+          if [ "$FEATURE_COUNT" -lt 1 ]; then
+            echo "❌ Error: No features found in API response"
+            exit 1
+          fi
+
+          echo "✅ Successfully verified $FEATURE_COUNT features via API"
+
+          echo "Feature summary:"
+          echo "$RESPONSE" | jq -r '.[] | "\(.name) (\(.featureType))"'
+
+      - name: Output success message
+        run: |
+          echo "✅ Development database seeded successfully!"
+          echo ""
+          echo "Next steps:"
+          echo "1. Open: ${{ vars.DEVELOPMENT_WEB_URL }}/dashboard/map"
+          echo "2. Verify the map renders with features"
+          echo "3. Test interactions (rotate, zoom, click)"
+          echo "4. Take screenshots for documentation"
+
