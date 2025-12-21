@@ -2,7 +2,7 @@
 
 > **Complete documentation map for the c2-opraxius project**
 >
-> **Last Updated**: December 20, 2025
+> **Last Updated**: December 21, 2025
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [NEXT_STEPS.md](NEXT_STEPS.md) | **START HERE** - Immediate action items for Phase 2 completion |
+| [ENVIRONMENTS.md](ENVIRONMENTS.md) | **🔗 ALL URLS** - Complete list of environments, endpoints, and user pages |
 | [../CLAUDE_CONTEXT.md](../CLAUDE_CONTEXT.md) | AI assistant context - project status and key references |
 | [../README.md](../README.md) | Full project documentation - comprehensive guide |
 
@@ -22,6 +22,7 @@
 |----------|-------------|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture diagrams, deployment architecture, dependency maps |
 | [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md) | Cloudflare infrastructure setup and deployment guide |
+| [ENVIRONMENTS.md](ENVIRONMENTS.md) | All environments, URLs, endpoints, and branch mappings |
 
 ---
 
@@ -29,6 +30,7 @@
 
 | Document | Description |
 |----------|-------------|
+| [AGENT_CI_CD_WORKFLOW.md](AGENT_CI_CD_WORKFLOW.md) | **NEW** - CI/CD debugging workflow for AI agents |
 | [STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md) | Database seeding procedures for staging environment |
 | [GITHUB_CLI_REFERENCE.md](GITHUB_CLI_REFERENCE.md) | GitHub Actions monitoring and CLI commands |
 
@@ -38,7 +40,8 @@
 
 | Document | Description |
 |----------|-------------|
-| [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) | Phase 2 status report with reality check |
+| [PHASE3_COMPLETE.md](PHASE3_COMPLETE.md) | **LATEST** - Phase 3 completion (Workcenters & Dashboards) |
+| [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) | Phase 2 status report (3D Map & Interaction) |
 | [PHASE2_COMPLETION_CHECKLIST.md](PHASE2_COMPLETION_CHECKLIST.md) | QA testing checklist for Phase 2 features |
 
 ---
@@ -71,20 +74,37 @@
 
 ## Quick Links
 
-**External Resources:**
-- GitHub Repository: https://github.com/roger-emerson/c2-opraxius
-- Development Web: https://dev.web.opraxius.com
-- Development API: https://dev.api.opraxius.com
-- Staging Web: https://staging.web.opraxius.com
-- Staging API: https://staging.api.opraxius.com
-- Production Web: https://dashboard.opraxius.com
-- Production API: https://api.opraxius.com
+### 🔧 Development Environment (Branch: `develop`)
+| Service | URL |
+|---------|-----|
+| Web Dashboard | https://dev.web.opraxius.com |
+| API | https://dev.api.opraxius.com |
+| Health Check | https://dev.api.opraxius.com/health |
+
+### 🎭 Staging Environment (Branch: `staging`)
+| Service | URL |
+|---------|-----|
+| Web Dashboard | https://staging.web.opraxius.com |
+| API | https://staging.api.opraxius.com |
+| Health Check | https://staging.api.opraxius.com/health |
+
+### 🚀 Production Environment (Branch: `main`)
+| Service | URL |
+|---------|-----|
+| Web Dashboard | https://dashboard.opraxius.com |
+| API | https://api.opraxius.com |
+| Health Check | https://api.opraxius.com/health |
+
+### GitHub Resources
+- Repository: https://github.com/roger-emerson/c2-opraxius
+- Actions: https://github.com/roger-emerson/c2-opraxius/actions
 
 **Workflows:**
 - [Deploy Development](../.github/workflows/deploy-development.yml)
 - [Deploy Staging](../.github/workflows/deploy-staging.yml)
 - [Deploy Production](../.github/workflows/deploy-production.yml)
-- [Seed Staging Database](../.github/workflows/seed-staging.yml)
+- [Seed Development](../.github/workflows/seed-development.yml)
+- [Seed Staging](../.github/workflows/seed-staging.yml)
 
 ---
 
