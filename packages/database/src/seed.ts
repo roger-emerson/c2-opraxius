@@ -41,7 +41,7 @@ async function main() {
       startDate: new Date('2025-05-16T00:00:00Z'),
       endDate: new Date('2025-05-18T23:59:59Z'),
       status: 'planning',
-      venueBoundary: null, // PostGIS geometry (optional for now)
+      venueBounds: null, // PostGIS geometry (optional for now)
       venueLocation: null, // PostGIS geography (optional for now)
     }).returning();
 
