@@ -789,7 +789,7 @@ git push origin main --tags  # Waits for manual approval
 
 **Security:**
 - ✅ Hostname blocking middleware prevents access to default `*.pages.dev` and `*.workers.dev` URLs
-- ✅ Only custom domains are accessible (staging.web.opraxius.com, dashboard.opraxius.com, staging.api.opraxius.com, api.opraxius.com)
+- ✅ Only custom domains are accessible (dev.web.opraxius.com, dev.api.opraxius.com, staging.web.opraxius.com, staging.api.opraxius.com, dashboard.opraxius.com, api.opraxius.com)
 - ✅ CORS configured for custom domains only
 - ✅ Next.js middleware blocks unauthorized hostnames at edge
 - ✅ Hono middleware blocks unauthorized hostnames in API workers

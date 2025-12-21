@@ -292,10 +292,10 @@ main                    # Production-ready code (protected)
    - CI/CD runs full test suite before deployment
 
 3. **`develop`** - Development Branch
-   - Default branch for local development
-   - Runs on local dev server (MacBook)
+   - Auto-deploys to Cloudflare Development environment
    - Integration point for all features
    - Merge feature branches here first
+   - Can also run locally for testing
 
 4. **`feature/*`** - Feature Branches
    - Created from `develop` for each new feature/phase
@@ -315,12 +315,12 @@ git add .
 git commit -m "feat: implement workcenter pages"
 git push origin feature/phase-3-workcenters
 
-# Merge to develop (local testing)
+# Merge to develop (auto-deploys to Cloudflare Development)
 git checkout develop
 git merge feature/phase-3-workcenters
-git push origin develop
+git push origin develop  # Triggers GitHub Actions → Cloudflare Development
 
-# When ready for staging (Cloudflare deployment)
+# When ready for staging (Cloudflare Staging deployment)
 git checkout staging
 git merge develop
 git push origin staging  # Triggers GitHub Actions → Cloudflare
@@ -370,12 +370,22 @@ ci: add GitHub Actions for Cloudflare deploy
 ### Branch → Deployment Mapping
 
 ```
-develop  → No CI/CD (local development only)
+develop  → Cloudflare Development (auto-deploy)
 staging  → Cloudflare Staging (auto-deploy)
 main     → Cloudflare Production (manual approval required)
 ```
 
 ### Cloudflare Deployments
+
+**Development Environment** (auto-deploy on push to `develop`):
+- **API**: `c2-api-development` Worker
+  - Custom domain: `dev.api.opraxius.com`
+  - Wrangler config: `apps/api-workers/wrangler.development.toml`
+  - GitHub Actions: `.github/workflows/deploy-development.yml`
+- **Web**: `c2-web-development` Pages
+  - Custom domain: `dev.web.opraxius.com`
+  - Wrangler config: `apps/web/wrangler.development.toml`
+  - GitHub Actions: `.github/workflows/deploy-development.yml`
 
 **Staging Environment** (auto-deploy on push to `staging`):
 - **API**: `c2-api-staging` Worker
@@ -399,6 +409,12 @@ main     → Cloudflare Production (manual approval required)
 
 ### GitHub Environments
 
+**Development environment** (uses `staging` secrets):
+- Shares database and secrets with staging for simplicity
+- Variables:
+  - `DEVELOPMENT_API_URL`: https://dev.api.opraxius.com
+  - `DEVELOPMENT_WEB_URL`: https://dev.web.opraxius.com
+
 **`staging` environment**:
 - No protection rules (auto-deploy)
 - Variables:
@@ -416,9 +432,11 @@ main     → Cloudflare Production (manual approval required)
 ### Deployment Workflow
 
 ```bash
-# Local development (no deployment)
+# Deploy to development (auto-deploys on push)
 git checkout develop
-# Work and test locally
+git push origin develop  # Triggers GitHub Actions → Cloudflare Development
+
+# Test at https://dev.web.opraxius.com and https://dev.api.opraxius.com
 
 # Deploy to staging
 git checkout staging
@@ -819,51 +837,9 @@ project-name/
 
 ## CI/CD Setup Complete
 
-**Completed**: 2025-12-18
+**Completed**: December 20, 2025
 
-### ✅ Infrastructure Status
-- Branch-based deployment strategy implemented and tested
-- GitHub environments configured (staging + production)
-- Cloudflare custom domains assigned:
-  - Staging: `staging.web.opraxius.com` + `staging.api.opraxius.com`
-  - Production: `dashboard.opraxius.com` + `api.opraxius.com`
-- Environment variables and secrets configured in GitHub
-- Wrangler configs created for both environments
-
-### Configuration Files Created
-- `.github/workflows/deploy-staging.yml` - Auto-deploys on push to `staging` branch
-- `.github/workflows/deploy-production.yml` - Deploys on push to `main` (with approval)
-- `apps/api-workers/wrangler.staging.toml` - Staging API config
-- `apps/api-workers/wrangler.toml` - Production API config
-- `apps/web/wrangler.staging.toml` - Staging web config
-- `apps/web/wrangler.toml` - Production web config
-
-### Workflow Tested
-- ✅ `develop` branch: Confirmed no CI/CD triggers (local only)
-- Ready to test: `staging` branch auto-deployment
-- Ready to test: `main` branch production deployment with manual approval
-
-### How to Deploy
-
-**To Staging:**
-```bash
-git checkout staging
-git merge develop
-git push origin staging  # Auto-deploys to staging.web.opraxius.com
-```
-
-**To Production:**
-```bash
-git checkout main
-git merge staging
-git tag v1.0.0
-git push origin main --tags  # Waits for manual approval, then deploys to dashboard.opraxius.com
-```
-
-### Deployment Verification
-After each deployment, verify:
-- **Staging**: https://staging.web.opraxius.com | https://staging.api.opraxius.com/health
-- **Production**: https://dashboard.opraxius.com | https://api.opraxius.com/health
+All three environments (development, staging, production) are configured with complete CI/CD pipelines. See [CI_CD_SETUP_COMPLETE.md](CI_CD_SETUP_COMPLETE.md) for detailed verification checklist and [MANUAL_CLOUDFLARE_SETUP.md](MANUAL_CLOUDFLARE_SETUP.md) for Cloudflare Dashboard setup steps.
 
 ---
 
@@ -882,28 +858,21 @@ After each deployment, verify:
 - API name updated: "C2 Command Center API"
 
 ### ✅ Custom Domain Configuration
+- **Development Web**: `dev.web.opraxius.com` (c2-web-development Pages)
+- **Development API**: `dev.api.opraxius.com` (c2-api-development Worker)
 - **Staging Web**: `staging.web.opraxius.com` (c2-web-staging Pages)
-- **Production Web**: `dashboard.opraxius.com` (c2-web-production Pages)
 - **Staging API**: `staging.api.opraxius.com` (c2-api-staging Worker)
+- **Production Web**: `dashboard.opraxius.com` (c2-web-production Pages)
 - **Production API**: `api.opraxius.com` (c2-api-production Worker)
 
 ### ✅ Hostname Blocking Middleware
 Implemented defense-in-depth security to block default Cloudflare URLs:
 
-**Frontend** ([apps/web/src/middleware.ts](apps/web/src/middleware.ts)):
-- Next.js middleware blocks access to `*.pages.dev` URLs
-- Returns 404 for unauthorized hostnames
-- Only allows: `dev.web.opraxius.com`, `staging.web.opraxius.com`, `dashboard.opraxius.com`, `localhost`
-
-**Backend** ([apps/api-workers/src/index.ts:19-34](apps/api-workers/src/index.ts#L19-L34)):
-- Hono middleware blocks access to `*.workers.dev` URLs
-- Returns 404 for unauthorized hostnames
-- Only allows: `dev.api.opraxius.com`, `staging.api.opraxius.com`, `api.opraxius.com`, `localhost`
-
-**CORS Updated** ([apps/api-workers/src/index.ts:56-60](apps/api-workers/src/index.ts#L56-L60)):
-- Origin whitelist updated to custom domains only
-- Removed old `esg-web-staging.pages.dev` reference
-- Added: `dev.web.opraxius.com`, `staging.web.opraxius.com`, `dashboard.opraxius.com`
+**Security Middleware**:
+- Hostname blocking on frontend (Next.js middleware) and backend (Hono middleware)
+- Blocks access to default Cloudflare URLs (`*.pages.dev`, `*.workers.dev`)
+- Only allows custom domains: `dev.*`, `staging.*`, `dashboard.opraxius.com`, `api.opraxius.com`, `localhost`
+- CORS whitelist configured for custom domains only
 
 ### Files Modified
 - `apps/web/src/middleware.ts` (created)
@@ -915,8 +884,8 @@ Implemented defense-in-depth security to block default Cloudflare URLs:
 - `apps/api/tsconfig.json` (path aliases, removed rootDir)
 
 ### Deployment Status
-- ✅ Changes pushed to `staging` branch
-- ✅ Middleware deployed and active
+- ✅ All three environments configured (development, staging, production)
+- ✅ Middleware deployed and active on all environments
 - ✅ Default URLs blocked at edge and application level
 - ✅ Custom domains configured in Cloudflare Dashboard
 

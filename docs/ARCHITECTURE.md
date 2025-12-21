@@ -91,13 +91,14 @@ This document provides comprehensive architectural diagrams and dependency maps 
 │                                                                             │
 │   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
 │   │   develop   │───►│   staging   │───►│    main     │                    │
-│   │  (local)    │    │ (auto-deploy)│   │ (approval)  │                    │
-│   └─────────────┘    └──────┬──────┘    └──────┬──────┘                    │
+│   │(auto-deploy)│    │ (auto-deploy)│   │ (approval)  │                    │
+│   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                    │
 └──────────────────────────────┼──────────────────┼───────────────────────────┘
                                │                  │
                     ┌──────────▼──────────┐       │
                     │   GITHUB ACTIONS    │       │
                     │                     │       │
+                    │ deploy-development.yml◄─────┘
                     │ deploy-staging.yml  │       │
                     │ deploy-production.yml◄──────┘
                     └──────────┬──────────┘
@@ -115,6 +116,16 @@ This document provides comprehensive architectural diagrams and dependency maps 
                                ▼                     ▼
                     ┌─────────────────────────────────────────┐
                     │           CLOUDFLARE INFRASTRUCTURE      │
+                    │                                          │
+                    │  ┌──────────────────────────────────┐   │
+                    │  │          DEVELOPMENT             │   │
+                    │  │                                   │   │
+                    │  │  Workers: c2-api-development     │   │
+                    │  │  → dev.api.opraxius.com          │   │
+                    │  │                                   │   │
+                    │  │  Pages: c2-web-development       │   │
+                    │  │  → dev.web.opraxius.com          │   │
+                    │  └──────────────────────────────────┘   │
                     │                                          │
                     │  ┌──────────────────────────────────┐   │
                     │  │           STAGING                 │   │
@@ -300,9 +311,11 @@ This document provides comprehensive architectural diagrams and dependency maps 
 │                                                                             │
 │  CLOUDFLARE INFRASTRUCTURE                                                  │
 │  ├── Workers (API hosting)                     [REQUIRED]                   │
+│  │   ├── c2-api-development                                                  │
 │  │   ├── c2-api-staging                                                     │
 │  │   └── c2-api-production                                                  │
 │  ├── Pages (Frontend hosting)                  [REQUIRED]                   │
+│  │   ├── c2-web-development                                                  │
 │  │   ├── c2-web-staging                                                     │
 │  │   └── c2-web-production                                                  │
 │  ├── DNS (Custom domains)                      [REQUIRED]                   │
@@ -390,12 +403,14 @@ This document provides comprehensive architectural diagrams and dependency maps 
 
 ### Required Variables (GitHub Environments)
 
-| Variable | Staging | Production | Value |
-|----------|---------|------------|-------|
-| `STAGING_API_URL` | ✅ | ❌ | `https://staging.api.opraxius.com` |
-| `STAGING_WEB_URL` | ✅ | ❌ | `https://staging.web.opraxius.com` |
-| `PRODUCTION_API_URL` | ❌ | ✅ | `https://api.opraxius.com` |
-| `PRODUCTION_WEB_URL` | ❌ | ✅ | `https://dashboard.opraxius.com` |
+| Variable | Development | Staging | Production | Value |
+|----------|-------------|---------|------------|-------|
+| `DEVELOPMENT_API_URL` | ✅ | ✅ | ❌ | `https://dev.api.opraxius.com` |
+| `DEVELOPMENT_WEB_URL` | ✅ | ✅ | ❌ | `https://dev.web.opraxius.com` |
+| `STAGING_API_URL` | ❌ | ✅ | ❌ | `https://staging.api.opraxius.com` |
+| `STAGING_WEB_URL` | ❌ | ✅ | ❌ | `https://staging.web.opraxius.com` |
+| `PRODUCTION_API_URL` | ❌ | ❌ | ✅ | `https://api.opraxius.com` |
+| `PRODUCTION_WEB_URL` | ❌ | ❌ | ✅ | `https://dashboard.opraxius.com` |
 
 ---
 
@@ -446,6 +461,8 @@ This document provides comprehensive architectural diagrams and dependency maps 
 │                         STAGING (CLOUDFLARE)                                │
 │                                                                             │
 │  Domains:                                                                   │
+│  ├── dev.web.opraxius.com          → c2-web-development (Pages)            │
+│  ├── dev.api.opraxius.com          → c2-api-development (Workers)          │
 │  ├── staging.web.opraxius.com      → c2-web-staging (Pages)                │
 │  └── staging.api.opraxius.com      → c2-api-staging (Workers)              │
 │                                                                             │
@@ -545,7 +562,12 @@ This document provides comprehensive architectural diagrams and dependency maps 
 - **API**: https://api.opraxius.com
 - **Health**: https://api.opraxius.com/health
 
-### Development
+### Development (Cloudflare)
+- **Web**: https://dev.web.opraxius.com
+- **API**: https://dev.api.opraxius.com
+- **Health**: https://dev.api.opraxius.com/health
+
+### Local Development
 - **Web**: http://localhost:3000
 - **API**: http://localhost:3001
 - **DB Studio**: http://localhost:4983
