@@ -11,12 +11,16 @@ import { calculateCenter } from '../lib/gis-utils';
 interface VenueMap3DProps {
   features: VenueFeature[];
   onFeatureClick?: (feature: VenueFeature) => void;
+  /** Slot for external header content (positioned top-left) */
+  headerSlot?: React.ReactNode;
+  /** Slot for external debug panel */
+  debugSlot?: React.ReactNode;
 }
 
 // Scale factor for coordinate conversion (larger = more spread out)
 const SCALE_FACTOR = 100000;
 
-export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
+export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: VenueMap3DProps) {
   const [selectedFeature, setSelectedFeature] = useState<VenueFeature | null>(null);
 
   // Calculate the center of all features to offset coordinates to origin
@@ -60,8 +64,10 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#050510]">
+    <div className="absolute inset-0 overflow-hidden bg-[#050510]">
+      {/* 3D Canvas - Full Screen */}
       <Canvas
+        className="!absolute !inset-0"
         camera={{
           position: [0, 300, 400],
           fov: 60,
@@ -69,6 +75,7 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
           far: 10000,
         }}
         shadows
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
       >
         {/* Ambient and Directional Lighting */}
         <ambientLight intensity={0.4} />
@@ -155,59 +162,40 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
         />
       </Canvas>
 
-      {/* Feature Detail Panel - Glassmorphism Style */}
-      {selectedFeature && (
-        <FeatureDetailPanel feature={selectedFeature} onClose={handleClosePanel} />
+      {/* ===== UI OVERLAYS (all positioned absolutely within canvas) ===== */}
+
+      {/* Header Slot - Top Left (if provided) */}
+      {headerSlot && (
+        <div className="absolute top-4 left-4 z-20">
+          {headerSlot}
+        </div>
       )}
 
-      {/* Controls Legend - Glassmorphism */}
-      <div className="absolute bottom-6 left-6 bg-black/70 backdrop-blur-md text-white p-4 rounded-xl text-sm border border-white/10 shadow-2xl">
-        <div className="font-semibold mb-3 text-white/90">Controls</div>
-        <div className="space-y-1.5 text-white/70">
+      {/* Status Legend - Top Left (below header if present) */}
+      <div className={`absolute ${headerSlot ? 'top-20' : 'top-4'} left-4 z-10 bg-black/70 backdrop-blur-md text-white p-3 rounded-xl text-sm border border-white/10 shadow-2xl`}>
+        <div className="font-semibold mb-2 text-white/90 text-xs uppercase tracking-wider">Status</div>
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-white/10 px-2 py-0.5 rounded">Left Click + Drag</span>
-            <span>Rotate</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-gray-500 shadow-lg shadow-gray-500/30" />
+            <span className="text-white/70 text-xs">Pending</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-white/10 px-2 py-0.5 rounded">Right Click + Drag</span>
-            <span>Pan</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/30" />
+            <span className="text-white/70 text-xs">In Progress</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-white/10 px-2 py-0.5 rounded">Scroll</span>
-            <span>Zoom</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-lg shadow-green-500/30" />
+            <span className="text-white/70 text-xs">Completed</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-white/10 px-2 py-0.5 rounded">Click Object</span>
-            <span>View Details</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-lg shadow-red-500/30" />
+            <span className="text-white/70 text-xs">Blocked</span>
           </div>
         </div>
       </div>
 
-      {/* Status Legend - Glassmorphism */}
-      <div className="absolute top-6 right-6 bg-black/70 backdrop-blur-md text-white p-4 rounded-xl text-sm border border-white/10 shadow-2xl">
-        <div className="font-semibold mb-3 text-white/90">Status</div>
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-gray-500 shadow-lg shadow-gray-500/30" />
-            <span className="text-white/70">Pending</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/30" />
-            <span className="text-white/70">In Progress</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/30" />
-            <span className="text-white/70">Completed</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/30" />
-            <span className="text-white/70">Blocked</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Feature Type Legend */}
-      <div className="absolute bottom-6 right-6 flex gap-2 overflow-x-auto pb-2 max-w-[50vw]">
+      {/* Feature Type Legend - Bottom Left */}
+      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-2 max-w-xs">
         {[
           { label: 'Stage', color: 'bg-pink-500' },
           { label: 'Facility', color: 'bg-amber-500' },
@@ -217,7 +205,7 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
         ].map((item) => (
           <div
             key={item.label}
-            className="flex items-center gap-2 bg-black/70 backdrop-blur-md border border-white/10 px-3 py-2 rounded-full whitespace-nowrap"
+            className="flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-white/10 px-2.5 py-1.5 rounded-full"
           >
             <div className={`w-2 h-2 rounded-full ${item.color}`} />
             <span className="text-xs text-white/80 font-medium">{item.label}</span>
@@ -225,11 +213,40 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
         ))}
       </div>
 
-      {/* Feature Count */}
-      <div className="absolute top-6 left-6 bg-black/70 backdrop-blur-md text-white px-4 py-3 rounded-xl border border-white/10 shadow-2xl">
-        <div className="text-2xl font-bold">{features.length}</div>
-        <div className="text-xs text-white/50 uppercase tracking-wider">Features</div>
+      {/* Controls Legend - Top Right */}
+      <div className="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-md text-white p-3 rounded-xl text-xs border border-white/10 shadow-2xl">
+        <div className="font-semibold mb-2 text-white/90 uppercase tracking-wider">Controls</div>
+        <div className="space-y-1 text-white/70">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">Drag</span>
+            <span>Rotate</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">Right+Drag</span>
+            <span>Pan</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">Scroll</span>
+            <span>Zoom</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">Click</span>
+            <span>Select</span>
+          </div>
+        </div>
       </div>
+
+      {/* Feature Detail Panel - Right Side (overlays canvas, not outside it) */}
+      {selectedFeature && (
+        <FeatureDetailPanel feature={selectedFeature} onClose={handleClosePanel} />
+      )}
+
+      {/* Debug Slot - Bottom Right (if provided) */}
+      {debugSlot && (
+        <div className="absolute bottom-4 right-4 z-30 max-w-sm">
+          {debugSlot}
+        </div>
+      )}
     </div>
   );
 }

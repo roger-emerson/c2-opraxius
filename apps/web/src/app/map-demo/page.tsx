@@ -13,7 +13,7 @@ interface DebugLog {
   message: string;
 }
 
-// Debug Panel Component
+// Debug Panel Component - Positioned in top-left corner to avoid conflicts
 function DebugPanel({ 
   logs, 
   isOpen, 
@@ -32,55 +32,44 @@ function DebugPanel({
   featureCount: number;
 }) {
   return (
-    <div className="fixed bottom-0 right-0 z-50 max-w-lg w-full">
-      {/* Toggle Button */}
+    <div className="fixed top-4 left-4 z-[100] max-w-xs">
+      {/* Compact Toggle Button */}
       <button
         onClick={onToggle}
-        className="absolute -top-10 right-4 bg-slate-800 text-white px-3 py-1 rounded-t text-sm font-mono border border-b-0 border-slate-600"
+        className="bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs font-mono border border-slate-600 hover:bg-slate-800 transition flex items-center gap-2"
       >
-        {isOpen ? '▼ Hide Debug' : '▲ Show Debug'}
+        <span className={`w-2 h-2 rounded-full ${apiStatus === 'success' ? 'bg-green-500' : apiStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'}`} />
+        {isOpen ? '▼ Debug' : '▶ Debug'}
+        <span className="text-slate-400">({featureCount})</span>
       </button>
       
       {isOpen && (
-        <div className="bg-slate-900 border-t border-slate-600 p-4 max-h-80 overflow-y-auto">
-          {/* Status Summary */}
-          <div className="grid grid-cols-2 gap-2 mb-4 text-xs font-mono">
-            <div className="bg-slate-800 p-2 rounded">
-              <span className="text-slate-400">React:</span>{' '}
-              <span className="text-green-400">{reactVersion}</span>
+        <div className="mt-2 bg-slate-900/95 backdrop-blur-sm border border-slate-600 rounded-lg p-3 max-h-64 overflow-y-auto shadow-2xl">
+          {/* Compact Status Summary */}
+          <div className="grid grid-cols-2 gap-1.5 mb-3 text-xs font-mono">
+            <div className="bg-slate-800/80 px-2 py-1 rounded">
+              <span className="text-slate-500">R:</span>{' '}
+              <span className="text-green-400">{reactVersion.split('-')[0]}</span>
             </div>
-            <div className="bg-slate-800 p-2 rounded">
-              <span className="text-slate-400">Three.js:</span>{' '}
+            <div className="bg-slate-800/80 px-2 py-1 rounded">
+              <span className="text-slate-500">3D:</span>{' '}
               <span className={threeLoaded ? 'text-green-400' : 'text-yellow-400'}>
-                {threeLoaded ? 'Loaded' : 'Loading...'}
+                {threeLoaded ? '✓' : '...'}
               </span>
-            </div>
-            <div className="bg-slate-800 p-2 rounded">
-              <span className="text-slate-400">API:</span>{' '}
-              <span className={
-                apiStatus === 'success' ? 'text-green-400' : 
-                apiStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
-              }>
-                {apiStatus}
-              </span>
-            </div>
-            <div className="bg-slate-800 p-2 rounded">
-              <span className="text-slate-400">Features:</span>{' '}
-              <span className="text-blue-400">{featureCount}</span>
             </div>
           </div>
           
           {/* Log Messages */}
-          <div className="space-y-1">
-            {logs.map((log, i) => (
-              <div key={i} className="font-mono text-xs flex">
-                <span className="text-slate-500 mr-2">[{log.time}]</span>
-                <span className={
+          <div className="space-y-0.5 max-h-40 overflow-y-auto">
+            {logs.slice(-10).map((log, i) => (
+              <div key={i} className="font-mono text-[10px] flex">
+                <span className="text-slate-600 mr-1">[{log.time.split(':').slice(1).join(':')}]</span>
+                <span className={`truncate ${
                   log.level === 'success' ? 'text-green-400' :
                   log.level === 'error' ? 'text-red-400' :
                   log.level === 'warn' ? 'text-yellow-400' :
-                  'text-slate-300'
-                }>
+                  'text-slate-400'
+                }`}>
                   {log.message}
                 </span>
               </div>
@@ -361,21 +350,14 @@ export default function MapDemoPage() {
     );
   }
 
-  // Success - render 3D map
+  // Success - render 3D map (fills entire viewport)
   return (
-    <div className="h-screen w-full relative">
-      {/* Demo banner */}
-      <div className="absolute top-4 left-4 z-10 bg-slate-900/90 text-white px-4 py-2 rounded-lg backdrop-blur-sm border border-slate-700">
-        <span className="font-semibold">C2 Opraxius</span>
-        <span className="text-slate-400 ml-2">3D Map Demo</span>
-        <span className="text-xs ml-3 px-2 py-0.5 bg-green-600 rounded">PUBLIC</span>
-        <span className="text-xs ml-2 text-slate-500">{features.length} features</span>
-      </div>
-      
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#050510]">
       <ThreeErrorBoundary onError={handleThreeError}>
         <VenueMap3D features={features} />
       </ThreeErrorBoundary>
       
+      {/* Debug panel - positioned to not conflict with map UI */}
       <DebugPanel 
         logs={logs} 
         isOpen={debugOpen} 
