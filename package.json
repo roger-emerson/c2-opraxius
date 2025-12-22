@@ -2,7 +2,7 @@
   "name": "c2-opraxius",
   "version": "1.0.0",
   "private": true,
-  "description": "Opraxius C2 - Festival Management Dashboard for Insomniac Events",
+  "description": "Opraxius C2 - Event Management Command & Control",
   "workspaces": [
     "apps/*",
     "packages/*"

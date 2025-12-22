@@ -1,6 +1,6 @@
 # Opraxius C2
 
-Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, etc.)
+Event Management Command & Control
 
 > **Current Status**: Phase 1, 2, & 2b complete. Auth.js v5 migration done. Ready for Phase 3.
 

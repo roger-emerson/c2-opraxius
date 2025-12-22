@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-**Opraxius C2** - Festival Management Dashboard for Insomniac Events
+**Opraxius C2** - Event Management Command & Control
 - **Repository**: `/Users/roger/Desktop/Projects/c2-opraxius`
 - **Current Phase**: Phase 2b (Auth) Complete - Auth.js v5 working on Edge Runtime
 - **Status**: Deployed on Cloudflare, custom domains working, Auth0 SSO functional

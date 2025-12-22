@@ -17,7 +17,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Opraxius C2',
-  description: 'Festival Management Dashboard for Insomniac Events',
+  description: 'Event Management Command & Control',
 };
 
 export default function RootLayout({

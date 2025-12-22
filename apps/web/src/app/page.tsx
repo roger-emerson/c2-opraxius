@@ -12,7 +12,7 @@ export default function Home() {
           OPRAXIUS C2
         </h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Festival Management Dashboard for Insomniac Events
+          Event Management Command & Control
         </p>
         <Link
           href="/dashboard"
