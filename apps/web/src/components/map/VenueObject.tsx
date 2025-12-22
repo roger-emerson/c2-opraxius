@@ -107,7 +107,7 @@ function renderPoint(feature: VenueFeature): JSX.Element {
 
 function renderPolygon(feature: VenueFeature): JSX.Element {
   const coords = feature.geometry.coordinates as number[][][];
-  const vectors = polygonToVectors(coords);
+  const vectors = polygonToVectors(coords) as THREE.Vector3[];
 
   // Create shape from polygon
   const shape = new THREE.Shape();
@@ -138,9 +138,18 @@ function renderPolygon(feature: VenueFeature): JSX.Element {
 
 function renderLineString(feature: VenueFeature): JSX.Element {
   const coords = feature.geometry.coordinates as number[][];
-  const vectors = lineStringToVectors(coords);
+  const vectors = lineStringToVectors(coords) as THREE.Vector3[];
 
-  // Create curve from points
+  // Create curve from points - need at least 2 points
+  if (vectors.length < 2) {
+    // Fallback to a point if not enough coordinates
+    return (
+      <group>
+        <boxGeometry args={[10, 5, 10]} />
+      </group>
+    );
+  }
+  
   const curve = new THREE.CatmullRomCurve3(vectors);
   const width = getFeatureSize(feature.featureType);
 
