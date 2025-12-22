@@ -100,7 +100,7 @@ npm run dev
 - **Database**: PostgreSQL 15 + PostGIS 3.4
 - **ORM**: Drizzle ORM
 - **Cache**: Redis 7
-- **Auth**: Auth0 + NextAuth.js
+- **Auth**: Auth0 + Auth.js v5 (Edge Runtime compatible)
 
 ### Infrastructure
 - **Dev**: Docker + Docker Compose
@@ -123,7 +123,7 @@ c2-opraxius/
 │   │   │   │   │   ├── page.tsx
 │   │   │   │   │   └── map/page.tsx
 │   │   │   │   ├── auth/        # Auth pages
-│   │   │   │   └── api/auth/    # NextAuth routes
+│   │   │   │   └── api/auth/    # Auth.js v5 routes
 │   │   │   ├── components/
 │   │   │   │   └── map/         # 3D map components
 │   │   │   │       ├── VenueMap3D.tsx
@@ -184,7 +184,7 @@ c2-opraxius/
 - `ai_chat_history` - Claude chat history (Phase 4)
 
 **Authentication & RBAC**:
-- Auth0 + NextAuth.js authentication
+- Auth0 + Auth.js v5 authentication (Edge Runtime compatible)
 - 10 roles (admin, operations_lead, production_lead, etc.)
 - 8 workcenters (Operations, Production, Security, etc.)
 - Granular permission system (resource + action + workcenter)
@@ -803,7 +803,7 @@ git push origin main --tags  # Waits for manual approval
 - Turborepo monorepo setup
 - PostgreSQL + PostGIS + Redis
 - Drizzle ORM schema (7 tables)
-- Auth0 + NextAuth.js authentication
+- Auth0 + Auth.js v5 authentication (Edge Runtime compatible)
 - RBAC middleware and hooks
 - REST API (events, tasks, venues)
 

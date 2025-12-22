@@ -1,196 +1,151 @@
 # Next Steps - Phase 3 Ready
 
-> **Quick Summary**: Phases 1, 2, and 2b (Auth) complete. Auth0 SSO working on Cloudflare Edge Runtime.
+> **Quick Summary**: Phases 1, 2, and 2b (Auth) complete. Auth0 SSO fully working on Cloudflare Edge Runtime. Ready for Phase 3.
 
 ---
 
 ## 🎯 Current Status
 
-✅ **What's Done:**
-- All Phase 2 code written and deployed to Cloudflare
-- 3D map components (VenueMap3D, VenueObject, FeatureDetailPanel)
+### ✅ Phase 1: Core Infrastructure (Complete)
+- Turborepo monorepo with TypeScript
+- Cloudflare Workers API (Hono)
+- Cloudflare Pages frontend (Next.js 15)
+- Supabase PostgreSQL + PostGIS
+- Drizzle ORM with migrations
+
+### ✅ Phase 2: 3D Map & GIS (Complete)
+- Three.js 3D map components (VenueMap3D, VenueObject)
 - GeoJSON import CLI tool
+- Interactive features (rotate, zoom, pan, click, hover)
+- Detail panel with feature information
 - Public API endpoint (`/api/venues/public`)
-- **Auth.js v5 with Auth0 SSO** (Edge Runtime compatible)
-- Auth API route handler at `/api/auth/[...nextauth]`
-- Auth0 environment variables configured in Cloudflare Pages
-- GitHub Actions workflows updated with auth secrets
 
-✅ **Authentication Working:**
-- Sign in via Auth0: https://dev.web.opraxius.com/auth/signin
-- Protected dashboard: https://dev.web.opraxius.com/dashboard
-- Public map demo: https://dev.web.opraxius.com/map-demo
+### ✅ Phase 2b: Authentication (Complete)
+- **Auth.js v5** (next-auth@5.0.0-beta.25) on Edge Runtime
+- **Auth0 OIDC** provider with SSO
+- Protected routes and dashboard
+- JWT session strategy with custom claims
+- GitHub Actions CI/CD with auth secrets
 
 ---
 
-## 🚀 How to Complete Phase 2 (Choose ONE method)
+## 🔐 Auth Configuration Reference
 
-### Method 1: GitHub Actions (Easiest - Recommended)
+The authentication system required specific configuration for Cloudflare Edge Runtime compatibility:
 
-1. Go to: https://github.com/roger-emerson/c2-opraxius/actions
-2. Click "Seed Staging Database" workflow (on the left)
-3. Click "Run workflow" button (top right)
-4. Select `staging` branch
-5. Click green "Run workflow" button
-6. Wait ~2-3 minutes for completion
+### Working Configuration (`apps/web/src/lib/auth.ts`)
 
-Then:
-7. Open: https://staging.web.opraxius.com/dashboard/map
-8. Verify map shows 8 features in 3D
-9. Test interactions (rotate, zoom, click)
+```typescript
+{
+  id: 'auth0',
+  name: 'Auth0',
+  type: 'oidc',                    // Must be 'oidc', NOT 'oauth'
+  issuer: `${auth0Domain}/`,       // MUST include trailing slash
+  wellKnown: `${auth0Domain}/.well-known/openid-configuration`,
+  clientId: process.env.AUTH0_CLIENT_ID!,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+  idToken: true,                   // Required for OIDC token handling
+  checks: ['state'],               // Security validation
+}
 
-### Method 2: Shell Script (If you have DATABASE_URL)
-
-If you have access to the staging DATABASE_URL:
-
-```bash
-# Export the DATABASE_URL from GitHub Secrets
-export DATABASE_URL="postgresql://user:pass@host:port/database"
-
-# Run the seed script
-../../scripts/seed-staging-api.sh
+// Plus these NextAuth options:
+{
+  secret: process.env.AUTH_SECRET,
+  trustHost: true,                 // Required for Cloudflare Pages
+}
 ```
 
-This will:
-- Create a test event
-- Import 8 GeoJSON features
-- Verify via API
+### Required Environment Variables
 
-Then test at: https://staging.web.opraxius.com/dashboard/map
+| Variable | Location | Format |
+|----------|----------|--------|
+| `AUTH0_CLIENT_ID` | Cloudflare Pages + GitHub Secrets | From Auth0 App |
+| `AUTH0_CLIENT_SECRET` | Cloudflare Pages + GitHub Secrets | From Auth0 App |
+| `AUTH0_ISSUER_BASE_URL` | Cloudflare Pages + GitHub Secrets | `https://tenant.us.auth0.com` (NO trailing slash) |
+| `AUTH_SECRET` | Cloudflare Pages + GitHub Secrets | `openssl rand -base64 32` |
 
-### Method 3: Manual (Step by Step)
+### Auth0 Application Settings
 
-See [STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md) for detailed manual instructions.
+- **Application Type**: Regular Web Application
+- **Allowed Callback URLs**: `https://dev.web.opraxius.com/api/auth/callback/auth0`
+- **Allowed Logout URLs**: `https://dev.web.opraxius.com`
+- **Grant Types**: Authorization Code
 
----
+### Key Learnings
 
-## 📋 What to Test After Seeding
-
-Visit: https://staging.web.opraxius.com/dashboard/map
-
-Expected behaviors:
-
-| Test | Expected Result |
-|------|----------------|
-| **Page loads** | Map renders with 8 colorful 3D objects |
-| **Rotate** (left-click drag) | Camera rotates around the venue |
-| **Zoom** (scroll wheel) | Camera zooms in and out |
-| **Pan** (right-click drag) | Camera moves across the scene |
-| **Hover** | Feature highlights orange |
-| **Click feature** | Detail panel slides in from right |
-| **Detail panel** | Shows name, type, status, tasks, etc. |
-| **Close panel** | Click X or click elsewhere |
+1. **Issuer URL**: Auth0's OIDC discovery returns issuer WITH trailing slash, so config must match
+2. **Explicit wellKnown**: Edge runtime needs explicit URL for OIDC discovery
+3. **idToken: true**: Required for proper OIDC token handling
+4. **trustHost: true**: Required for Cloudflare Pages (no hardcoded host verification)
 
 ---
 
-## 📸 Document Results
+## 🌐 Working Endpoints
 
-After testing, take screenshots of:
-
-1. Full map view with all features
-2. Detail panel open for a feature
-3. Map from different angles (showing 3D perspective)
-4. Hover effect on a feature
-
-Save to: `docs/screenshots/phase2/`
-
----
-
-## 🎉 Definition of "Complete"
-
-Phase 2 is **COMPLETE** when:
-
-1. ✅ Test data imported to staging
-2. ✅ Map loads without errors
-3. ✅ All 8 features visible
-4. ✅ All controls working (rotate, zoom, pan, click, hover)
-5. ✅ Detail panel shows correct data
-6. ✅ Screenshots captured
-7. ✅ No critical bugs
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Sign In | https://dev.web.opraxius.com/auth/signin | Public |
+| Dashboard | https://dev.web.opraxius.com/dashboard | Protected |
+| 3D Map | https://dev.web.opraxius.com/dashboard/map | Protected |
+| Public Demo | https://dev.web.opraxius.com/map-demo | Public |
+| API Health | https://dev.api.opraxius.com/health | Public |
 
 ---
 
-## 📚 Documentation Created
+## 🔜 Phase 3: Workcenter Dashboards
 
-New files to help you:
+Ready to build:
 
-- **[STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md)** - Detailed seeding instructions
-- **[PHASE2_COMPLETION_CHECKLIST.md](PHASE2_COMPLETION_CHECKLIST.md)** - Full testing checklist
-- **[seed-staging.yml](../.github/workflows/seed-staging.yml)** - GitHub Actions workflow
-- **[seed-staging-api.sh](../scripts/seed-staging-api.sh)** - Shell script for seeding
-- **[seed.ts](../packages/database/src/seed.ts)** - Creates test event
+1. **8 Workcenter Pages**
+   - Operations, Production, Security, Workforce
+   - Vendors, Sponsors, Marketing, Finance
+   - Each with department-specific views
+
+2. **Overall Readiness Tracking**
+   - Event completion percentage
+   - Critical items dashboard
+   - Cross-workcenter dependencies
+
+3. **Real-time Activity Feed**
+   - WebSocket or SSE updates
+   - Live task status changes
+   - User activity logging
+
+4. **Task CRUD Operations**
+   - Create, edit, delete tasks
+   - Task assignment and dependencies
+   - Status workflow (pending → in_progress → complete)
+
+5. **RBAC Enforcement**
+   - Role-based data filtering
+   - Workcenter-specific permissions
+   - Admin vs. department lead views
 
 ---
 
-## 🐛 If Something Goes Wrong
-
-### Map shows "Loading..." forever
+## 💡 Quick Commands
 
 ```bash
-# Check if API returns data
-curl -s https://staging.api.opraxius.com/api/venues/public | jq .
+# Local development
+cd apps/web && npm run dev        # Frontend on localhost:3000
+cd apps/api-workers && npm run dev # API on localhost:3001
 
-# Expected: Array of 8 features
-# If empty: Re-run seed script
-```
+# Deploy to development
+git push origin develop           # Auto-deploys via GitHub Actions
 
-### Map shows error
-
-1. Check browser console (F12 → Console tab)
-2. Check Network tab for failed API calls
-3. Verify public endpoint works (no auth required)
-
-### Features imported but not visible
-
-1. Check camera distance in [VenueMap3D.tsx](../apps/web/src/components/map/VenueMap3D.tsx#L8)
-2. Verify coordinate conversion in [coordinates.ts](../packages/gis/src/coordinates.ts)
-3. Check feature data: `curl https://staging.api.opraxius.com/api/venues/public | jq '.[0]'`
-
----
-
-## 🔜 After Phase 2 is Complete
-
-Start Phase 3:
-- 8 workcenter dashboard pages
-- Overall Readiness tracking
-- Critical Items panel
-- Real-time Activity Feed
-- Task CRUD operations
-
----
-
-## 💡 Quick Commands Reference
-
-```bash
-# Seed staging (with DATABASE_URL)
-export DATABASE_URL="postgresql://..."
-../../scripts/seed-staging-api.sh
-
-# Verify data via API
-curl https://staging.api.opraxius.com/api/venues/public | jq '. | length'
-
-# Check staging health
-curl https://staging.api.opraxius.com/health
-
-# Run seed manually
-cd packages/database
-DATABASE_URL="..." npm run db:seed
-
-cd ../gis
-DATABASE_URL="..." npm run import -- -f examples/test-venue.geojson -e <EVENT_ID>
+# Check deployment status
+curl https://dev.api.opraxius.com/health
+curl https://dev.web.opraxius.com/api/auth/providers
 ```
 
 ---
 
-## 🆘 Need Help?
+## 📚 Related Documentation
 
-1. Check [STAGING_SEED_INSTRUCTIONS.md](STAGING_SEED_INSTRUCTIONS.md)
-2. Check [PHASE2_COMPLETION_CHECKLIST.md](PHASE2_COMPLETION_CHECKLIST.md)
-3. Review [../CLAUDE_CONTEXT.md](../CLAUDE_CONTEXT.md) for project overview
-4. Check [ARCHITECTURE.md](ARCHITECTURE.md) for system architecture
+- [CLAUDE_CONTEXT.md](../CLAUDE_CONTEXT.md) - Full project context
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
+- [README.md](../README.md) - Quick start guide
 
 ---
 
-**Bottom line:** Run the GitHub Actions "Seed Staging Database" workflow, then test the map at staging.web.opraxius.com/dashboard/map.
-
-That's it! 🎉
+**Status**: Authentication complete, ready for Phase 3 development! 🎉
