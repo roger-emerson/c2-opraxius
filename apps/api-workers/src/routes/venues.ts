@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { AppBindings } from '../types';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission, RBACService } from '../middleware/rbac';
@@ -14,18 +14,40 @@ venuesRoutes.get('/public', async (c) => {
     const db = c.get('db');
     const eventId = c.req.query('eventId');
 
-    let query = db.select().from(venueFeatures);
+    // Use raw SQL to properly handle PostGIS geometry conversion to GeoJSON
+    // Drizzle ORM doesn't handle PostGIS geometry types natively
+    const baseQuery = `
+      SELECT 
+        id, 
+        event_id as "eventId", 
+        feature_type as "featureType", 
+        feature_category as "featureCategory", 
+        name, 
+        code,
+        CASE 
+          WHEN geometry IS NOT NULL THEN ST_AsGeoJSON(geometry)::json 
+          ELSE NULL 
+        END as geometry,
+        properties, 
+        workcenter_access as "workcenterAccess",
+        status, 
+        completion_percent as "completionPercent",
+        created_at as "createdAt", 
+        updated_at as "updatedAt"
+      FROM venue_features
+    `;
 
-    if (eventId) {
-      query = query.where(eq(venueFeatures.eventId, eventId)) as typeof query;
-    }
+    const query = eventId
+      ? sql.raw(`${baseQuery} WHERE event_id = '${eventId}'`)
+      : sql.raw(baseQuery);
 
-    const features = await query;
+    const result = await db.execute(query);
+    const features = result.rows ?? result ?? [];
 
     return c.json({ features });
   } catch (error) {
     console.error('Failed to fetch public venue features:', error);
-    return c.json({ error: 'Failed to fetch venue features' }, 500);
+    return c.json({ error: 'Failed to fetch venue features', details: String(error) }, 500);
   }
 });
 
