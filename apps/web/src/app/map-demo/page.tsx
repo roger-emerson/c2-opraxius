@@ -246,6 +246,13 @@ export default function MapDemoPage() {
     if (status === 'error') addLog('error', `Query: error - ${(error as Error)?.message}`);
   }, [status, error, addLog]);
 
+  // Log when ready to render 3D
+  useEffect(() => {
+    if (features.length > 0 && !threeError) {
+      addLog('info', `Ready to render 3D map with ${features.length} features`);
+    }
+  }, [features.length, threeError, addLog]);
+
   const features: VenueFeature[] = data?.features || [];
   const apiStatus = isLoading ? 'loading' : error ? 'error' : 'success';
 
@@ -352,8 +359,6 @@ export default function MapDemoPage() {
   }
 
   // Success - render 3D map
-  addLog('info', 'Rendering VenueMap3D component...');
-  
   return (
     <div className="h-screen w-full relative">
       {/* Demo banner */}
