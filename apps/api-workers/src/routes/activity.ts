@@ -15,6 +15,7 @@ activityRoutes.get('/live', async (c) => {
     const limit = limitStr ? Math.min(parseInt(limitStr, 10), 50) : 20;
 
     // Use raw SQL to avoid schema mismatch issues
+    // db.execute returns array directly (not {rows: []})
     const result = await db.execute(sql`
       SELECT 
         id,
@@ -27,9 +28,9 @@ activityRoutes.get('/live', async (c) => {
       FROM activity_feed
       ORDER BY created_at DESC
       LIMIT ${limit}
-    `);
+    `) as any[];
 
-    const activities = (result.rows || []).map((a: any) => ({
+    const activities = result.map((a: any) => ({
       id: a.id,
       type: a.type,
       message: a.message,
@@ -53,6 +54,7 @@ activityRoutes.get('/stats', async (c) => {
   try {
     const db = c.get('db');
 
+    // db.execute returns array directly (not {rows: []})
     // Get task counts by workcenter and status
     const taskStats = await db.execute(sql`
       SELECT 
@@ -63,7 +65,7 @@ activityRoutes.get('/stats', async (c) => {
       FROM tasks
       GROUP BY workcenter, status
       ORDER BY workcenter, status
-    `);
+    `) as any[];
 
     // Get total tasks by workcenter
     const workcenterTotals = await db.execute(sql`
@@ -79,7 +81,7 @@ activityRoutes.get('/stats', async (c) => {
       FROM tasks
       GROUP BY workcenter
       ORDER BY workcenter
-    `);
+    `) as any[];
 
     // Get overall summary
     const overall = await db.execute(sql`
@@ -93,20 +95,20 @@ activityRoutes.get('/stats', async (c) => {
         COUNT(CASE WHEN is_critical_path AND status = 'completed' THEN 1 END) as critical_completed,
         AVG(CAST(completion_percent AS NUMERIC)) as avg_completion
       FROM tasks
-    `);
+    `) as any[];
 
     // Get recent activity count
     const recentActivity = await db.execute(sql`
       SELECT COUNT(*) as count
       FROM activity_feed
       WHERE created_at > NOW() - INTERVAL '24 hours'
-    `);
+    `) as any[];
 
     return c.json({
-      overall: overall.rows[0] || {},
-      byWorkcenter: workcenterTotals.rows || [],
-      detailedStats: taskStats.rows || [],
-      recentActivityCount: recentActivity.rows[0]?.count || 0,
+      overall: overall[0] || {},
+      byWorkcenter: workcenterTotals || [],
+      detailedStats: taskStats || [],
+      recentActivityCount: recentActivity[0]?.count || 0,
     });
   } catch (error) {
     console.error('Failed to fetch task stats:', error);
@@ -127,7 +129,8 @@ activityRoutes.get('/', async (c) => {
     const limit = limitStr ? Math.min(parseInt(limitStr, 10), 100) : 20;
 
     // Use raw SQL to avoid schema mismatch
-    let result;
+    // db.execute returns array directly
+    let result: any[];
     if (workcenter) {
       result = await db.execute(sql`
         SELECT 
@@ -143,7 +146,7 @@ activityRoutes.get('/', async (c) => {
         WHERE workcenter = ${workcenter}
         ORDER BY created_at DESC
         LIMIT ${limit}
-      `);
+      `) as any[];
     } else {
       result = await db.execute(sql`
         SELECT 
@@ -158,15 +161,13 @@ activityRoutes.get('/', async (c) => {
         FROM activity_feed
         ORDER BY created_at DESC
         LIMIT ${limit}
-      `);
+      `) as any[];
     }
-
-    const activities = result.rows || [];
 
     // Filter by user's workcenter access (unless admin)
     const filteredActivities = user.role === 'admin'
-      ? activities
-      : activities.filter(
+      ? result
+      : result.filter(
           (a: any) => !a.workcenter || user.workcenters.includes(a.workcenter)
         );
 
@@ -218,9 +219,9 @@ activityRoutes.post('/', async (c) => {
         ${JSON.stringify({ taskTitle: body.taskTitle, ...body.metadata })}::jsonb
       )
       RETURNING *
-    `);
+    `) as any[];
 
-    return c.json({ activity: result.rows[0] }, 201);
+    return c.json({ activity: result[0] }, 201);
   } catch (error) {
     console.error('Failed to create activity:', error);
     return c.json({ error: 'Failed to create activity' }, 500);
