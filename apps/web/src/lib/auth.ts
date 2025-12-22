@@ -32,12 +32,17 @@ declare module '@auth/core/jwt' {
   }
 }
 
+// Normalize issuer URL (ensure trailing slash to match Auth0's discovery response)
+const issuerUrl = process.env.AUTH0_ISSUER_BASE_URL?.endsWith('/')
+  ? process.env.AUTH0_ISSUER_BASE_URL
+  : `${process.env.AUTH0_ISSUER_BASE_URL}/`;
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Auth0({
       clientId: process.env.AUTH0_CLIENT_ID!,
       clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-      issuer: process.env.AUTH0_ISSUER_BASE_URL!,
+      issuer: issuerUrl,
     }),
   ],
   callbacks: {
