@@ -86,3 +86,22 @@ export interface VenueBounds {
     lng: number;
   };
 }
+
+// 3D Model category for rendering different feature types
+export type ModelCategory = 'stage' | 'facility' | 'landmark' | 'infrastructure';
+
+// Map feature types to model categories
+export function featureTypeToModelCategory(featureType: VenueFeatureType): ModelCategory {
+  const stageTypes: VenueFeatureType[] = ['stage', 'sound_booth', 'vip_area'];
+  const facilityTypes: VenueFeatureType[] = [
+    'vendor_booth', 'medical_tent', 'security_post', 
+    'restroom', 'water_station', 'gate',
+    'command_center', 'production_office', 'warehouse', 'generator'
+  ];
+  const landmarkTypes: VenueFeatureType[] = ['art_installation'];
+
+  if (stageTypes.includes(featureType)) return 'stage';
+  if (facilityTypes.includes(featureType)) return 'facility';
+  if (landmarkTypes.includes(featureType)) return 'landmark';
+  return 'infrastructure'; // pathways, roads, fences, parking_lot, zone, boundary
+}
