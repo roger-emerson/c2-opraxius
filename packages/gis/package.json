@@ -18,11 +18,16 @@
   },
   "dependencies": {
     "@c2/shared": "*",
-    "@c2/database": "*"
+    "@c2/database": "*",
+    "three": "^0.171.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.150.0"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
     "@types/node": "^22.10.2",
+    "@types/three": "^0.170.0",
     "tsx": "^4.19.2",
     "@types/geojson": "^7946.0.14"
   }
