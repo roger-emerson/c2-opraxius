@@ -13,13 +13,12 @@ interface DebugLog {
   message: string;
 }
 
-// Debug Panel Component - Positioned in top-left corner to avoid conflicts
+// Compact Debug Panel Component - designed to not interfere with map UI
 function DebugPanel({ 
   logs, 
   isOpen, 
   onToggle,
   reactVersion,
-  threeLoaded,
   apiStatus,
   featureCount,
 }: { 
@@ -27,56 +26,70 @@ function DebugPanel({
   isOpen: boolean;
   onToggle: () => void;
   reactVersion: string;
-  threeLoaded: boolean;
   apiStatus: string;
   featureCount: number;
 }) {
-  return (
-    <div className="fixed top-4 left-4 z-[100] max-w-xs">
-      {/* Compact Toggle Button */}
+  if (!isOpen) {
+    return (
       <button
         onClick={onToggle}
-        className="bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs font-mono border border-slate-600 hover:bg-slate-800 transition flex items-center gap-2"
+        className="bg-black/70 backdrop-blur-md text-white/70 px-3 py-1.5 rounded-lg text-xs font-mono border border-white/10 hover:bg-black/80 transition"
       >
-        <span className={`w-2 h-2 rounded-full ${apiStatus === 'success' ? 'bg-green-500' : apiStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'}`} />
-        {isOpen ? '▼ Debug' : '▶ Debug'}
-        <span className="text-slate-400">({featureCount})</span>
+        Debug
       </button>
+    );
+  }
+
+  return (
+    <div className="bg-black/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden w-72">
+      {/* Header */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-white/10">
+        <span className="text-xs font-mono text-white/70">Debug Panel</span>
+        <button
+          onClick={onToggle}
+          className="text-white/50 hover:text-white text-xs"
+        >
+          ✕
+        </button>
+      </div>
       
-      {isOpen && (
-        <div className="mt-2 bg-slate-900/95 backdrop-blur-sm border border-slate-600 rounded-lg p-3 max-h-64 overflow-y-auto shadow-2xl">
-          {/* Compact Status Summary */}
-          <div className="grid grid-cols-2 gap-1.5 mb-3 text-xs font-mono">
-            <div className="bg-slate-800/80 px-2 py-1 rounded">
-              <span className="text-slate-500">R:</span>{' '}
-              <span className="text-green-400">{reactVersion.split('-')[0]}</span>
-            </div>
-            <div className="bg-slate-800/80 px-2 py-1 rounded">
-              <span className="text-slate-500">3D:</span>{' '}
-              <span className={threeLoaded ? 'text-green-400' : 'text-yellow-400'}>
-                {threeLoaded ? '✓' : '...'}
-              </span>
-            </div>
-          </div>
-          
-          {/* Log Messages */}
-          <div className="space-y-0.5 max-h-40 overflow-y-auto">
-            {logs.slice(-10).map((log, i) => (
-              <div key={i} className="font-mono text-[10px] flex">
-                <span className="text-slate-600 mr-1">[{log.time.split(':').slice(1).join(':')}]</span>
-                <span className={`truncate ${
-                  log.level === 'success' ? 'text-green-400' :
-                  log.level === 'error' ? 'text-red-400' :
-                  log.level === 'warn' ? 'text-yellow-400' :
-                  'text-slate-400'
-                }`}>
-                  {log.message}
-                </span>
-              </div>
-            ))}
+      {/* Status Summary */}
+      <div className="grid grid-cols-3 gap-1 p-2 text-[10px] font-mono border-b border-white/10">
+        <div className="bg-white/5 p-1.5 rounded text-center">
+          <div className="text-white/50">React</div>
+          <div className="text-green-400 truncate">{reactVersion.split('-')[0]}</div>
+        </div>
+        <div className="bg-white/5 p-1.5 rounded text-center">
+          <div className="text-white/50">API</div>
+          <div className={
+            apiStatus === 'success' ? 'text-green-400' : 
+            apiStatus === 'error' ? 'text-red-400' : 'text-yellow-400'
+          }>
+            {apiStatus}
           </div>
         </div>
-      )}
+        <div className="bg-white/5 p-1.5 rounded text-center">
+          <div className="text-white/50">Features</div>
+          <div className="text-blue-400">{featureCount}</div>
+        </div>
+      </div>
+      
+      {/* Log Messages - Compact */}
+      <div className="max-h-32 overflow-y-auto p-2 space-y-0.5">
+        {logs.slice(-8).map((log, i) => (
+          <div key={i} className="font-mono text-[10px] flex">
+            <span className="text-white/30 mr-1.5">{log.time.split(':').slice(1).join(':')}</span>
+            <span className={
+              log.level === 'success' ? 'text-green-400' :
+              log.level === 'error' ? 'text-red-400' :
+              log.level === 'warn' ? 'text-yellow-400' :
+              'text-white/60'
+            }>
+              {log.message.length > 40 ? log.message.substring(0, 40) + '...' : log.message}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -103,15 +116,12 @@ class ThreeErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center h-full bg-slate-900">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#050510]">
           <div className="text-center max-w-lg p-6">
             <div className="text-2xl font-semibold text-red-400 mb-4">3D Render Error</div>
-            <div className="bg-red-900/30 border border-red-500 rounded p-4 text-left">
+            <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-left">
               <div className="font-mono text-sm text-red-300 break-all">
                 {this.state.error?.message}
-              </div>
-              <div className="mt-2 font-mono text-xs text-red-400/70 break-all">
-                {this.state.error?.stack?.split('\n').slice(0, 5).join('\n')}
               </div>
             </div>
           </div>
@@ -126,7 +136,7 @@ class ThreeErrorBoundary extends React.Component<
 // Loading component for 3D map
 function Loading3D() {
   return (
-    <div className="flex items-center justify-center h-screen bg-slate-900">
+    <div className="absolute inset-0 flex items-center justify-center bg-[#050510]">
       <div className="text-center">
         <div className="text-2xl font-semibold text-white mb-2">Loading 3D Engine...</div>
         <div className="text-slate-400">Initializing Three.js & React Three Fiber</div>
@@ -144,16 +154,29 @@ const VenueMap3D = dynamic(
   }
 );
 
+// Header component to pass as slot
+function MapHeader({ featureCount }: { featureCount: number }) {
+  return (
+    <div className="bg-black/70 backdrop-blur-md text-white px-4 py-2.5 rounded-xl border border-white/10 shadow-2xl">
+      <div className="flex items-center gap-3">
+        <div>
+          <span className="font-semibold">C2 Opraxius</span>
+          <span className="text-white/50 ml-2 text-sm">3D Map</span>
+        </div>
+        <span className="text-xs px-2 py-0.5 bg-green-600/80 rounded font-medium">PUBLIC</span>
+        <span className="text-xs text-white/40">{featureCount} features</span>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Public demo page for the 3D map - NO AUTHENTICATION REQUIRED
  * Access at: /map-demo
- * 
- * Includes debug panel for real-time troubleshooting
  */
 export default function MapDemoPage() {
-  const [debugOpen, setDebugOpen] = useState(true);
+  const [debugOpen, setDebugOpen] = useState(false);
   const [logs, setLogs] = useState<DebugLog[]>([]);
-  const [threeLoaded, setThreeLoaded] = useState(false);
   const [threeError, setThreeError] = useState<string | null>(null);
 
   // Add debug log
@@ -171,21 +194,6 @@ export default function MapDemoPage() {
   useEffect(() => {
     addLog('info', `Page mounted - React ${React.version}`);
     addLog('info', `API URL: ${process.env.NEXT_PUBLIC_API_URL || 'localhost:3001'}`);
-    
-    // Check if Three.js loads
-    const checkThree = setTimeout(() => {
-      try {
-        // @ts-ignore
-        if (typeof window !== 'undefined' && window.THREE) {
-          setThreeLoaded(true);
-          addLog('success', 'Three.js global detected');
-        }
-      } catch (e) {
-        addLog('warn', 'Three.js not on window (expected for bundled)');
-      }
-    }, 2000);
-
-    return () => clearTimeout(checkThree);
   }, [addLog]);
 
   // Handle Three.js errors
@@ -248,37 +256,46 @@ export default function MapDemoPage() {
     }
   }, [features.length, threeError, addLog]);
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="h-screen w-full relative bg-slate-900">
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-white mb-2">Loading 3D Map...</div>
-            <div className="text-slate-400">Fetching venue features</div>
-          </div>
-        </div>
+  // Full-screen container for all states
+  const FullScreenContainer = ({ children }: { children: React.ReactNode }) => (
+    <div className="fixed inset-0 bg-[#050510] overflow-hidden">
+      {children}
+      {/* Debug panel is always available */}
+      <div className="fixed bottom-4 right-4 z-50">
         <DebugPanel 
           logs={logs} 
           isOpen={debugOpen} 
           onToggle={() => setDebugOpen(!debugOpen)}
           reactVersion={React.version}
-          threeLoaded={threeLoaded}
           apiStatus={apiStatus}
-          featureCount={0}
+          featureCount={features.length}
         />
       </div>
+    </div>
+  );
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <FullScreenContainer>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-white mb-2">Loading 3D Map...</div>
+            <div className="text-slate-400">Fetching venue features</div>
+          </div>
+        </div>
+      </FullScreenContainer>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="h-screen w-full relative bg-slate-900">
-        <div className="flex items-center justify-center h-full">
+      <FullScreenContainer>
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center max-w-lg p-6">
             <div className="text-2xl font-semibold text-red-400 mb-2">API Error</div>
-            <div className="bg-red-900/30 border border-red-500 rounded p-4">
+            <div className="bg-red-900/30 border border-red-500 rounded-lg p-4">
               <div className="text-red-300">{(error as Error).message}</div>
             </div>
             <div className="mt-4 text-sm text-slate-500">
@@ -286,50 +303,32 @@ export default function MapDemoPage() {
             </div>
           </div>
         </div>
-        <DebugPanel 
-          logs={logs} 
-          isOpen={debugOpen} 
-          onToggle={() => setDebugOpen(!debugOpen)}
-          reactVersion={React.version}
-          threeLoaded={threeLoaded}
-          apiStatus={apiStatus}
-          featureCount={0}
-        />
-      </div>
+      </FullScreenContainer>
     );
   }
 
   // No features state
   if (features.length === 0) {
     return (
-      <div className="h-screen w-full relative bg-slate-900">
-        <div className="flex items-center justify-center h-full">
+      <FullScreenContainer>
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center max-w-lg">
             <div className="text-2xl font-semibold text-white mb-2">No venue features found</div>
             <div className="text-slate-400 mb-4">Import GeoJSON data to get started</div>
           </div>
         </div>
-        <DebugPanel 
-          logs={logs} 
-          isOpen={debugOpen} 
-          onToggle={() => setDebugOpen(!debugOpen)}
-          reactVersion={React.version}
-          threeLoaded={threeLoaded}
-          apiStatus={apiStatus}
-          featureCount={0}
-        />
-      </div>
+      </FullScreenContainer>
     );
   }
 
   // Three.js error state
   if (threeError) {
     return (
-      <div className="h-screen w-full relative bg-slate-900">
-        <div className="flex items-center justify-center h-full">
+      <FullScreenContainer>
+        <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center max-w-lg p-6">
             <div className="text-2xl font-semibold text-red-400 mb-4">3D Render Error</div>
-            <div className="bg-red-900/30 border border-red-500 rounded p-4 text-left">
+            <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-left">
               <div className="font-mono text-sm text-red-300">{threeError}</div>
             </div>
             <div className="mt-4 text-slate-400">
@@ -337,36 +336,29 @@ export default function MapDemoPage() {
             </div>
           </div>
         </div>
-        <DebugPanel 
-          logs={logs} 
-          isOpen={debugOpen} 
-          onToggle={() => setDebugOpen(!debugOpen)}
-          reactVersion={React.version}
-          threeLoaded={threeLoaded}
-          apiStatus={apiStatus}
-          featureCount={features.length}
-        />
-      </div>
+      </FullScreenContainer>
     );
   }
 
   // Success - render 3D map (fills entire viewport)
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#050510]">
+    <div className="fixed inset-0 overflow-hidden">
       <ThreeErrorBoundary onError={handleThreeError}>
-        <VenueMap3D features={features} />
+        <VenueMap3D 
+          features={features}
+          headerSlot={<MapHeader featureCount={features.length} />}
+          debugSlot={
+            <DebugPanel 
+              logs={logs} 
+              isOpen={debugOpen} 
+              onToggle={() => setDebugOpen(!debugOpen)}
+              reactVersion={React.version}
+              apiStatus={apiStatus}
+              featureCount={features.length}
+            />
+          }
+        />
       </ThreeErrorBoundary>
-      
-      {/* Debug panel - positioned to not conflict with map UI */}
-      <DebugPanel 
-        logs={logs} 
-        isOpen={debugOpen} 
-        onToggle={() => setDebugOpen(!debugOpen)}
-        reactVersion={React.version}
-        threeLoaded={threeLoaded}
-        apiStatus={apiStatus}
-        featureCount={features.length}
-      />
     </div>
   );
 }
