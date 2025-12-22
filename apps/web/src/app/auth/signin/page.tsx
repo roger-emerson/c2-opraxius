@@ -18,7 +18,7 @@ function SignInContent() {
             Opraxius C2
           </h1>
           <p className="mt-3 text-muted-foreground">
-            Festival Management Dashboard
+            Event Management Command & Control
           </p>
         </div>
 
