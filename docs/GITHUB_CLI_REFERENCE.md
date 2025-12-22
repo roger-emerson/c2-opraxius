@@ -1,4 +1,4 @@
-# GitHub CLI Reference for C2 Command Center
+# GitHub CLI Reference for Opraxius C2
 
 This document provides reference commands for monitoring GitHub Actions deployments using the GitHub CLI (`gh`).
 
@@ -181,7 +181,7 @@ gh run view <run-id> --json jobs --jq '.jobs[] | {name, conclusion, steps: [.ste
 gh run view <run-id> --job=<job-id> --log
 ```
 
-## C2 Command Center Specific Examples
+## Opraxius C2 Specific Examples
 
 ### Verify Health Endpoints After Deployment
 
@@ -273,7 +273,7 @@ GitHub CLI uses the same rate limits as the API:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [GitHub CLI Workflow Commands](https://cli.github.com/manual/gh_run)
 
-## C2 Command Center Workflows
+## Opraxius C2 Workflows
 
 Our GitHub Actions workflows:
 
@@ -290,4 +290,4 @@ Our GitHub Actions workflows:
 ---
 
 **Last Updated**: December 20, 2025
-**Maintained by**: C2 Command Center Team
+**Maintained by**: Opraxius C2 Team

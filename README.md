@@ -1,4 +1,4 @@
-# C2 Command Center
+# Opraxius C2
 
 Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, etc.)
 
@@ -27,7 +27,7 @@ Festival Management Dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando, 
 
 ## Overview
 
-The C2 Command Center is an internal command and control dashboard providing a single pane of glass for managing large-scale festival operations across multiple offices and departments.
+Opraxius C2 is an internal command and control dashboard providing a single pane of glass for managing large-scale festival operations across multiple offices and departments.
 
 ### Key Features
 

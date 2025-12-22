@@ -1,7 +1,7 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 
@@ -12,6 +12,7 @@ export default function DashboardLayout({
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -21,8 +22,8 @@ export default function DashboardLayout({
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -31,39 +32,59 @@ export default function DashboardLayout({
     return null;
   }
 
+  const isActive = (path: string) => pathname === path;
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-background-alt">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">C2 Command Center</h1>
-          <p className="text-sm text-gray-600 mt-1">Festival Management</p>
+      <aside className="w-64 bg-background border-r border-border flex flex-col">
+        <div className="p-6 border-b border-border">
+          <h1 className="font-display text-lg font-medium tracking-[0.15em] text-foreground uppercase">
+            Opraxius C2
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1 tracking-wide">
+            Festival Management
+          </p>
         </div>
 
-        <nav className="mt-6">
+        <nav className="flex-1 py-4">
           <Link
             href="/dashboard"
-            className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
+            className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${
+              isActive('/dashboard')
+                ? 'text-foreground bg-background-subtle border-r-2 border-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background-subtle'
+            }`}
           >
-            📊 Dashboard
+            <span className="text-base">📊</span>
+            <span>Dashboard</span>
           </Link>
           <Link
             href="/dashboard/map"
-            className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
+            className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${
+              isActive('/dashboard/map')
+                ? 'text-foreground bg-background-subtle border-r-2 border-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background-subtle'
+            }`}
           >
-            🗺️ 3D Map
+            <span className="text-base">🗺️</span>
+            <span>3D Map</span>
           </Link>
 
           {/* Workcenters */}
           <div className="mt-6 px-6">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            <div className="text-[10px] font-medium text-subtle uppercase tracking-[0.15em] mb-3">
               Workcenters
             </div>
             {session.user.workcenters.map((wc) => (
               <Link
                 key={wc}
                 href={`/dashboard/${wc}`}
-                className="block py-2 text-gray-700 hover:text-blue-600 transition capitalize"
+                className={`block py-2 text-sm transition-colors capitalize ${
+                  pathname === `/dashboard/${wc}`
+                    ? 'text-foreground font-medium'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 {wc}
               </Link>
@@ -72,9 +93,15 @@ export default function DashboardLayout({
         </nav>
 
         {/* User Info */}
-        <div className="absolute bottom-0 w-64 p-6 border-t">
-          <div className="text-sm text-gray-900 font-medium">{session.user.name}</div>
-          <div className="text-xs text-gray-600">{session.user.role}</div>
+        <div className="p-6 border-t border-border">
+          <div className="text-sm text-foreground font-medium">{session.user.name}</div>
+          <div className="text-xs text-muted-foreground capitalize">{session.user.role}</div>
+          <button
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className="mt-3 text-xs text-subtle hover:text-foreground transition-colors"
+          >
+            Sign out
+          </button>
         </div>
       </aside>
 

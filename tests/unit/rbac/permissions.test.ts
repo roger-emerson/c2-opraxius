@@ -1,5 +1,5 @@
 /**
- * ESG Command Center - RBAC Permission Tests
+ * Opraxius C2 - RBAC Permission Tests
  * 
  * CRITICAL SECURITY TESTS
  * 

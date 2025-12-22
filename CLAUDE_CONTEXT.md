@@ -1,4 +1,4 @@
-# Claude Context for C2 Command Center
+# Claude Context for Opraxius C2
 
 > This document provides comprehensive context for AI assistants (Claude, etc.) working on this project. It includes project state, systematic documentation approach, and continuation guidelines.
 
@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-**C2 Command Center** - Festival Management Dashboard for Insomniac Events
+**Opraxius C2** - Festival Management Dashboard for Insomniac Events
 - **Repository**: `/Users/roger/Desktop/Projects/c2-opraxius`
 - **Current Phase**: Phase 2b (Auth) Complete - Auth.js v5 migration done
 - **Status**: Deployed on Cloudflare, custom domains working, Auth.js v5 Edge-compatible
@@ -843,19 +843,26 @@ All three environments (development, staging, production) are configured with co
 
 ---
 
-## C2 Rebrand Complete
+## Opraxius C2 Rebrand Complete
 
-**Completed**: December 19, 2025
+**Completed**: December 21, 2025
 
 ### ✅ Rebrand Summary
-- Full rename from ESG Command Center → C2 Command Center
-- Repository renamed: `esg-commandcenter` → `c2-opraxius`
-- Git remote updated to new repository URL
-- Docker containers renamed: `c2-postgres`, `c2-redis`
-- Database credentials updated: `c2:password@localhost:5432/c2_commandcenter`
-- All package names updated to `@c2/*` namespace
-- Cloudflare Projects renamed to `c2-*` naming convention
-- API name updated: "C2 Command Center API"
+- Full rename from C2 Command Center → Opraxius C2
+- Visual theme overhaul with sacred geometry, DM Sans/Inter fonts, monochrome palette
+- Repository: `c2-opraxius` (unchanged)
+- Docker containers: `c2-postgres`, `c2-redis` (unchanged)
+- Database credentials: `c2:password@localhost:5432/c2_commandcenter` (unchanged)
+- Package names: `@c2/*` namespace (unchanged)
+- Cloudflare Projects: `c2-*` naming convention (unchanged)
+- API name updated: "Opraxius C2 API"
+
+### ✅ Visual Theme
+- **Typography**: DM Sans (display) + Inter (body) via Next.js Google Fonts
+- **Color Palette**: Monochrome (#0A0A0A, #666666, #999999, #E5E5E5, #FFFFFF)
+- **Sacred Geometry**: Background component with 5 SVG patterns (Flower of Life, Metatron's Cube, Seed of Life, Sri Yantra, Vesica Piscis)
+- **Animations**: Drift, pulse, breathe, rotate effects with mouse parallax
+- **Design Language**: Clean borders instead of shadows, minimal aesthetic
 
 ### ✅ Custom Domain Configuration
 - **Development Web**: `dev.web.opraxius.com` (c2-web-development Pages)

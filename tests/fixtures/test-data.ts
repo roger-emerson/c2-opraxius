@@ -1,5 +1,5 @@
 /**
- * ESG Command Center - Test Fixtures
+ * Opraxius C2 - Test Fixtures
  * 
  * Provides consistent test data for all test suites
  */

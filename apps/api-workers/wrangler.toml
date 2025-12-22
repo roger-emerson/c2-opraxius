@@ -1,4 +1,4 @@
-# Cloudflare Workers configuration for C2 Command Center API - PRODUCTION
+# Cloudflare Workers configuration for Opraxius C2 API - PRODUCTION
 name = "c2-api-production"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"

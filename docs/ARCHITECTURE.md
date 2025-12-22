@@ -1,8 +1,8 @@
-# C2 Command Center - System Architecture
+# Opraxius C2 - System Architecture
 
 > Last Updated: December 20, 2025
 
-This document provides comprehensive architectural diagrams and dependency maps for the C2 Command Center system deployed on Cloudflare infrastructure.
+This document provides comprehensive architectural diagrams and dependency maps for the Opraxius C2 system deployed on Cloudflare infrastructure.
 
 ---
 

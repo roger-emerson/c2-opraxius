@@ -97,7 +97,7 @@ apps/api-workers/src/routes/
 
 ```
 apps/web/src/app/dashboard/page.tsx      # Complete rewrite with readiness dashboard
-apps/web/src/app/dashboard/layout.tsx    # Updated branding to C2 Command Center
+apps/web/src/app/dashboard/layout.tsx    # Updated branding to Opraxius C2
 apps/api-workers/src/routes/tasks.ts     # Added DELETE, workcenter filter
 apps/api-workers/src/lib/schema.ts       # Added activity_feed table
 apps/api-workers/src/middleware/rbac.ts  # Added canDeleteTask

@@ -1,4 +1,4 @@
-# C2 Command Center - Environments & Endpoints
+# Opraxius C2 - Environments & Endpoints
 
 > **Complete reference for all deployed environments, URLs, and user-accessible features**
 >

@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document provides a comprehensive guide for deploying the C2 Command Center to Cloudflare's infrastructure, including Workers (API) and Pages (Web frontend).
+This document provides a comprehensive guide for deploying Opraxius C2 to Cloudflare's infrastructure, including Workers (API) and Pages (Web frontend).
 
 ## Architecture
 
-The C2 Command Center uses a split deployment strategy:
+Opraxius C2 uses a split deployment strategy:
 
 - **API**: Deployed to Cloudflare Workers
   - Framework: Hono

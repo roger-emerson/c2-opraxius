@@ -103,7 +103,7 @@ app.get('/health', (c) => {
 // API version endpoint
 app.get('/', (c) => {
   return c.json({
-    name: 'C2 Command Center API',
+    name: 'Opraxius C2 API',
     version: '1.0.0',
     environment: c.env.ENVIRONMENT || 'unknown',
   });

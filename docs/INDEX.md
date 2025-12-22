@@ -1,4 +1,4 @@
-# C2 Command Center - Documentation Index
+# Opraxius C2 - Documentation Index
 
 > **Complete documentation map for the c2-opraxius project**
 >

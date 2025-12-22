@@ -1,4 +1,4 @@
-# Cloudflare Pages configuration for C2 Command Center Web - STAGING
+# Cloudflare Pages configuration for Opraxius C2 Web - STAGING
 name = "c2-web-staging"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]

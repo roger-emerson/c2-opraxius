@@ -1,5 +1,5 @@
 /**
- * ESG Command Center - Database Schema Tests
+ * Opraxius C2 - Database Schema Tests
  * 
  * Tests for: 7 tables, PostGIS geometry, Drizzle ORM
  * 

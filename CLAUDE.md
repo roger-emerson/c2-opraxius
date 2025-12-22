@@ -1,8 +1,8 @@
-# Claude Code Agent Instructions - C2 Command Center
+# Claude Code Agent Instructions - Opraxius C2
 
 ## Project Overview
 
-**C2 Command Center** is a festival management dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando).
+**Opraxius C2** is a festival management dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando).
 
 For detailed project context, current status, and architecture decisions, see **CLAUDE_CONTEXT.md**.
 

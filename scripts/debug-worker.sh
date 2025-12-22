@@ -1,5 +1,5 @@
 #!/bin/bash
-# Debug script for C2 Command Center Cloudflare Workers
+# Debug script for Opraxius C2 Cloudflare Workers
 # Usage: ./scripts/debug-worker.sh [staging|production]
 
 set -e
@@ -9,7 +9,7 @@ WORKER_NAME="c2-api-${ENVIRONMENT}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-echo "🔍 C2 Command Center Worker Debugger"
+echo "🔍 Opraxius C2 Worker Debugger"
 echo "======================================"
 echo "Environment: $ENVIRONMENT"
 echo "Worker: $WORKER_NAME"

@@ -68,54 +68,56 @@ export default function DashboardPage() {
     <div className="p-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome back, {session?.user.name}!</h1>
-        <p className="text-gray-600 mt-2">Festival command center dashboard</p>
+        <h1 className="font-display text-3xl font-medium text-foreground">
+          Welcome back, {session?.user.name}
+        </h1>
+        <p className="text-muted-foreground mt-2">Opraxius C2 Dashboard</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* Overall Readiness */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">📊 Overall Readiness</h2>
+          <div className="bg-background border border-border p-6">
+            <h2 className="font-display text-xl font-medium text-foreground mb-6">Overall Readiness</h2>
             
             {/* Main Progress Bar */}
             <div className="mb-6">
               <ProgressBar
                 value={overallProgress}
                 label="Event Readiness"
-                color={overallProgress >= 80 ? '#10B981' : overallProgress >= 50 ? '#F59E0B' : '#EF4444'}
+                color={overallProgress >= 80 ? '#0A0A0A' : overallProgress >= 50 ? '#666666' : '#999999'}
                 size="lg"
               />
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-3xl font-bold text-gray-900">{overallStats.total}</div>
-                <div className="text-sm text-gray-500">Total Tasks</div>
+              <div className="text-center p-4 bg-background-subtle border border-border">
+                <div className="text-3xl font-display font-medium text-foreground">{overallStats.total}</div>
+                <div className="text-sm text-muted-foreground">Total Tasks</div>
               </div>
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-3xl font-bold text-blue-600">{overallStats.inProgress}</div>
-                <div className="text-sm text-blue-600">In Progress</div>
+              <div className="text-center p-4 bg-background-subtle border border-border">
+                <div className="text-3xl font-display font-medium text-foreground">{overallStats.inProgress}</div>
+                <div className="text-sm text-muted-foreground">In Progress</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-3xl font-bold text-green-600">{overallStats.completed}</div>
-                <div className="text-sm text-green-600">Completed</div>
+              <div className="text-center p-4 bg-background-subtle border border-border">
+                <div className="text-3xl font-display font-medium text-foreground">{overallStats.completed}</div>
+                <div className="text-sm text-muted-foreground">Completed</div>
               </div>
-              <div className="text-center p-4 bg-red-50 rounded-lg">
-                <div className="text-3xl font-bold text-red-600">{overallStats.blocked}</div>
-                <div className="text-sm text-red-600">Blocked</div>
+              <div className="text-center p-4 bg-background-subtle border border-border">
+                <div className="text-3xl font-display font-medium text-foreground">{overallStats.blocked}</div>
+                <div className="text-sm text-destructive">Blocked</div>
               </div>
             </div>
 
             {/* Critical Path Alert */}
             {overallStats.critical > 0 && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <div className="p-4 bg-background-subtle border border-foreground flex items-center gap-3">
                 <span className="text-2xl">⚠️</span>
                 <div>
-                  <div className="font-semibold text-red-800">Critical Path Alert</div>
-                  <div className="text-sm text-red-700">
+                  <div className="font-medium text-foreground">Critical Path Alert</div>
+                  <div className="text-sm text-muted-foreground">
                     {overallStats.critical} critical path task{overallStats.critical !== 1 ? 's' : ''} require attention
                   </div>
                 </div>
@@ -124,20 +126,20 @@ export default function DashboardPage() {
           </div>
 
           {/* Workstream Progress */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">🔧 Workstream Progress</h2>
+          <div className="bg-background border border-border p-6">
+            <h2 className="font-display text-xl font-medium text-foreground mb-6">Workstream Progress</h2>
             
             {isLoading ? (
               <div className="space-y-4">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-1/4 mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-background-subtle w-1/4 mb-2" />
+                    <div className="h-3 bg-background-subtle w-full" />
                   </div>
                 ))}
               </div>
             ) : workcenterProgress.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>No workcenters assigned</p>
               </div>
             ) : (
@@ -150,7 +152,7 @@ export default function DashboardPage() {
                     <Link
                       key={wcp.workcenter}
                       href={`/dashboard/${wcp.workcenter}`}
-                      className="block hover:bg-gray-50 -mx-2 px-2 py-2 rounded-lg transition"
+                      className="block hover:bg-background-subtle -mx-2 px-2 py-2 transition"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -158,12 +160,12 @@ export default function DashboardPage() {
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: wcDef.color }}
                           />
-                          <span className="font-medium text-gray-900">{wcDef.displayName}</span>
+                          <span className="font-medium text-foreground">{wcDef.displayName}</span>
                         </div>
                         <div className="flex items-center gap-3 text-sm">
-                          <span className="text-gray-500">{wcp.completed}/{wcp.total}</span>
+                          <span className="text-muted-foreground">{wcp.completed}/{wcp.total}</span>
                           {wcp.blocked > 0 && (
-                            <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs">
+                            <span className="px-2 py-0.5 bg-background-subtle border border-border text-xs">
                               {wcp.blocked} blocked
                             </span>
                           )}
@@ -186,22 +188,22 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Link
               href="/dashboard/map"
-              className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition group"
+              className="block bg-background p-6 border border-border hover:border-foreground transition group"
             >
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🗺️</div>
-              <h3 className="text-xl font-semibold text-gray-900">3D Venue Map</h3>
-              <p className="text-gray-600 mt-2">
+              <h3 className="font-display text-xl font-medium text-foreground">3D Venue Map</h3>
+              <p className="text-muted-foreground mt-2">
                 Explore the festival venue in interactive 3D
               </p>
             </Link>
 
-            <div className="block bg-white p-6 rounded-lg shadow relative overflow-hidden">
-              <div className="absolute top-2 right-2 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+            <div className="block bg-background p-6 border border-border relative overflow-hidden">
+              <div className="absolute top-2 right-2 px-2 py-1 bg-background-subtle border border-border text-xs text-muted-foreground">
                 Phase 4
               </div>
               <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-xl font-semibold text-gray-900">AI Assistant</h3>
-              <p className="text-gray-600 mt-2">
+              <h3 className="font-display text-xl font-medium text-foreground">AI Assistant</h3>
+              <p className="text-muted-foreground mt-2">
                 Natural language task management with Claude
               </p>
             </div>
