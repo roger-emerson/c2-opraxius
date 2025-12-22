@@ -43,7 +43,7 @@ export default function DashboardLayout({
             Opraxius C2
           </h1>
           <p className="text-xs text-muted-foreground mt-1 tracking-wide">
-            Festival Management
+            Event Management
           </p>
         </div>
 
