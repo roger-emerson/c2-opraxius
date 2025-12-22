@@ -1,6 +1,6 @@
 # Next Steps - Phase 3 Ready
 
-> **Quick Summary**: Phases 1, 2, and 2b (Auth) complete. Auth.js v5 migration done. Configure Auth0 env vars to enable authentication.
+> **Quick Summary**: Phases 1, 2, and 2b (Auth) complete. Auth0 SSO working on Cloudflare Edge Runtime.
 
 ---
 
@@ -11,12 +11,15 @@
 - 3D map components (VenueMap3D, VenueObject, FeatureDetailPanel)
 - GeoJSON import CLI tool
 - Public API endpoint (`/api/venues/public`)
-- **Auth.js v5 migration complete** (Edge Runtime compatible)
+- **Auth.js v5 with Auth0 SSO** (Edge Runtime compatible)
 - Auth API route handler at `/api/auth/[...nextauth]`
+- Auth0 environment variables configured in Cloudflare Pages
+- GitHub Actions workflows updated with auth secrets
 
-⏳ **Pending (User Action Required):**
-- Configure Auth0 environment variables in Cloudflare Pages dashboard
-- Test protected routes after env vars are set
+✅ **Authentication Working:**
+- Sign in via Auth0: https://dev.web.opraxius.com/auth/signin
+- Protected dashboard: https://dev.web.opraxius.com/dashboard
+- Public map demo: https://dev.web.opraxius.com/map-demo
 
 ---
 
