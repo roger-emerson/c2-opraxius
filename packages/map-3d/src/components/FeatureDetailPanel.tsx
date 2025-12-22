@@ -7,14 +7,17 @@ import { useQuery } from '@tanstack/react-query';
 interface FeatureDetailPanelProps {
   feature: VenueFeature;
   onClose: () => void;
+  apiUrl?: string;
 }
 
-export function FeatureDetailPanel({ feature, onClose }: FeatureDetailPanelProps) {
+export function FeatureDetailPanel({ feature, onClose, apiUrl }: FeatureDetailPanelProps) {
+  const baseUrl = apiUrl || (typeof window !== 'undefined' ? (window as any).__NEXT_PUBLIC_API_URL : '') || 'http://localhost:3001';
+  
   // Fetch tasks for this feature
   const { data: tasks } = useQuery({
     queryKey: ['tasks', feature.id],
     queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/tasks?venueFeatureId=${feature.id}`);
+      const response = await fetch(`${baseUrl}/api/tasks?venueFeatureId=${feature.id}`);
       if (!response.ok) throw new Error('Failed to fetch tasks');
       return response.json();
     },
@@ -210,3 +213,4 @@ function getPriorityClass(priority: string): string {
       return 'bg-gray-100 text-gray-700';
   }
 }
+

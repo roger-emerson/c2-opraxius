@@ -134,3 +134,4 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
     </div>
   );
 }
+

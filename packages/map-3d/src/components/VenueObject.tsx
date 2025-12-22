@@ -4,7 +4,7 @@ import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { VenueFeature } from '@c2/shared';
-import { pointToVector3, polygonToVectors, lineStringToVectors } from '@/lib/gis-utils';
+import { pointToVector3, polygonToVectors, lineStringToVectors } from '../lib/gis-utils';
 
 interface VenueObjectProps {
   feature: VenueFeature;
@@ -232,3 +232,4 @@ function getFeatureSize(featureType: string): number {
 function getObjectHeight(feature: VenueFeature): number {
   return getFeatureHeight(feature.featureType);
 }
+

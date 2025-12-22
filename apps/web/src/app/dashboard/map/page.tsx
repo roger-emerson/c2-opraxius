@@ -1,8 +1,29 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
-import { VenueMap3D } from '@/components/map/VenueMap3D';
 import type { VenueFeature } from '@c2/shared';
+
+// Loading component for 3D map
+function Loading3D() {
+  return (
+    <div className="flex items-center justify-center h-screen bg-slate-900">
+      <div className="text-center">
+        <div className="text-2xl font-semibold text-white mb-2">Loading 3D Engine...</div>
+        <div className="text-slate-400">Initializing Three.js & React Three Fiber</div>
+      </div>
+    </div>
+  );
+}
+
+// Dynamically import the map component from @c2/map-3d package
+const VenueMap3D = dynamic(
+  () => import('@c2/map-3d').then(mod => mod.VenueMap3D),
+  { 
+    ssr: false,
+    loading: () => <Loading3D />
+  }
+);
 
 export default function MapPage() {
   // Fetch venue features
@@ -22,10 +43,10 @@ export default function MapPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-slate-900">
         <div className="text-center">
-          <div className="text-2xl font-semibold text-gray-700 mb-2">Loading 3D Map...</div>
-          <div className="text-gray-500">Fetching venue features</div>
+          <div className="text-2xl font-semibold text-white mb-2">Loading 3D Map...</div>
+          <div className="text-slate-400">Fetching venue features</div>
         </div>
       </div>
     );
@@ -33,12 +54,14 @@ export default function MapPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="text-2xl font-semibold text-red-600 mb-2">Error loading map</div>
-          <div className="text-gray-600">{(error as Error).message}</div>
-          <div className="mt-4 text-sm text-gray-500">
-            Make sure the API server is running on port 3001
+      <div className="flex items-center justify-center h-screen bg-slate-900">
+        <div className="text-center max-w-lg p-6">
+          <div className="text-2xl font-semibold text-red-400 mb-2">Error loading map</div>
+          <div className="bg-red-900/30 border border-red-500 rounded p-4">
+            <div className="text-red-300">{(error as Error).message}</div>
+          </div>
+          <div className="mt-4 text-sm text-slate-500">
+            Make sure the API server is running
           </div>
         </div>
       </div>
@@ -49,13 +72,13 @@ export default function MapPage() {
 
   if (features.length === 0) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="text-2xl font-semibold text-gray-700 mb-2">No venue features found</div>
-          <div className="text-gray-600">Import GeoJSON data to get started</div>
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-left">
-            <div className="font-semibold mb-2">To import data:</div>
-            <code className="block bg-gray-800 text-white p-3 rounded">
+      <div className="flex items-center justify-center h-screen bg-slate-900">
+        <div className="text-center max-w-lg">
+          <div className="text-2xl font-semibold text-white mb-2">No venue features found</div>
+          <div className="text-slate-400 mb-4">Import GeoJSON data to get started</div>
+          <div className="p-4 bg-slate-800 rounded-lg text-sm text-left border border-slate-700">
+            <div className="font-semibold text-white mb-2">To import data:</div>
+            <code className="block bg-slate-900 text-green-400 p-3 rounded font-mono text-xs">
               cd packages/gis<br />
               npm run import -- -f path/to/file.geojson -e EVENT_ID
             </code>

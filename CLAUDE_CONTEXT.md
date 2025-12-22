@@ -17,7 +17,7 @@ Event Management Command & Control Platform with 3D GIS visualization.
 | Layer | Technology |
 |-------|------------|
 | Frontend | Next.js 14, React 18.2, TypeScript |
-| 3D Rendering | Three.js, React Three Fiber 8, Drei 9 |
+| 3D Rendering | Three.js, React Three Fiber 8, Drei 9 (isolated in `@c2/map-3d`) |
 | Styling | Tailwind CSS, Shadcn/ui |
 | API | Hono on Cloudflare Workers |
 | Database | Supabase PostgreSQL + PostGIS via Hyperdrive |
@@ -32,17 +32,19 @@ c2-opraxius/
 ├── apps/
 │   ├── web/                    # Next.js 14 frontend
 │   │   ├── src/app/
-│   │   │   ├── map-demo/       # Public 3D map demo
+│   │   │   ├── map-demo/       # Public 3D map demo (lazy loads @c2/map-3d)
 │   │   │   ├── dashboard/      # Protected dashboard pages
 │   │   │   └── api/auth/       # NextAuth routes
-│   │   ├── src/components/map/ # Three.js components
-│   │   └── src/lib/gis-utils.ts # Coordinate conversion
+│   │   └── src/components/     # UI components (3D moved to map-3d package)
 │   └── api-workers/            # Hono API on Workers
 │       └── src/routes/         # API endpoints
 ├── packages/
 │   ├── shared/                 # Types & constants
 │   ├── database/               # Drizzle ORM schema
-│   └── gis/                    # GeoJSON parser & CLI
+│   ├── gis/                    # GeoJSON parser & CLI
+│   └── map-3d/                 # 3D rendering (Three.js, R3F, Drei)
+│       ├── src/components/     # VenueMap3D, VenueObject, FeatureDetailPanel
+│       └── src/lib/            # gis-utils.ts coordinate conversion
 └── docs/                       # Documentation
 ```
 
@@ -50,9 +52,10 @@ c2-opraxius/
 
 | File | Purpose |
 |------|---------|
-| `apps/web/src/app/map-demo/page.tsx` | Public 3D map with debug panel |
-| `apps/web/src/lib/gis-utils.ts` | Three.js coordinate conversion |
-| `apps/web/src/components/map/VenueObject.tsx` | 3D geometry rendering |
+| `apps/web/src/app/map-demo/page.tsx` | Public 3D map with debug panel (dynamically imports @c2/map-3d) |
+| `packages/map-3d/src/components/VenueMap3D.tsx` | Main 3D scene component |
+| `packages/map-3d/src/components/VenueObject.tsx` | 3D geometry rendering |
+| `packages/map-3d/src/lib/gis-utils.ts` | Three.js coordinate conversion |
 | `apps/api-workers/src/routes/venues.ts` | Venue API with PostGIS |
 | `apps/api-workers/wrangler.development.toml` | Hyperdrive config |
 
@@ -75,6 +78,9 @@ npm install
 # Start local dev
 cd apps/web && npm run dev      # localhost:3000
 cd apps/api-workers && npm run dev  # localhost:8787
+
+# Build packages (required before web build)
+npm run build --workspace=@c2/shared --workspace=@c2/database --workspace=@c2/gis --workspace=@c2/map-3d
 
 # Deploy
 git push origin develop         # Auto-deploys to dev.*
@@ -112,6 +118,7 @@ main     → *.opraxius.com         (manual approval)
 3. **PostGIS**: Use `ST_AsGeoJSON()` in raw SQL for geometry serialization
 4. **Hyperdrive**: Configure in wrangler.*.toml with Transaction mode (port 6543)
 5. **Client Components**: Don't use `export const runtime = 'edge'` with `'use client'`
+6. **3D Code Isolation**: All Three.js code lives in `@c2/map-3d` package, lazy-loaded via `dynamic()` import
 
 ## Database Schema
 
@@ -122,6 +129,18 @@ tasks             # Task management
 users             # Auth0 users with RBAC
 workcenters       # 8 departments
 activity_feed     # Activity log
+```
+
+## Package Dependencies
+
+```
+@c2/web depends on:
+  - @c2/shared (types)
+  - @c2/map-3d (3D components, lazy loaded)
+
+@c2/map-3d depends on:
+  - @c2/shared (types)
+  - three, @react-three/fiber, @react-three/drei (bundled)
 ```
 
 ## Docs Index

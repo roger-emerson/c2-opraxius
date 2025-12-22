@@ -96,7 +96,7 @@ jobs:
           npm ci
 
       - name: Build workspace packages
-        run: npm run build --workspace=@c2/shared --workspace=@c2/database --workspace=@c2/gis
+        run: npm run build --workspace=@c2/shared --workspace=@c2/database --workspace=@c2/gis --workspace=@c2/map-3d
 
       - name: Build with @cloudflare/next-on-pages
         run: npm run pages:build

@@ -134,21 +134,24 @@ class ThreeErrorBoundary extends React.Component<
   }
 }
 
-// Dynamically import the map component
+// Loading component for 3D map
+function Loading3D() {
+  return (
+    <div className="flex items-center justify-center h-screen bg-slate-900">
+      <div className="text-center">
+        <div className="text-2xl font-semibold text-white mb-2">Loading 3D Engine...</div>
+        <div className="text-slate-400">Initializing Three.js & React Three Fiber</div>
+      </div>
+    </div>
+  );
+}
+
+// Dynamically import the map component from @c2/map-3d package
 const VenueMap3D = dynamic(
-  () => import('@/components/map/VenueMap3D').then(mod => {
-    return mod.VenueMap3D;
-  }),
+  () => import('@c2/map-3d').then(mod => mod.VenueMap3D),
   { 
     ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-screen bg-slate-900">
-        <div className="text-center">
-          <div className="text-2xl font-semibold text-white mb-2">Loading 3D Engine...</div>
-          <div className="text-slate-400">Initializing Three.js & React Three Fiber</div>
-        </div>
-      </div>
-    )
+    loading: () => <Loading3D />
   }
 );
 
