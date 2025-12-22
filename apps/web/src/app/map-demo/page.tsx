@@ -1,16 +1,23 @@
 'use client';
 
-// Required for Cloudflare Pages deployment
-export const runtime = 'edge';
-
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import type { VenueFeature } from '@c2/shared';
 
-// Dynamically import the map component to avoid SSR issues with Deck.gl/Mapbox
+// Dynamically import the map component to avoid SSR issues with Three.js
 const VenueMap3D = dynamic(
   () => import('@/components/map/VenueMap3D').then(mod => mod.VenueMap3D),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-screen bg-slate-900">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-white mb-2">Loading 3D Engine...</div>
+          <div className="text-slate-400">Initializing Three.js</div>
+        </div>
+      </div>
+    )
+  }
 );
 
 /**
@@ -23,12 +30,24 @@ export default function MapDemoPage() {
     queryKey: ['venueFeatures'],
     queryFn: async () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      console.log('Fetching from:', `${apiUrl}/api/venues/public`);
       const response = await fetch(`${apiUrl}/api/venues/public`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch venue features: ${response.status} ${response.statusText}`);
       }
-      return response.json();
+      const json = await response.json();
+      console.log('API Response:', json);
+      
+      // Transform features to ensure correct types
+      const features = (json.features || []).map((f: any) => ({
+        ...f,
+        completionPercent: Number(f.completionPercent) || 0,
+        createdAt: new Date(f.createdAt),
+        updatedAt: new Date(f.updatedAt),
+      }));
+      
+      return { ...json, features };
     },
   });
 
