@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { eq, desc, and, sql, count } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import type { AppBindings } from '../types';
 import { authMiddleware } from '../middleware/auth';
 import { RBACService } from '../middleware/rbac';
-import { activityFeed, tasks } from '../lib/schema';
+import { activityFeed } from '../lib/schema';
 
 const activityRoutes = new Hono<AppBindings>();
 
@@ -14,25 +14,34 @@ activityRoutes.get('/live', async (c) => {
     const limitStr = c.req.query('limit');
     const limit = limitStr ? Math.min(parseInt(limitStr, 10), 50) : 20;
 
-    const activities = await db
-      .select()
-      .from(activityFeed)
-      .orderBy(desc(activityFeed.createdAt))
-      .limit(limit);
+    // Use raw SQL to avoid schema mismatch issues
+    const result = await db.execute(sql`
+      SELECT 
+        id,
+        activity_type as type,
+        message,
+        workcenter,
+        entity_id as "taskId",
+        metadata,
+        created_at as timestamp
+      FROM activity_feed
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `);
 
-    const mapped = activities.map((a) => ({
+    const activities = (result.rows || []).map((a: any) => ({
       id: a.id,
       type: a.type,
       message: a.message,
-      userName: a.userName || 'System',
+      userName: 'System',
       workcenter: a.workcenter,
       taskId: a.taskId,
-      taskTitle: a.taskTitle,
-      timestamp: a.createdAt,
+      taskTitle: a.metadata?.taskTitle || a.message,
+      timestamp: a.timestamp,
       metadata: a.metadata,
     }));
 
-    return c.json({ activities: mapped });
+    return c.json({ activities });
   } catch (error) {
     console.error('Failed to fetch live feed:', error);
     return c.json({ error: 'Failed to fetch live feed' }, 500);
@@ -117,41 +126,61 @@ activityRoutes.get('/', async (c) => {
     const limitStr = c.req.query('limit');
     const limit = limitStr ? Math.min(parseInt(limitStr, 10), 100) : 20;
 
-    let activities;
-
+    // Use raw SQL to avoid schema mismatch
+    let result;
     if (workcenter) {
-      activities = await db
-        .select()
-        .from(activityFeed)
-        .where(eq(activityFeed.workcenter, workcenter))
-        .orderBy(desc(activityFeed.createdAt))
-        .limit(limit);
+      result = await db.execute(sql`
+        SELECT 
+          id,
+          activity_type as type,
+          message,
+          user_id as "userId",
+          workcenter,
+          entity_id as "taskId",
+          metadata,
+          created_at as timestamp
+        FROM activity_feed
+        WHERE workcenter = ${workcenter}
+        ORDER BY created_at DESC
+        LIMIT ${limit}
+      `);
     } else {
-      activities = await db
-        .select()
-        .from(activityFeed)
-        .orderBy(desc(activityFeed.createdAt))
-        .limit(limit);
+      result = await db.execute(sql`
+        SELECT 
+          id,
+          activity_type as type,
+          message,
+          user_id as "userId",
+          workcenter,
+          entity_id as "taskId",
+          metadata,
+          created_at as timestamp
+        FROM activity_feed
+        ORDER BY created_at DESC
+        LIMIT ${limit}
+      `);
     }
+
+    const activities = result.rows || [];
 
     // Filter by user's workcenter access (unless admin)
     const filteredActivities = user.role === 'admin'
       ? activities
       : activities.filter(
-          (a) => !a.workcenter || user.workcenters.includes(a.workcenter)
+          (a: any) => !a.workcenter || user.workcenters.includes(a.workcenter)
         );
 
     // Map to frontend format
-    const mapped = filteredActivities.map((a) => ({
+    const mapped = filteredActivities.map((a: any) => ({
       id: a.id,
       type: a.type,
       message: a.message,
       userId: a.userId,
-      userName: a.userName,
+      userName: 'System',
       workcenter: a.workcenter,
       taskId: a.taskId,
-      taskTitle: a.taskTitle,
-      timestamp: a.createdAt,
+      taskTitle: a.metadata?.taskTitle || a.message,
+      timestamp: a.timestamp,
     }));
 
     return c.json({ activities: mapped });
@@ -168,22 +197,30 @@ activityRoutes.post('/', async (c) => {
     const user = c.get('user');
     const body = await c.req.json();
 
-    const newActivity = await db
-      .insert(activityFeed)
-      .values({
-        eventId: body.eventId,
-        type: body.type,
-        message: body.message,
-        userId: user.id,
-        userName: user.name,
-        workcenter: body.workcenter,
-        taskId: body.taskId,
-        taskTitle: body.taskTitle,
-        metadata: body.metadata || {},
-      })
-      .returning();
+    const result = await db.execute(sql`
+      INSERT INTO activity_feed (
+        event_id,
+        activity_type,
+        message,
+        user_id,
+        workcenter,
+        entity_type,
+        entity_id,
+        metadata
+      ) VALUES (
+        ${body.eventId},
+        ${body.type},
+        ${body.message},
+        ${user.id},
+        ${body.workcenter},
+        'task',
+        ${body.taskId},
+        ${JSON.stringify({ taskTitle: body.taskTitle, ...body.metadata })}::jsonb
+      )
+      RETURNING *
+    `);
 
-    return c.json({ activity: newActivity[0] }, 201);
+    return c.json({ activity: result.rows[0] }, 201);
   } catch (error) {
     console.error('Failed to create activity:', error);
     return c.json({ error: 'Failed to create activity' }, 500);
@@ -191,4 +228,3 @@ activityRoutes.post('/', async (c) => {
 });
 
 export { activityRoutes };
-

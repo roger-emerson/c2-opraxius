@@ -17,7 +17,7 @@
  *   DATABASE_URL=<your-database-url> npm run db:seed-tasks
  */
 
-import { db, events, venueFeatures, tasks, activityFeed } from './index.js';
+import { db, events, tasks, activityFeed } from './index.js';
 import { eq, sql } from 'drizzle-orm';
 
 // Task templates for each department
@@ -249,17 +249,20 @@ async function main() {
     console.log(`✓ Found event: ${existingEvent[0].name} (ID: ${eventId})`);
     console.log(`  Start Date: ${eventStartDate.toISOString()}\n`);
 
-    // Get all venue features to link tasks
-    const features = await db.select().from(venueFeatures).where(eq(venueFeatures.eventId, eventId));
+    // Get all venue features to link tasks (use raw SQL to avoid geometry parsing issues)
+    const featuresResult = await db.execute(sql`
+      SELECT id, feature_type, name FROM venue_features WHERE event_id = ${eventId}
+    `) as unknown as { id: string; feature_type: string; name: string }[];
+    const features = featuresResult;
     console.log(`✓ Found ${features.length} venue features to link tasks\n`);
 
     // Create feature type lookup map
     const featuresByType: Record<string, any[]> = {};
     features.forEach(f => {
-      if (!featuresByType[f.featureType]) {
-        featuresByType[f.featureType] = [];
+      if (!featuresByType[f.feature_type]) {
+        featuresByType[f.feature_type] = [];
       }
-      featuresByType[f.featureType].push(f);
+      featuresByType[f.feature_type].push(f);
     });
 
     // Helper to find matching feature for a task
@@ -333,12 +336,16 @@ async function main() {
           
           activityEntries.push({
             eventId,
-            type: activityType,
+            activityType,
+            entityType: 'task',
+            entityId: newTask.id,
             message: `${template.title} - ${status.replace('_', ' ')}`,
             workcenter,
-            taskId: newTask.id,
-            taskTitle: template.title,
-            metadata: { priority: template.priority, isCriticalPath: template.isCriticalPath },
+            metadata: { 
+              priority: template.priority, 
+              isCriticalPath: template.isCriticalPath,
+              taskTitle: template.title
+            },
             createdAt: new Date(Date.now() - Math.random() * 86400000 * 3), // Random time in last 3 days
           });
         }
@@ -367,13 +374,13 @@ async function main() {
           : avgCompletion > 0 ? 'in_progress' 
           : 'pending';
         
-        await db.update(venueFeatures)
-          .set({ 
-            completionPercent: avgCompletion.toFixed(2),
-            status: newStatus,
-            updatedAt: new Date()
-          })
-          .where(eq(venueFeatures.id, feature.id));
+        await db.execute(sql`
+          UPDATE venue_features 
+          SET completion_percent = ${avgCompletion.toFixed(2)}, 
+              status = ${newStatus}, 
+              updated_at = NOW() 
+          WHERE id = ${feature.id}
+        `);
       }
     }
 
