@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, Grid, ContactShadows, Stars } from '@react-three/drei';
+import { OrbitControls, Environment, Grid, Stars } from '@react-three/drei';
 import { Suspense, useState, useMemo } from 'react';
 import type { VenueFeature } from '@c2/shared';
 import { VenueObject } from './VenueObject';
@@ -71,10 +71,16 @@ export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: 
         camera={{
           position: [0, 300, 400],
           fov: 60,
-          near: 0.1,
-          far: 10000,
+          near: 1,
+          far: 5000,
         }}
         shadows
+        gl={{ 
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+          logarithmicDepthBuffer: true, // Prevents z-fighting
+        }}
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
       >
         {/* Ambient and Directional Lighting */}
@@ -115,22 +121,11 @@ export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: 
           infiniteGrid
         />
 
-        {/* Ground Plane - Slightly lighter to show grid better */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -1, 0]}>
+        {/* Ground Plane - Lowered to avoid z-fighting with grid */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -2, 0]}>
           <planeGeometry args={[5000, 5000]} />
           <meshStandardMaterial color="#12122a" roughness={0.95} metalness={0.05} />
         </mesh>
-
-        {/* Contact Shadows for grounded feel */}
-        <ContactShadows
-          position={[0, 0, 0]}
-          opacity={0.5}
-          scale={1000}
-          blur={2}
-          far={100}
-          resolution={512}
-          color="#000000"
-        />
 
         {/* Render all venue features with center offset */}
         <Suspense fallback={null}>
@@ -156,7 +151,7 @@ export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: 
           minDistance={50}
           maxDistance={1500}
           enableDamping
-          dampingFactor={0.05}
+          dampingFactor={0.1}
           rotateSpeed={0.5}
           zoomSpeed={0.8}
         />

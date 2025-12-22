@@ -24,7 +24,7 @@ export function FeatureDetailPanel({ feature, onClose, apiUrl }: FeatureDetailPa
   });
 
   return (
-    <div className="absolute top-52 left-4 w-72 max-h-[calc(100vh-15rem)] bg-black/85 backdrop-blur-xl text-white shadow-2xl overflow-hidden flex flex-col rounded-xl border border-white/20 z-20 animate-fade-in">
+    <div className="absolute top-16 right-40 w-72 max-h-[calc(100vh-8rem)] bg-black/85 backdrop-blur-xl text-white shadow-2xl overflow-hidden flex flex-col rounded-xl border border-white/20 z-20 animate-fade-in">
       {/* Header - Glassmorphism with gradient accent */}
       <div className="bg-gradient-to-r from-purple-600/80 to-blue-600/80 p-4 border-b border-white/10">
         <div className="flex items-start justify-between">
