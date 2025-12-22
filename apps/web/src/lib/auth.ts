@@ -31,20 +31,34 @@ declare module '@auth/core/jwt' {
   }
 }
 
-// Normalize issuer URL (ensure trailing slash to match Auth0's discovery response)
-const issuerUrl = process.env.AUTH0_ISSUER_BASE_URL?.endsWith('/')
-  ? process.env.AUTH0_ISSUER_BASE_URL
-  : `${process.env.AUTH0_ISSUER_BASE_URL}/`;
+// Get Auth0 issuer URL (without trailing slash for endpoint construction)
+const auth0Domain = process.env.AUTH0_ISSUER_BASE_URL?.replace(/\/$/, '') || '';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     {
       id: 'auth0',
       name: 'Auth0',
-      type: 'oidc',
-      issuer: issuerUrl,
+      type: 'oauth',
       clientId: process.env.AUTH0_CLIENT_ID!,
       clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      authorization: {
+        url: `${auth0Domain}/authorize`,
+        params: {
+          scope: 'openid email profile',
+          response_type: 'code',
+        },
+      },
+      token: `${auth0Domain}/oauth/token`,
+      userinfo: `${auth0Domain}/userinfo`,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     },
   ],
   callbacks: {
