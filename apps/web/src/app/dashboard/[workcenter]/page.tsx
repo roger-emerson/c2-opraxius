@@ -1,8 +1,5 @@
 'use client';
 
-// Required for Cloudflare Pages deployment
-export const runtime = 'edge';
-
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, useCallback } from 'react';
@@ -39,7 +36,8 @@ export default function WorkcenterPage() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/tasks?workcenter=${workcenter}`);
+      // Use public tasks endpoint for workcenter-specific tasks
+      const res = await fetch(`${apiUrl}/api/tasks/public?workcenter=${workcenter}`);
       if (!res.ok) throw new Error('Failed to fetch tasks');
       const data = await res.json();
       setTasks(data.tasks || []);
@@ -112,23 +110,9 @@ export default function WorkcenterPage() {
     ? tasks 
     : tasks.filter((t) => t.status === filter);
 
-  // Check if user has access to this workcenter
-  const hasAccess = session?.user.workcenters?.includes(workcenter as VenueFeatureCategory) || 
-                   session?.user.role === 'admin';
-
-  if (!hasAccess) {
-    return (
-      <div className="p-8">
-        <div className="max-w-md mx-auto text-center py-12">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">
-            You don't have permission to access the {wcDef.displayName} workcenter.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // All users can view workcenter tasks (read-only for non-members)
+  const hasWriteAccess = session?.user.workcenters?.includes(workcenter as VenueFeatureCategory) || 
+                         session?.user.role === 'admin';
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -138,12 +122,14 @@ export default function WorkcenterPage() {
           <h1 className="text-3xl font-bold text-gray-900">{wcDef.displayName}</h1>
           <p className="text-gray-600 mt-1">{wcDef.description}</p>
         </div>
-        <button
-          onClick={openNewTask}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-        >
-          <span>➕</span> New Task
-        </button>
+        {hasWriteAccess && (
+          <button
+            onClick={openNewTask}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            <span>➕</span> New Task
+          </button>
+        )}
       </div>
 
       {isLoading ? (
@@ -224,6 +210,7 @@ export default function WorkcenterPage() {
               workcenter={workcenter}
               apiUrl={`${apiUrl}/api/activity`}
               maxItems={8}
+              isPublic={true}
             />
           </div>
         </div>

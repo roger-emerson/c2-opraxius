@@ -76,7 +76,7 @@ export default function DashboardLayout({
             <div className="text-[10px] font-medium text-subtle uppercase tracking-[0.15em] mb-3">
               Workcenters
             </div>
-            {session.user.workcenters.map((wc) => (
+            {['operations', 'production', 'security', 'workforce', 'vendors', 'marketing', 'finance'].map((wc) => (
               <Link
                 key={wc}
                 href={`/dashboard/${wc}`}

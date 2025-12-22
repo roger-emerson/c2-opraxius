@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import type { AppBindings } from '../types';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission, RBACService } from '../middleware/rbac';
@@ -7,7 +7,38 @@ import { tasks } from '../lib/schema';
 
 const tasksRoutes = new Hono<AppBindings>();
 
-// Apply auth middleware to all routes
+// PUBLIC: Get tasks without auth (for dashboard display)
+tasksRoutes.get('/public', async (c) => {
+  try {
+    const db = c.get('db');
+    const workcenter = c.req.query('workcenter');
+    const limitStr = c.req.query('limit');
+    const limit = limitStr ? Math.min(parseInt(limitStr, 10), 100) : 50;
+
+    let result;
+    if (workcenter) {
+      result = await db
+        .select()
+        .from(tasks)
+        .where(eq(tasks.workcenter, workcenter))
+        .orderBy(desc(tasks.updatedAt))
+        .limit(limit);
+    } else {
+      result = await db
+        .select()
+        .from(tasks)
+        .orderBy(desc(tasks.updatedAt))
+        .limit(limit);
+    }
+
+    return c.json({ tasks: result });
+  } catch (error) {
+    console.error('Failed to fetch public tasks:', error);
+    return c.json({ error: 'Failed to fetch tasks' }, 500);
+  }
+});
+
+// Apply auth middleware to remaining routes
 tasksRoutes.use('/*', authMiddleware);
 
 // Get tasks (filtered by user's workcenter access)
