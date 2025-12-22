@@ -1,8 +1,8 @@
-import { NextAuthOptions } from 'next-auth';
-import Auth0Provider from 'next-auth/providers/auth0';
-import type { User, UserRole } from '@c2/shared';
+import NextAuth from 'next-auth';
+import Auth0 from 'next-auth/providers/auth0';
+import type { UserRole } from '@c2/shared';
 
-// Extend NextAuth types
+// Extend Auth.js types for custom session data
 declare module 'next-auth' {
   interface Session {
     user: {
@@ -17,13 +17,13 @@ declare module 'next-auth' {
   }
 
   interface User {
-    role: UserRole;
-    workcenters: string[];
-    permissions: any[];
+    role?: UserRole;
+    workcenters?: string[];
+    permissions?: any[];
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module '@auth/core/jwt' {
   interface JWT {
     id: string;
     role: UserRole;
@@ -32,12 +32,12 @@ declare module 'next-auth/jwt' {
   }
 }
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Auth0Provider({
-      clientId: process.env.AUTH0_CLIENT_ID || '',
-      clientSecret: process.env.AUTH0_CLIENT_SECRET || '',
-      issuer: process.env.AUTH0_ISSUER_BASE_URL || '',
+    Auth0({
+      clientId: process.env.AUTH0_CLIENT_ID!,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      issuer: process.env.AUTH0_ISSUER_BASE_URL!,
     }),
   ],
   callbacks: {
@@ -55,10 +55,10 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.workcenters = token.workcenters;
-        session.user.permissions = token.permissions;
+        session.user.id = token.id as string;
+        session.user.role = token.role as UserRole;
+        session.user.workcenters = token.workcenters as string[];
+        session.user.permissions = token.permissions as any[];
       }
       return session;
     },
@@ -67,8 +67,5 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  session: {
-    strategy: 'jwt',
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-};
+  trustHost: true, // Required for Cloudflare Pages
+});

@@ -8,9 +8,9 @@
 
 **C2 Command Center** - Festival Management Dashboard for Insomniac Events
 - **Repository**: `/Users/roger/Desktop/Projects/c2-opraxius`
-- **Current Phase**: Phase 2 - CODE Complete, FEATURE Incomplete (see Phase 2 Reality Check)
-- **Status**: Deployed on Cloudflare, custom domains working, acceptance criteria corrected
-- **Critical**: Phase 2 needs data import and end-to-end testing to be truly complete
+- **Current Phase**: Phase 2b (Auth) Complete - Auth.js v5 migration done
+- **Status**: Deployed on Cloudflare, custom domains working, Auth.js v5 Edge-compatible
+- **Next Step**: Configure Auth0 env vars in Cloudflare Pages dashboard
 
 ---
 
@@ -41,7 +41,7 @@ For each completed phase, we create a dedicated completion document following th
 - ✅ **PHASE1_COMPLETE.md** - Core Infrastructure completion
   - Turborepo monorepo
   - PostgreSQL + PostGIS + Redis
-  - Auth0 + NextAuth.js authentication
+  - Auth0 + Auth.js v5 authentication (Edge Runtime compatible)
   - RBAC system (10 roles, 8 workcenters)
   - REST API (events, tasks, venues)
 
@@ -87,7 +87,7 @@ ai_chat_history     # Claude conversations (Phase 4)
 ```
 
 **Authentication & RBAC**:
-- Auth0 + NextAuth.js (SSO)
+- Auth0 + Auth.js v5 (SSO, Edge Runtime compatible)
 - 10 roles (admin, operations_lead, production_lead, security_lead, workforce_lead, vendor_lead, sponsor_lead, marketing_lead, finance_lead, viewer)
 - 8 workcenters (Operations, Production, Security, Workforce, Vendors, Sponsors, Marketing, Finance)
 - Granular permission system: `{ resource, action, workcenter? }`

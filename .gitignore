@@ -34,3 +34,4 @@ coverage/
 # NOTE: .debug/ is NOT ignored - we want to track agent reasoning
 # Remove this comment and add .debug/ to ignore if you don't want it in git
 
+.vercel

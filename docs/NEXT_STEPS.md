@@ -1,21 +1,22 @@
-# Next Steps - Phase 2 Completion
+# Next Steps - Phase 3 Ready
 
-> **Quick Summary**: Phase 2 code is complete and deployed. Now we need to import test data to the staging database and verify the 3D map works.
+> **Quick Summary**: Phases 1, 2, and 2b (Auth) complete. Auth.js v5 migration done. Configure Auth0 env vars to enable authentication.
 
 ---
 
 ## 🎯 Current Status
 
 ✅ **What's Done:**
-- All Phase 2 code written and deployed to Cloudflare staging
+- All Phase 2 code written and deployed to Cloudflare
 - 3D map components (VenueMap3D, VenueObject, FeatureDetailPanel)
 - GeoJSON import CLI tool
 - Public API endpoint (`/api/venues/public`)
-- Seed scripts and workflows created
+- **Auth.js v5 migration complete** (Edge Runtime compatible)
+- Auth API route handler at `/api/auth/[...nextauth]`
 
-❌ **What's Blocking:**
-- **No test data in staging database** - the map loads but shows empty/error
-- Need to import 8 test features from `../packages/gis/examples/test-venue.geojson`
+⏳ **Pending (User Action Required):**
+- Configure Auth0 environment variables in Cloudflare Pages dashboard
+- Test protected routes after env vars are set
 
 ---
 
