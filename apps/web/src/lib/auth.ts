@@ -41,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: 'Auth0',
       type: 'oidc',
       issuer: `${auth0Domain}/`,
+      wellKnown: `${auth0Domain}/.well-known/openid-configuration`,
       clientId: process.env.AUTH0_CLIENT_ID!,
       clientSecret: process.env.AUTH0_CLIENT_SECRET!,
       authorization: {
@@ -48,6 +49,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           scope: 'openid email profile',
         },
       },
+      idToken: true,
+      checks: ['state'],
       profile(profile) {
         return {
           id: profile.sub,
