@@ -42,15 +42,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       type: 'oauth',
       clientId: process.env.AUTH0_CLIENT_ID!,
       clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      checks: ['state'],
       authorization: {
         url: `${auth0Domain}/authorize`,
         params: {
           scope: 'openid email profile',
-          response_type: 'code',
         },
       },
-      token: `${auth0Domain}/oauth/token`,
-      userinfo: `${auth0Domain}/userinfo`,
+      token: {
+        url: `${auth0Domain}/oauth/token`,
+      },
+      userinfo: {
+        url: `${auth0Domain}/userinfo`,
+      },
       profile(profile) {
         return {
           id: profile.sub,
