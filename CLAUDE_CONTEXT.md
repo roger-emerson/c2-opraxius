@@ -219,7 +219,7 @@ c2-opraxius/
 - **Styling**: Tailwind CSS 3 + Shadcn/ui
 - **State**: Zustand + React Query (TanStack Query)
 - **Icons**: Lucide React
-- **Auth**: NextAuth.js 4 + Auth0
+- **Auth**: Auth.js v5 (next-auth@5.0.0-beta.25) + Auth0 OIDC
 
 ### Backend
 - **Runtime**: Node.js 18+ with TypeScript (ESM)
@@ -593,8 +593,42 @@ cd packages/shared && npm run build    # Build shared types first
 cd packages/database && npm run build  # Build database types
 ```
 
-### Auth0 not configured
-The app works without Auth0 in local dev! Mock auth is used. Only needed for real SSO.
+### Auth0 Configuration (WORKING)
+
+Auth.js v5 is configured for Cloudflare Edge Runtime with Auth0 OIDC. Key configuration details:
+
+**Critical Configuration (`apps/web/src/lib/auth.ts`):**
+```typescript
+{
+  id: 'auth0',
+  name: 'Auth0',
+  type: 'oidc',                    // Must be 'oidc', not 'oauth'
+  issuer: `${auth0Domain}/`,       // MUST have trailing slash
+  wellKnown: `${auth0Domain}/.well-known/openid-configuration`,  // Explicit for edge
+  clientId: process.env.AUTH0_CLIENT_ID!,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+  idToken: true,                   // Required for OIDC token handling
+  checks: ['state'],               // Security: validates state parameter
+  trustHost: true,                 // Required for Cloudflare Pages
+}
+```
+
+**Required Environment Variables (Cloudflare Pages):**
+- `AUTH0_CLIENT_ID` - From Auth0 Application settings
+- `AUTH0_CLIENT_SECRET` - From Auth0 Application settings
+- `AUTH0_ISSUER_BASE_URL` - Format: `https://your-tenant.us.auth0.com` (NO trailing slash)
+- `AUTH_SECRET` - Generate with `openssl rand -base64 32`
+
+**Auth0 Application Settings:**
+- Application Type: Regular Web Application
+- Allowed Callback URLs: `https://dev.web.opraxius.com/api/auth/callback/auth0`
+- Allowed Logout URLs: `https://dev.web.opraxius.com`
+
+**Key Fixes Applied:**
+1. Issuer URL must have trailing slash to match Auth0's OIDC discovery response
+2. Explicit `wellKnown` URL helps edge runtime discover endpoints
+3. `idToken: true` required for proper token handling
+4. `trustHost: true` required for Cloudflare Pages deployment
 
 ---
 
