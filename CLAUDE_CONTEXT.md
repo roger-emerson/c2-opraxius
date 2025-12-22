@@ -138,6 +138,32 @@ staging  → staging.*.opraxius.com (auto-deploy)
 main     → *.opraxius.com         (manual approval)
 ```
 
+### Post-Push Verification (REQUIRED)
+
+After every `git push`, verify GitHub Actions status:
+
+```bash
+# Step 1: Push changes
+git push origin develop
+
+# Step 2: Watch Actions (REQUIRED)
+gh run list --branch develop --limit 3
+
+# Step 3: Monitor running workflow
+gh run view <RUN_ID>
+
+# Step 4: If failed, get logs
+gh run view <RUN_ID> --log-failed
+```
+
+**Expected Jobs (develop branch):**
+1. Run Database Migrations (~30s)
+2. Deploy API to Workers (~50s)
+3. Deploy Web to Pages (~2m)
+4. Verify Deployment (~30s)
+
+**Do not proceed** until all jobs show ✅ Success.
+
 ## Critical Notes
 
 1. **React Version**: Must use React 18.2 (not 19) for React Three Fiber compatibility
