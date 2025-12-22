@@ -4,8 +4,8 @@ Event Management Command & Control Platform with 3D GIS visualization.
 
 ## Current State
 
-- **Phase 4**: 3D Model Integration ✅ Complete
-- **Status**: Styled 3D models rendering, Auth0 SSO working, API deployed
+- **Phase 5**: Task Management & Live Feed ✅ Complete
+- **Status**: 150 event tasks seeded, live activity feed, 3D map with linked tasks
 - **Live URLs**:
   - Dev Web: https://dev.web.opraxius.com
   - Dev API: https://dev.api.opraxius.com
@@ -25,6 +25,36 @@ Event Management Command & Control Platform with 3D GIS visualization.
 | Monorepo | Turborepo |
 | Deploy | Cloudflare Pages (web) + Workers (api) |
 
+## Task Management System
+
+### 150 Event Management Tasks (7 Workcenters)
+
+| Workcenter | Tasks | Description |
+|------------|-------|-------------|
+| Operations | 30 | Command center, signage, power, water, restrooms, medical, evacuation |
+| Production | 25 | Stage rigging, LED screens, sound, lighting, pyrotechnics, DJ booths |
+| Security | 25 | Perimeter, metal detection, CCTV, crowd control, K-9, VIP security |
+| Workforce | 20 | Credentials, training, scheduling, uniforms, staff services |
+| Vendors | 20 | Booth assignments, food safety, POS systems, health inspections |
+| Marketing | 15 | Branding, photo ops, media credentials, sponsor activations |
+| Finance | 15 | Cash office, box office, revenue tracking, vendor payments |
+
+### Task-to-Feature Linking
+
+Tasks are linked to venue features via `venueFeatureId`:
+- Tasks appear on 3D map when clicking features
+- Feature completion % is calculated from linked task progress
+- Activity feed shows real-time task updates
+
+### Task Statuses & Completion
+
+| Status | Completion Range |
+|--------|-----------------|
+| pending | 0-10% |
+| in_progress | 20-80% |
+| completed | 100% |
+| blocked | 10-50% |
+
 ## 3D Model Architecture
 
 Features are automatically rendered with styled 3D models based on `featureType`:
@@ -37,26 +67,6 @@ Features are automatically rendered with styled 3D models based on `featureType`
 | `art_installation` | LandmarkModel | Wireframe octahedron or FerrisWheel |
 | `pathway`, `road`, `fence`, `parking_lot`, `zone`, `boundary` | Infrastructure | Tube/extrude geometry from PostGIS |
 
-### Model Components
-
-```
-packages/map-3d/src/components/
-├── VenueMap3D.tsx      # Main scene: Canvas, lighting, controls, legends
-├── VenueObject.tsx     # Smart wrapper: selects model by featureType
-├── StageModel.tsx      # Stages: floating box, roof, pillars, Float
-├── FacilityModel.tsx   # Facilities: glowing cylinder, Html tooltip
-├── LandmarkModel.tsx   # Art: wireframe octahedron, FerrisWheel
-└── FeatureDetailPanel.tsx  # Glassmorphism detail panel
-```
-
-### Visual Features
-
-- **Lighting**: Ambient + directional + colored accent lights (magenta/cyan)
-- **Shadows**: ContactShadows for grounded feel
-- **Background**: Stars + night environment
-- **Animations**: Float for stages, rotation for landmarks, pulse for selection
-- **UI**: Glassmorphism panels with status/type legends
-
 ## Project Structure
 
 ```
@@ -65,40 +75,45 @@ c2-opraxius/
 │   ├── web/                    # Next.js 14 frontend
 │   │   ├── src/app/
 │   │   │   ├── map-demo/       # Public 3D map demo (lazy loads @c2/map-3d)
-│   │   │   ├── dashboard/      # Protected dashboard pages
+│   │   │   ├── dashboard/      # Protected dashboard with live feed
 │   │   │   └── api/auth/       # NextAuth routes
-│   │   └── src/components/     # UI components
+│   │   └── src/components/
+│   │       └── dashboard/      # ActivityFeed, CriticalItemsPanel, etc.
 │   └── api-workers/            # Hono API on Workers
-│       └── src/routes/         # API endpoints
+│       └── src/routes/
+│           ├── tasks.ts        # Task CRUD with RBAC
+│           ├── activity.ts     # Live feed & stats endpoints
+│           └── venues.ts       # GeoJSON features
 ├── packages/
-│   ├── shared/                 # Types & constants (ModelCategory, etc.)
+│   ├── shared/                 # Types & constants
 │   ├── database/               # Drizzle ORM schema
+│   │   └── src/
+│   │       ├── seed.ts         # Event seeding
+│   │       └── seed-tasks.ts   # Task seeding (150 tasks)
 │   ├── gis/                    # GeoJSON parser & CLI
 │   └── map-3d/                 # 3D rendering package
-│       ├── src/components/     # StageModel, FacilityModel, LandmarkModel
-│       └── src/lib/            # gis-utils.ts, colors.ts
 └── docs/                       # Documentation
 ```
-
-## Key Files
-
-| File | Purpose |
-|------|---------|
-| `packages/map-3d/src/components/StageModel.tsx` | Styled stage with Float animation |
-| `packages/map-3d/src/components/FacilityModel.tsx` | Glowing facility cylinder |
-| `packages/map-3d/src/components/LandmarkModel.tsx` | Art installation / FerrisWheel |
-| `packages/map-3d/src/components/VenueObject.tsx` | Model selector by featureType |
-| `packages/map-3d/src/lib/colors.ts` | Status colors, feature colors, model categories |
-| `packages/shared/src/types/venue.types.ts` | ModelCategory type, featureTypeToModelCategory() |
 
 ## API Endpoints
 
 ```
+# Public (no auth)
 GET  /health                    # Health check
-GET  /api/venues/public         # GeoJSON features (no auth)
+GET  /api/venues/public         # GeoJSON features
+GET  /api/activity/live         # Live task activity feed
+GET  /api/activity/stats        # Task statistics by workcenter
+
+# Protected (requires auth)
 GET  /api/venues                # Protected venue list
 GET  /api/tasks                 # Task list (RBAC filtered)
-GET  /api/events                # Event list (RBAC filtered)
+GET  /api/tasks/:id             # Single task
+POST /api/tasks                 # Create task
+PATCH /api/tasks/:id            # Update task
+DELETE /api/tasks/:id           # Delete task
+GET  /api/activity              # Activity feed (RBAC filtered)
+POST /api/activity              # Log activity
+GET  /api/events                # Event list
 ```
 
 ## Development
@@ -113,6 +128,10 @@ cd apps/api-workers && npm run dev  # localhost:8787
 
 # Build packages (required before web build)
 npm run build --workspace=@c2/shared --workspace=@c2/map-3d
+
+# Seed database
+npm run db:seed --workspace=@c2/database        # Create event
+npm run db:seed-tasks --workspace=@c2/database  # Seed 150 tasks
 
 # Deploy
 git push origin develop         # Auto-deploys to dev.*
@@ -156,14 +175,6 @@ gh run view <RUN_ID>
 gh run view <RUN_ID> --log-failed
 ```
 
-**Expected Jobs (develop branch):**
-1. Run Database Migrations (~30s)
-2. Deploy API to Workers (~50s)
-3. Deploy Web to Pages (~2m)
-4. Verify Deployment (~30s)
-
-**Do not proceed** until all jobs show ✅ Success.
-
 ## Critical Notes
 
 1. **React Version**: Must use React 18.2 (not 19) for React Three Fiber compatibility
@@ -172,17 +183,33 @@ gh run view <RUN_ID> --log-failed
 4. **Hyperdrive**: Configure in wrangler.*.toml with Transaction mode (port 6543)
 5. **Client Components**: Don't use `export const runtime = 'edge'` with `'use client'`
 6. **3D Code Isolation**: All Three.js code lives in `@c2/map-3d` package, lazy-loaded via `dynamic()` import
-7. **Model Selection**: VenueObject automatically picks StageModel/FacilityModel/LandmarkModel based on featureType
+7. **Task Linking**: Tasks linked to venue features via `venueFeatureId` appear on 3D map
 
 ## Database Schema
 
 ```
-venue_features    # GIS data (Point/Polygon/LineString) + featureType for model selection
 events            # Festival events
-tasks             # Task management
+venue_features    # GIS data + featureType for model selection
+tasks             # 150 event management tasks (linked to venue_features)
 users             # Auth0 users with RBAC
 workcenters       # 8 departments
-activity_feed     # Activity log
+activity_feed     # Real-time activity log
+```
+
+### Task Table Relationships
+
+```
+tasks
+  ├── eventId → events.id
+  ├── venueFeatureId → venue_features.id (nullable, for 3D map)
+  ├── workcenter (operations, production, security, workforce, vendors, marketing, finance)
+  ├── assignedTo → users.id
+  └── createdBy → users.id
+
+activity_feed
+  ├── eventId → events.id
+  ├── taskId → tasks.id
+  └── userId → users.id
 ```
 
 ## Docs Index

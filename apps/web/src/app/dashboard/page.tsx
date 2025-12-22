@@ -182,43 +182,45 @@ export default function DashboardPage() {
                 })}
               </div>
             )}
-          </div>
+      </div>
 
-          {/* Quick Actions */}
+      {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Link
-              href="/dashboard/map"
+        <Link
+          href="/dashboard/map"
               className="block bg-background p-6 border border-border hover:border-foreground transition group"
             >
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🗺️</div>
               <h3 className="font-display text-xl font-medium text-foreground">3D Venue Map</h3>
               <p className="text-muted-foreground mt-2">
-                Explore the festival venue in interactive 3D
-              </p>
-            </Link>
+            Explore the festival venue in interactive 3D
+          </p>
+        </Link>
 
             <div className="block bg-background p-6 border border-border relative overflow-hidden">
               <div className="absolute top-2 right-2 px-2 py-1 bg-background-subtle border border-border text-xs text-muted-foreground">
                 Phase 4
-              </div>
+        </div>
               <div className="text-4xl mb-4">🤖</div>
               <h3 className="font-display text-xl font-medium text-foreground">AI Assistant</h3>
               <p className="text-muted-foreground mt-2">
                 Natural language task management with Claude
               </p>
-            </div>
-          </div>
         </div>
+      </div>
+            </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Critical Items */}
           <CriticalItemsPanel tasks={tasks} maxItems={5} />
 
-          {/* Activity Feed */}
+          {/* Live Activity Feed */}
           <ActivityFeed
             apiUrl={`${apiUrl}/api/activity`}
-            maxItems={10}
+            maxItems={15}
+            isPublic={true}
+            pollInterval={10000}
           />
         </div>
       </div>

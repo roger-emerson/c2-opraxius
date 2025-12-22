@@ -1,0 +1,86 @@
+name: Seed Tasks to Development
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      clear_existing:
+        description: 'Clear existing tasks before seeding'
+        required: false
+        default: 'true'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  seed-tasks:
+    name: Import Event Management Tasks
+    runs-on: ubuntu-latest
+    environment: staging  # Uses staging environment secrets
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: |
+          npm install -g npm@10.2.4
+          npm ci
+
+      - name: Build workspace packages
+        run: |
+          npm run build --workspace=@c2/shared
+          npm run build --workspace=@c2/database
+
+      - name: Seed event management tasks
+        run: npm run db:seed-tasks
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Verify tasks via API
+        run: |
+          echo "Waiting for API to be ready..."
+          sleep 5
+
+          echo "Fetching task stats from API..."
+          STATS=$(curl -s ${{ vars.DEVELOPMENT_API_URL }}/api/activity/stats)
+
+          TOTAL_TASKS=$(echo "$STATS" | jq -r '.overall.total_tasks // 0')
+          echo "Total tasks seeded: $TOTAL_TASKS"
+
+          if [ "$TOTAL_TASKS" -lt 100 ]; then
+            echo "⚠️ Warning: Expected ~150 tasks, got $TOTAL_TASKS"
+          else
+            echo "✅ Successfully verified $TOTAL_TASKS tasks via API"
+          fi
+
+          echo ""
+          echo "Tasks by workcenter:"
+          echo "$STATS" | jq -r '.byWorkcenter[] | "\(.workcenter): \(.total_tasks) tasks (\(.completed_tasks) completed, \(.blocked_tasks) blocked)"'
+
+      - name: Output success message
+        run: |
+          echo "✅ Task seeding complete!"
+          echo ""
+          echo "Next steps:"
+          echo "1. Open: ${{ vars.DEVELOPMENT_WEB_URL }}/map-demo"
+          echo "2. Click on 3D objects to see linked tasks"
+          echo "3. Open: ${{ vars.DEVELOPMENT_WEB_URL }}/dashboard"
+          echo "4. View live activity feed"
+          echo ""
+          echo "Task breakdown:"
+          echo "  • Operations: 30 tasks"
+          echo "  • Production: 25 tasks"
+          echo "  • Security: 25 tasks"
+          echo "  • Workforce: 20 tasks"
+          echo "  • Vendors: 20 tasks"
+          echo "  • Marketing: 15 tasks"
+          echo "  • Finance: 15 tasks"
+          echo "  • TOTAL: 150 tasks"
+

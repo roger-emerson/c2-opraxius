@@ -1,13 +1,111 @@
 import { Hono } from 'hono';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, sql, count } from 'drizzle-orm';
 import type { AppBindings } from '../types';
 import { authMiddleware } from '../middleware/auth';
 import { RBACService } from '../middleware/rbac';
-import { activityFeed } from '../lib/schema';
+import { activityFeed, tasks } from '../lib/schema';
 
 const activityRoutes = new Hono<AppBindings>();
 
-// Apply auth middleware to all routes
+// PUBLIC: Get live task feed (no auth required)
+activityRoutes.get('/live', async (c) => {
+  try {
+    const db = c.get('db');
+    const limitStr = c.req.query('limit');
+    const limit = limitStr ? Math.min(parseInt(limitStr, 10), 50) : 20;
+
+    const activities = await db
+      .select()
+      .from(activityFeed)
+      .orderBy(desc(activityFeed.createdAt))
+      .limit(limit);
+
+    const mapped = activities.map((a) => ({
+      id: a.id,
+      type: a.type,
+      message: a.message,
+      userName: a.userName || 'System',
+      workcenter: a.workcenter,
+      taskId: a.taskId,
+      taskTitle: a.taskTitle,
+      timestamp: a.createdAt,
+      metadata: a.metadata,
+    }));
+
+    return c.json({ activities: mapped });
+  } catch (error) {
+    console.error('Failed to fetch live feed:', error);
+    return c.json({ error: 'Failed to fetch live feed' }, 500);
+  }
+});
+
+// PUBLIC: Get task statistics by workcenter (no auth required)
+activityRoutes.get('/stats', async (c) => {
+  try {
+    const db = c.get('db');
+
+    // Get task counts by workcenter and status
+    const taskStats = await db.execute(sql`
+      SELECT 
+        workcenter,
+        status,
+        COUNT(*) as count,
+        AVG(CAST(completion_percent AS NUMERIC)) as avg_completion
+      FROM tasks
+      GROUP BY workcenter, status
+      ORDER BY workcenter, status
+    `);
+
+    // Get total tasks by workcenter
+    const workcenterTotals = await db.execute(sql`
+      SELECT 
+        workcenter,
+        COUNT(*) as total_tasks,
+        COUNT(CASE WHEN is_critical_path THEN 1 END) as critical_tasks,
+        AVG(CAST(completion_percent AS NUMERIC)) as avg_completion,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
+        COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress_tasks,
+        COUNT(CASE WHEN status = 'blocked' THEN 1 END) as blocked_tasks,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_tasks
+      FROM tasks
+      GROUP BY workcenter
+      ORDER BY workcenter
+    `);
+
+    // Get overall summary
+    const overall = await db.execute(sql`
+      SELECT 
+        COUNT(*) as total_tasks,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+        COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress,
+        COUNT(CASE WHEN status = 'blocked' THEN 1 END) as blocked,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+        COUNT(CASE WHEN is_critical_path THEN 1 END) as critical_total,
+        COUNT(CASE WHEN is_critical_path AND status = 'completed' THEN 1 END) as critical_completed,
+        AVG(CAST(completion_percent AS NUMERIC)) as avg_completion
+      FROM tasks
+    `);
+
+    // Get recent activity count
+    const recentActivity = await db.execute(sql`
+      SELECT COUNT(*) as count
+      FROM activity_feed
+      WHERE created_at > NOW() - INTERVAL '24 hours'
+    `);
+
+    return c.json({
+      overall: overall.rows[0] || {},
+      byWorkcenter: workcenterTotals.rows || [],
+      detailedStats: taskStats.rows || [],
+      recentActivityCount: recentActivity.rows[0]?.count || 0,
+    });
+  } catch (error) {
+    console.error('Failed to fetch task stats:', error);
+    return c.json({ error: 'Failed to fetch task stats' }, 500);
+  }
+});
+
+// Apply auth middleware to remaining routes
 activityRoutes.use('/*', authMiddleware);
 
 // Get activity feed (filtered by user's workcenter access)
