@@ -100,25 +100,25 @@ export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: 
         {/* Stars background for night sky */}
         <Stars radius={2000} depth={100} count={3000} factor={6} saturation={0.5} fade speed={0.5} />
 
-        {/* Ground Grid */}
+        {/* Ground Grid - Lighter for better contrast */}
         <Grid
           args={[2000, 2000]}
           cellSize={20}
-          cellThickness={0.5}
-          cellColor="#1e1e3f"
+          cellThickness={1}
+          cellColor="#4a4a7a"
           sectionSize={100}
-          sectionThickness={1}
-          sectionColor="#2d2d5a"
-          fadeDistance={1000}
-          fadeStrength={1}
+          sectionThickness={2}
+          sectionColor="#6a6aaa"
+          fadeDistance={1200}
+          fadeStrength={0.8}
           followCamera={false}
           infiniteGrid
         />
 
-        {/* Ground Plane */}
+        {/* Ground Plane - Slightly lighter to show grid better */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -1, 0]}>
           <planeGeometry args={[5000, 5000]} />
-          <meshStandardMaterial color="#0a0a1a" roughness={0.9} metalness={0.1} />
+          <meshStandardMaterial color="#12122a" roughness={0.95} metalness={0.05} />
         </mesh>
 
         {/* Contact Shadows for grounded feel */}
@@ -197,18 +197,18 @@ export function VenueMap3D({ features, onFeatureClick, headerSlot, debugSlot }: 
       {/* Feature Type Legend - Bottom Left */}
       <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-2 max-w-xs">
         {[
-          { label: 'Stage', color: 'bg-pink-500' },
-          { label: 'Facility', color: 'bg-amber-500' },
-          { label: 'Art', color: 'bg-emerald-500' },
-          { label: 'Medical', color: 'bg-red-500' },
-          { label: 'Water', color: 'bg-sky-500' },
+          { label: 'Stage', color: 'bg-pink-500', shadow: 'shadow-pink-500/50' },
+          { label: 'Facility', color: 'bg-amber-500', shadow: 'shadow-amber-500/50' },
+          { label: 'Art', color: 'bg-emerald-500', shadow: 'shadow-emerald-500/50' },
+          { label: 'Medical', color: 'bg-red-500', shadow: 'shadow-red-500/50' },
+          { label: 'Water', color: 'bg-sky-500', shadow: 'shadow-sky-500/50' },
         ].map((item) => (
           <div
             key={item.label}
-            className="flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-white/10 px-2.5 py-1.5 rounded-full"
+            className="flex items-center gap-2 bg-black/80 backdrop-blur-md border border-white/20 px-3 py-2 rounded-full shadow-lg"
           >
-            <div className={`w-2 h-2 rounded-full ${item.color}`} />
-            <span className="text-xs text-white/80 font-medium">{item.label}</span>
+            <div className={`w-3 h-3 rounded-full ${item.color} shadow-md ${item.shadow}`} />
+            <span className="text-sm text-white font-semibold">{item.label}</span>
           </div>
         ))}
       </div>
