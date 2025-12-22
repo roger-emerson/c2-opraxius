@@ -55,17 +55,6 @@ jobs:
           npm install -g npm@10.2.4
           npm ci
 
-      - name: Set Worker Secrets
-        run: |
-          echo "${{ secrets.DATABASE_URL }}" | npx wrangler secret put DATABASE_URL -c wrangler.development.toml
-          echo "${{ secrets.JWT_SECRET }}" | npx wrangler secret put JWT_SECRET -c wrangler.development.toml
-          echo "${{ secrets.UPSTASH_REDIS_REST_URL }}" | npx wrangler secret put UPSTASH_REDIS_REST_URL -c wrangler.development.toml
-          echo "${{ secrets.UPSTASH_REDIS_REST_TOKEN }}" | npx wrangler secret put UPSTASH_REDIS_REST_TOKEN -c wrangler.development.toml
-        working-directory: apps/api-workers
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
@@ -73,6 +62,16 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/api-workers
           command: deploy -c wrangler.development.toml
+
+      - name: Set Worker Secrets (if needed)
+        continue-on-error: true
+        run: |
+          echo "${{ secrets.DATABASE_URL }}" | npx wrangler secret put DATABASE_URL -c wrangler.development.toml || true
+          echo "${{ secrets.JWT_SECRET }}" | npx wrangler secret put JWT_SECRET -c wrangler.development.toml || true
+        working-directory: apps/api-workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   # Deploy Frontend to Cloudflare Pages
   deploy-web:
