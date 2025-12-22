@@ -1,5 +1,4 @@
 import NextAuth from 'next-auth';
-import Auth0 from 'next-auth/providers/auth0';
 import type { UserRole } from '@c2/shared';
 
 // Extend Auth.js types for custom session data
@@ -39,11 +38,14 @@ const issuerUrl = process.env.AUTH0_ISSUER_BASE_URL?.endsWith('/')
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Auth0({
+    {
+      id: 'auth0',
+      name: 'Auth0',
+      type: 'oidc',
+      issuer: issuerUrl,
       clientId: process.env.AUTH0_CLIENT_ID!,
       clientSecret: process.env.AUTH0_CLIENT_SECRET!,
-      issuer: issuerUrl,
-    }),
+    },
   ],
   callbacks: {
     async jwt({ token, user, account }) {
