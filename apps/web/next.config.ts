@@ -1,15 +1,19 @@
 import type { NextConfig } from 'next';
-import path from 'path';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@c2/shared', '@c2/auth'],
-  // Ensure React is resolved to a single instance (fixes ReactCurrentBatchConfig error)
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'react': path.resolve('./node_modules/react'),
-      'react-dom': path.resolve('./node_modules/react-dom'),
-    };
+  transpilePackages: ['@c2/shared', '@c2/auth', 'three', '@react-three/fiber', '@react-three/drei'],
+  // Force single React instance by ensuring all packages resolve to the same version
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Ensure React is deduplicated in client bundles
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        // Use require.resolve to find the actual installed package
+        'react': require.resolve('react'),
+        'react-dom': require.resolve('react-dom'),
+        'react/jsx-runtime': require.resolve('react/jsx-runtime'),
+      };
+    }
     return config;
   },
 };
