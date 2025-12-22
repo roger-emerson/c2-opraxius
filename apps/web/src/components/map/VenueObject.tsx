@@ -4,7 +4,7 @@ import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { VenueFeature } from '@c2/shared';
-import { pointToVector3, polygonToVectors, lineStringToVectors } from '@c2/gis';
+import { pointToVector3, polygonToVectors, lineStringToVectors } from '@/lib/gis-utils';
 
 interface VenueObjectProps {
   feature: VenueFeature;
@@ -107,7 +107,7 @@ function renderPoint(feature: VenueFeature): JSX.Element {
 
 function renderPolygon(feature: VenueFeature): JSX.Element {
   const coords = feature.geometry.coordinates as number[][][];
-  const vectors = polygonToVectors(coords) as THREE.Vector3[];
+  const vectors = polygonToVectors(coords);
 
   // Create shape from polygon
   const shape = new THREE.Shape();
@@ -138,7 +138,7 @@ function renderPolygon(feature: VenueFeature): JSX.Element {
 
 function renderLineString(feature: VenueFeature): JSX.Element {
   const coords = feature.geometry.coordinates as number[][];
-  const vectors = lineStringToVectors(coords) as THREE.Vector3[];
+  const vectors = lineStringToVectors(coords);
 
   // Create curve from points - need at least 2 points
   if (vectors.length < 2) {

@@ -21,9 +21,6 @@
     "@c2/database": "*",
     "three": "^0.171.0"
   },
-  "peerDependencies": {
-    "three": ">=0.150.0"
-  },
   "devDependencies": {
     "typescript": "^5.7.2",
     "@types/node": "^22.10.2",
