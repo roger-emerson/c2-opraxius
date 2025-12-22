@@ -1,6 +1,21 @@
 import type { VenueFeatureStatus, VenueFeatureType } from '@c2/shared';
 
 /**
+ * Normalize feature type aliases from database to our standard types
+ */
+export function normalizeFeatureType(featureType: string): string {
+  const aliases: Record<string, string> = {
+    // Database aliases → Standard types
+    entrance: 'gate',
+    medical: 'medical_tent',
+    first_aid: 'medical_tent',
+    plaza: 'zone',
+    area: 'zone',
+  };
+  return aliases[featureType] || featureType;
+}
+
+/**
  * Get color based on venue feature status
  */
 export function getStatusColor(status: VenueFeatureStatus): string {
@@ -16,7 +31,8 @@ export function getStatusColor(status: VenueFeatureStatus): string {
 /**
  * Get accent color based on feature type
  */
-export function getFeatureColor(featureType: VenueFeatureType): string {
+export function getFeatureColor(featureType: VenueFeatureType | string): string {
+  const normalized = normalizeFeatureType(featureType);
   const colors: Record<string, string> = {
     // Stages - vibrant EDC colors
     stage: '#ff00ff',           // magenta
@@ -50,7 +66,7 @@ export function getFeatureColor(featureType: VenueFeatureType): string {
     zone: '#6366f1',            // indigo
     boundary: '#a855f7',        // purple
   };
-  return colors[featureType] || '#6b7280';
+  return colors[normalized] || '#6b7280';
 }
 
 /**
@@ -58,25 +74,29 @@ export function getFeatureColor(featureType: VenueFeatureType): string {
  */
 export type ModelCategory = 'stage' | 'facility' | 'landmark' | 'infrastructure';
 
-export function getModelCategory(featureType: VenueFeatureType): ModelCategory {
-  const stageTypes: VenueFeatureType[] = ['stage', 'sound_booth', 'vip_area'];
-  const facilityTypes: VenueFeatureType[] = [
+export function getModelCategory(featureType: VenueFeatureType | string): ModelCategory {
+  // Normalize feature type aliases
+  const normalized = normalizeFeatureType(featureType);
+  
+  const stageTypes = ['stage', 'sound_booth', 'vip_area'];
+  const facilityTypes = [
     'vendor_booth', 'medical_tent', 'security_post', 
     'restroom', 'water_station', 'gate',
     'command_center', 'production_office', 'warehouse', 'generator'
   ];
-  const landmarkTypes: VenueFeatureType[] = ['art_installation'];
+  const landmarkTypes = ['art_installation'];
 
-  if (stageTypes.includes(featureType)) return 'stage';
-  if (facilityTypes.includes(featureType)) return 'facility';
-  if (landmarkTypes.includes(featureType)) return 'landmark';
+  if (stageTypes.includes(normalized)) return 'stage';
+  if (facilityTypes.includes(normalized)) return 'facility';
+  if (landmarkTypes.includes(normalized)) return 'landmark';
   return 'infrastructure'; // pathways, roads, fences, parking_lot, zone, boundary
 }
 
 /**
  * Get height for different feature types
  */
-export function getFeatureHeight(featureType: VenueFeatureType): number {
+export function getFeatureHeight(featureType: VenueFeatureType | string): number {
+  const normalized = normalizeFeatureType(featureType);
   const heights: Record<string, number> = {
     stage: 30,
     sound_booth: 20,
@@ -99,13 +119,14 @@ export function getFeatureHeight(featureType: VenueFeatureType): number {
     zone: 5,
     boundary: 3,
   };
-  return heights[featureType] || 10;
+  return heights[normalized] || 10;
 }
 
 /**
  * Get base size for different feature types
  */
-export function getFeatureSize(featureType: VenueFeatureType): number {
+export function getFeatureSize(featureType: VenueFeatureType | string): number {
+  const normalized = normalizeFeatureType(featureType);
   const sizes: Record<string, number> = {
     stage: 40,
     sound_booth: 20,
@@ -128,6 +149,5 @@ export function getFeatureSize(featureType: VenueFeatureType): number {
     zone: 20,
     boundary: 5,
   };
-  return sizes[featureType] || 15;
+  return sizes[normalized] || 15;
 }
-

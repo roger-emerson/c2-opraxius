@@ -2,18 +2,53 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, Grid, ContactShadows, Stars } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import type { VenueFeature } from '@c2/shared';
 import { VenueObject } from './VenueObject';
 import { FeatureDetailPanel } from './FeatureDetailPanel';
+import { calculateCenter } from '../lib/gis-utils';
 
 interface VenueMap3DProps {
   features: VenueFeature[];
   onFeatureClick?: (feature: VenueFeature) => void;
 }
 
+// Scale factor for coordinate conversion (larger = more spread out)
+const SCALE_FACTOR = 100000;
+
 export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
   const [selectedFeature, setSelectedFeature] = useState<VenueFeature | null>(null);
+
+  // Calculate the center of all features to offset coordinates to origin
+  const venueCenter = useMemo(() => {
+    if (features.length === 0) return { lat: 0, lng: 0 };
+    
+    // Collect all coordinates from all features
+    const allCoords: number[][] = [];
+    features.forEach(feature => {
+      const coords = feature.geometry.coordinates;
+      if (feature.geometry.type === 'Point') {
+        allCoords.push(coords as number[]);
+      } else if (feature.geometry.type === 'LineString') {
+        (coords as number[][]).forEach(c => allCoords.push(c));
+      } else if (feature.geometry.type === 'Polygon') {
+        (coords as number[][][])[0]?.forEach(c => allCoords.push(c));
+      }
+    });
+    
+    if (allCoords.length === 0) return { lat: 0, lng: 0 };
+    
+    // Calculate average position
+    const sum = allCoords.reduce((acc, [lng, lat]) => ({
+      lng: acc.lng + lng,
+      lat: acc.lat + lat
+    }), { lng: 0, lat: 0 });
+    
+    return {
+      lng: sum.lng / allCoords.length,
+      lat: sum.lat / allCoords.length
+    };
+  }, [features]);
 
   const handleFeatureClick = (feature: VenueFeature) => {
     setSelectedFeature(feature);
@@ -28,7 +63,7 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
     <div className="relative w-full h-full bg-[#050510]">
       <Canvas
         camera={{
-          position: [0, 500, 500],
+          position: [0, 300, 400],
           fov: 60,
           near: 0.1,
           far: 10000,
@@ -60,14 +95,14 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
 
         {/* Ground Grid */}
         <Grid
-          args={[10000, 10000]}
-          cellSize={50}
+          args={[2000, 2000]}
+          cellSize={20}
           cellThickness={0.5}
           cellColor="#1e1e3f"
-          sectionSize={250}
+          sectionSize={100}
           sectionThickness={1}
           sectionColor="#2d2d5a"
-          fadeDistance={2500}
+          fadeDistance={1000}
           fadeStrength={1}
           followCamera={false}
           infiniteGrid
@@ -75,7 +110,7 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
 
         {/* Ground Plane */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, -1, 0]}>
-          <planeGeometry args={[10000, 10000]} />
+          <planeGeometry args={[5000, 5000]} />
           <meshStandardMaterial color="#0a0a1a" roughness={0.9} metalness={0.1} />
         </mesh>
 
@@ -83,14 +118,14 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
         <ContactShadows
           position={[0, 0, 0]}
           opacity={0.5}
-          scale={2000}
+          scale={1000}
           blur={2}
           far={100}
           resolution={512}
           color="#000000"
         />
 
-        {/* Render all venue features */}
+        {/* Render all venue features with center offset */}
         <Suspense fallback={null}>
           {features.map((feature) => (
             <VenueObject
@@ -98,6 +133,8 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
               feature={feature}
               onClick={() => handleFeatureClick(feature)}
               isSelected={selectedFeature?.id === feature.id}
+              centerOffset={venueCenter}
+              scaleFactor={SCALE_FACTOR}
             />
           ))}
         </Suspense>
@@ -110,7 +147,7 @@ export function VenueMap3D({ features, onFeatureClick }: VenueMap3DProps) {
           makeDefault
           maxPolarAngle={Math.PI / 2.1} // Don't go underground
           minDistance={50}
-          maxDistance={2500}
+          maxDistance={1500}
           enableDamping
           dampingFactor={0.05}
           rotateSpeed={0.5}

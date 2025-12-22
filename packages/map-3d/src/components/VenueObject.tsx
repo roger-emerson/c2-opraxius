@@ -4,7 +4,6 @@ import { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { VenueFeature } from '@c2/shared';
-import { pointToVector3, polygonToVectors, lineStringToVectors } from '../lib/gis-utils';
 import { getModelCategory, getStatusColor, getFeatureHeight, getFeatureSize } from '../lib/colors';
 import { StageModel } from './StageModel';
 import { FacilityModel } from './FacilityModel';
@@ -14,6 +13,46 @@ interface VenueObjectProps {
   feature: VenueFeature;
   onClick: () => void;
   isSelected: boolean;
+  centerOffset: { lat: number; lng: number };
+  scaleFactor: number;
+}
+
+/**
+ * Convert coordinates to centered Three.js position
+ */
+function coordsToPosition(
+  coords: number[],
+  centerOffset: { lat: number; lng: number },
+  scaleFactor: number
+): THREE.Vector3 {
+  const [lng, lat] = coords;
+  // Subtract center to normalize around origin, then scale
+  const x = (lng - centerOffset.lng) * scaleFactor;
+  const z = -(lat - centerOffset.lat) * scaleFactor; // Negate for map orientation
+  return new THREE.Vector3(x, 0, z);
+}
+
+/**
+ * Convert polygon coordinates to centered Three.js vectors
+ */
+function polygonToVectorsCentered(
+  coordinates: number[][][],
+  centerOffset: { lat: number; lng: number },
+  scaleFactor: number
+): THREE.Vector3[] {
+  const outerRing = coordinates[0];
+  return outerRing.map(coords => coordsToPosition(coords, centerOffset, scaleFactor));
+}
+
+/**
+ * Convert linestring coordinates to centered Three.js vectors
+ */
+function lineStringToVectorsCentered(
+  coordinates: number[][],
+  centerOffset: { lat: number; lng: number },
+  scaleFactor: number
+): THREE.Vector3[] {
+  return coordinates.map(coords => coordsToPosition(coords, centerOffset, scaleFactor));
 }
 
 /**
@@ -25,22 +64,22 @@ interface VenueObjectProps {
  * - art_installation → LandmarkModel
  * - pathway, road, fence, etc. → InfrastructureGeometry (tubes/extrusions)
  */
-export function VenueObject({ feature, onClick, isSelected }: VenueObjectProps) {
+export function VenueObject({ feature, onClick, isSelected, centerOffset, scaleFactor }: VenueObjectProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const [hovered, setHovered] = useState(false);
 
   // Get the model category for this feature type
   const modelCategory = useMemo(() => getModelCategory(feature.featureType), [feature.featureType]);
   
-  // Get position from geometry
+  // Get position from geometry (centered around origin)
   const position = useMemo(() => {
     const geom = feature.geometry;
     
     if (geom.type === 'Point') {
-      return pointToVector3(geom.coordinates as number[]);
+      return coordsToPosition(geom.coordinates as number[], centerOffset, scaleFactor);
     } else if (geom.type === 'Polygon') {
       // Use centroid of polygon
-      const vectors = polygonToVectors(geom.coordinates as number[][][]);
+      const vectors = polygonToVectorsCentered(geom.coordinates as number[][][], centerOffset, scaleFactor);
       if (vectors.length > 0) {
         const centroid = new THREE.Vector3();
         vectors.forEach(v => centroid.add(v));
@@ -49,7 +88,7 @@ export function VenueObject({ feature, onClick, isSelected }: VenueObjectProps) 
       }
     } else if (geom.type === 'LineString') {
       // Use midpoint of line
-      const vectors = lineStringToVectors(geom.coordinates as number[][]);
+      const vectors = lineStringToVectorsCentered(geom.coordinates as number[][], centerOffset, scaleFactor);
       if (vectors.length > 0) {
         const midIndex = Math.floor(vectors.length / 2);
         return vectors[midIndex];
@@ -57,7 +96,7 @@ export function VenueObject({ feature, onClick, isSelected }: VenueObjectProps) 
     }
     
     return new THREE.Vector3(0, 0, 0);
-  }, [feature.geometry]);
+  }, [feature.geometry, centerOffset, scaleFactor]);
 
   // Render styled models for Point geometries or use centroid for polygons
   if (modelCategory === 'stage') {
@@ -102,6 +141,8 @@ export function VenueObject({ feature, onClick, isSelected }: VenueObjectProps) 
       hovered={hovered}
       setHovered={setHovered}
       meshRef={meshRef}
+      centerOffset={centerOffset}
+      scaleFactor={scaleFactor}
     />
   );
 }
@@ -117,6 +158,8 @@ function InfrastructureObject({
   hovered,
   setHovered,
   meshRef,
+  centerOffset,
+  scaleFactor,
 }: {
   feature: VenueFeature;
   onClick: () => void;
@@ -124,6 +167,8 @@ function InfrastructureObject({
   hovered: boolean;
   setHovered: (h: boolean) => void;
   meshRef: React.RefObject<THREE.Mesh>;
+  centerOffset: { lat: number; lng: number };
+  scaleFactor: number;
 }) {
   // Get color based on status
   const color = useMemo(() => getStatusColor(feature.status), [feature.status]);
@@ -139,20 +184,75 @@ function InfrastructureObject({
   });
 
   // Render different geometry based on geometry type
-  const geometry = useMemo(() => {
+  const geometryElement = useMemo(() => {
     const geom = feature.geometry;
 
     if (geom.type === 'Point') {
-      return renderInfrastructurePoint(feature);
+      const position = coordsToPosition(geom.coordinates as number[], centerOffset, scaleFactor);
+      const height = getFeatureHeight(feature.featureType);
+      const size = getFeatureSize(feature.featureType);
+      return (
+        <group position={position.toArray()}>
+          <boxGeometry args={[size, height, size]} />
+        </group>
+      );
     } else if (geom.type === 'Polygon') {
-      return renderPolygon(feature);
+      const vectors = polygonToVectorsCentered(geom.coordinates as number[][][], centerOffset, scaleFactor);
+      
+      // Create shape from polygon
+      const shape = new THREE.Shape();
+      if (vectors.length > 0) {
+        shape.moveTo(vectors[0].x, vectors[0].z);
+        for (let i = 1; i < vectors.length; i++) {
+          shape.lineTo(vectors[i].x, vectors[i].z);
+        }
+        shape.closePath();
+      }
+
+      const height = getFeatureHeight(feature.featureType);
+
+      return (
+        <group>
+          <extrudeGeometry
+            args={[
+              shape,
+              {
+                depth: height,
+                bevelEnabled: false,
+              },
+            ]}
+          />
+        </group>
+      );
     } else if (geom.type === 'LineString') {
-      return renderLineString(feature);
+      const vectors = lineStringToVectorsCentered(geom.coordinates as number[][], centerOffset, scaleFactor);
+      
+      // Create curve from points - need at least 2 points
+      if (vectors.length < 2) {
+        return (
+          <group>
+            <boxGeometry args={[10, 5, 10]} />
+          </group>
+        );
+      }
+      
+      const curve = new THREE.CatmullRomCurve3(vectors);
+      const width = getFeatureSize(feature.featureType);
+
+      return (
+        <group>
+          <tubeGeometry args={[curve, 64, width / 2, 8, false]} />
+        </group>
+      );
     }
 
-    // Default: render as point
-    return renderInfrastructurePoint(feature);
-  }, [feature]);
+    // Default: render as small box at origin
+    return (
+      <group>
+        <boxGeometry args={[10, 5, 10]} />
+      </group>
+    );
+  }, [feature, centerOffset, scaleFactor]);
 
   return (
     <group>
@@ -174,85 +274,17 @@ function InfrastructureObject({
         castShadow
         receiveShadow
       >
-        {geometry}
+        {geometryElement}
         <meshStandardMaterial
           color={hovered ? '#ff9800' : color}
           emissive={isSelected ? '#ffffff' : '#000000'}
           emissiveIntensity={isSelected ? 0.2 : 0}
           metalness={0.2}
           roughness={0.8}
-          transparent={feature.featureType === 'zone' || feature.featureType === 'boundary'}
-          opacity={feature.featureType === 'zone' || feature.featureType === 'boundary' ? 0.6 : 1}
+          transparent={['zone', 'boundary', 'plaza'].includes(feature.featureType as string)}
+          opacity={['zone', 'boundary', 'plaza'].includes(feature.featureType as string) ? 0.6 : 1}
         />
       </mesh>
-    </group>
-  );
-}
-
-function renderInfrastructurePoint(feature: VenueFeature): JSX.Element {
-  const coords = feature.geometry.coordinates as number[];
-  const position = pointToVector3(coords);
-  const height = getFeatureHeight(feature.featureType);
-  const size = getFeatureSize(feature.featureType);
-
-  return (
-    <group position={position.toArray()}>
-      <boxGeometry args={[size, height, size]} />
-    </group>
-  );
-}
-
-function renderPolygon(feature: VenueFeature): JSX.Element {
-  const coords = feature.geometry.coordinates as number[][][];
-  const vectors = polygonToVectors(coords);
-
-  // Create shape from polygon
-  const shape = new THREE.Shape();
-  if (vectors.length > 0) {
-    shape.moveTo(vectors[0].x, vectors[0].z);
-    for (let i = 1; i < vectors.length; i++) {
-      shape.lineTo(vectors[i].x, vectors[i].z);
-    }
-    shape.closePath();
-  }
-
-  const height = getFeatureHeight(feature.featureType);
-
-  return (
-    <group>
-      <extrudeGeometry
-        args={[
-          shape,
-          {
-            depth: height,
-            bevelEnabled: false,
-          },
-        ]}
-      />
-    </group>
-  );
-}
-
-function renderLineString(feature: VenueFeature): JSX.Element {
-  const coords = feature.geometry.coordinates as number[][];
-  const vectors = lineStringToVectors(coords);
-
-  // Create curve from points - need at least 2 points
-  if (vectors.length < 2) {
-    // Fallback to a point if not enough coordinates
-    return (
-      <group>
-        <boxGeometry args={[10, 5, 10]} />
-      </group>
-    );
-  }
-  
-  const curve = new THREE.CatmullRomCurve3(vectors);
-  const width = getFeatureSize(feature.featureType);
-
-  return (
-    <group>
-      <tubeGeometry args={[curve, 64, width / 2, 8, false]} />
     </group>
   );
 }

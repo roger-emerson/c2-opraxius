@@ -27,6 +27,7 @@ export {
   getModelCategory,
   getFeatureHeight,
   getFeatureSize,
+  normalizeFeatureType,
   type ModelCategory,
 } from './lib/colors';
 
