@@ -239,6 +239,9 @@ export default function MapDemoPage() {
     },
   });
 
+  const features: VenueFeature[] = data?.features || [];
+  const apiStatus = isLoading ? 'loading' : error ? 'error' : 'success';
+
   // Log status changes
   useEffect(() => {
     if (status === 'pending') addLog('info', 'Query: pending...');
@@ -252,9 +255,6 @@ export default function MapDemoPage() {
       addLog('info', `Ready to render 3D map with ${features.length} features`);
     }
   }, [features.length, threeError, addLog]);
-
-  const features: VenueFeature[] = data?.features || [];
-  const apiStatus = isLoading ? 'loading' : error ? 'error' : 'success';
 
   // Loading state
   if (isLoading) {
