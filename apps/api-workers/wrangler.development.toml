@@ -25,11 +25,9 @@ persist = true
 head_sampling_rate = 1
 
 # Hyperdrive - PostgreSQL connection pooling at the edge
-# After running: wrangler hyperdrive create c2-development-db --connection-string="<your-supabase-url>"
-# Uncomment and add your Hyperdrive ID:
-# [[hyperdrive]]
-# binding = "HYPERDRIVE"
-# id = "<your-hyperdrive-id>"
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "3d79e6f6ba0840cb8fe5d8305bee6e05"
 
 # For development without Hyperdrive, use environment variable:
 # DATABASE_URL = "postgresql://user:pass@host:5432/database"
