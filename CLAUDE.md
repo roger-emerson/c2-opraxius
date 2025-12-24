@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Opraxius C2** is a festival management dashboard for Insomniac Events (EDC Las Vegas, EDC Orlando).
+**Opraxius C2** - Event Management Command & Control platform with 3D GIS visualization.
 
 For detailed project context, current status, and architecture decisions, see **CLAUDE_CONTEXT.md**.
 
@@ -11,51 +11,55 @@ For detailed project context, current status, and architecture decisions, see **
 ## Quick Reference
 
 ### Key Documentation
-- `CLAUDE_CONTEXT.md` - Full project context, architecture, and CI/CD setup
-- `README.md` - Quick start, features, API reference, deployment
-- `DEPLOYMENT.md` - Cloudflare deployment configuration
+- `CLAUDE_CONTEXT.md` - **Primary reference** - Full project context, API, architecture
+- `README.md` - User-facing documentation, quick start guide
+- `docs/ARCHITECTURE.md` - System architecture diagrams
+- `docs/ENVIRONMENTS.md` - All URLs and endpoints
 
 ### Project Structure
 ```
 apps/
-├── web/          # Next.js 15 frontend (port 3000)
-└── api/          # Fastify backend (port 3001)
+├── web/              # Next.js 14 frontend
+└── api-workers/      # Hono API on Cloudflare Workers
 
 packages/
-├── shared/       # TypeScript types
-├── database/     # Drizzle ORM + PostGIS
-├── ui/           # Component library (Phase 3)
-├── auth/         # Auth utilities (future)
-└── gis/          # GIS utilities (Phase 2)
+├── shared/           # TypeScript types & constants
+├── database/         # Drizzle ORM + PostGIS
+├── map-3d/           # Three.js 3D map components
+└── gis/              # GeoJSON parser & CLI
 ```
 
 ### Tech Stack
-- **Frontend**: Next.js 15, React 18, TypeScript, Tailwind, Shadcn/ui
-- **Backend**: Fastify, PostgreSQL 15 + PostGIS 3.4, Redis 7, Drizzle ORM
-- **Auth**: Auth0 + NextAuth.js
-- **Infrastructure**: Docker, Turborepo
+- **Frontend**: Next.js 14, React 18.2, TypeScript, Tailwind, Shadcn/ui
+- **3D Rendering**: Three.js, React Three Fiber 8, Drei 9 (in `@c2/map-3d`)
+- **Backend**: Hono on Cloudflare Workers
+- **Database**: Supabase PostgreSQL + PostGIS via Hyperdrive
+- **Auth**: Auth0 + NextAuth.js v5 (Edge Runtime)
+- **Monorepo**: Turborepo
 
-### Running the Project
+### Running Locally
 ```bash
 cd /Users/roger/Desktop/Projects/c2-opraxius
 
-# Start databases
-make db-up
-
-# Start API (Terminal 1)
-cd apps/api && npm run dev
-
-# Start Web (Terminal 2)
+# Start web (localhost:3000)
 cd apps/web && npm run dev
+
+# Start API workers (localhost:8787)
+cd apps/api-workers && npm run dev
 ```
 
 ---
 
 ## Current Status
 
-**Phase 1**: ✅ Complete (infrastructure, auth, RBAC, API)
-**Phase 2**: ✅ Complete (3D map with Three.js, GeoJSON import, dashboard)
-**CI/CD**: ✅ Configured (Cloudflare staging + production)
-**Phase 3**: 🚧 Next (Workcenters & dashboards)
+**Phase 5**: ✅ Complete (Task Management & Live Feed)
+- 150 event tasks seeded across 7 workcenters
+- Live activity feed with real-time updates
+- 3D map with task-linked venue features
 
-See `CLAUDE_CONTEXT.md` for detailed status and deployment instructions.
+### Live URLs
+- **Dev**: https://dev.web.opraxius.com | https://dev.api.opraxius.com
+- **Staging**: https://staging.web.opraxius.com | https://staging.api.opraxius.com
+- **Production**: https://dashboard.opraxius.com | https://api.opraxius.com
+
+See `CLAUDE_CONTEXT.md` for full API reference and deployment workflow.

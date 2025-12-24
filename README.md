@@ -2,7 +2,9 @@
 
 Event Management Command & Control
 
-> **Current Status**: Phase 1, 2, & 2b complete. Auth.js v5 migration done. Ready for Phase 3.
+> **Current Status**: Phase 5 complete. Task management, live feed, and 3D map with linked tasks deployed.
+>
+> **Quick Reference**: See [CLAUDE_CONTEXT.md](CLAUDE_CONTEXT.md) for AI assistants or [docs/ENVIRONMENTS.md](docs/ENVIRONMENTS.md) for all URLs.
 
 ---
 
@@ -33,7 +35,7 @@ Opraxius C2 is an internal command and control dashboard providing a single pane
 
 - **Interactive 3D Venue Visualization** - Rotatable, zoomable 3D map with clickable objects
 - **GeoJSON Import Tool** - CLI tool for importing Burning Man-style GIS data
-- **8 Specialized Workcenters** - Operations, Production, Security, Workforce, Vendors, Sponsors, Marketing, Finance
+- **7 Specialized Workcenters** - Operations, Production, Security, Workforce, Vendors, Marketing, Finance
 - **Real-time Status Dashboard** - Overall readiness %, critical items, workstream progress
 - **AI-Powered Assistant** - Claude AI integration with RBAC-scoped context (Phase 4)
 - **Role-Based Access Control** - SSO with Auth0, granular permissions per workcenter
@@ -88,25 +90,24 @@ npm run dev
 ## Technology Stack
 
 ### Frontend
-- **Framework**: Next.js 15 (App Router)
-- **UI**: React 18 + TypeScript
-- **3D Visualization**: Three.js + React Three Fiber + Drei
+- **Framework**: Next.js 14 (App Router)
+- **UI**: React 18.2 + TypeScript
+- **3D Visualization**: Three.js + React Three Fiber 8 + Drei 9 (isolated in `@c2/map-3d`)
 - **Styling**: Tailwind CSS + Shadcn/ui
 - **State**: Zustand + React Query (TanStack Query)
-- **Real-time**: Pusher/Socket.IO (Phase 3)
 
 ### Backend
-- **Framework**: Node.js + Fastify
-- **Database**: PostgreSQL 15 + PostGIS 3.4
+- **Framework**: Hono on Cloudflare Workers
+- **Database**: Supabase PostgreSQL + PostGIS via Hyperdrive
 - **ORM**: Drizzle ORM
-- **Cache**: Redis 7
-- **Auth**: Auth0 + Auth.js v5 (Edge Runtime compatible)
+- **Cache**: Upstash Redis
+- **Auth**: Auth0 + NextAuth.js v5 (Edge Runtime)
 
 ### Infrastructure
-- **Dev**: Docker + Docker Compose
+- **Dev**: Docker + Docker Compose (local PostgreSQL/Redis)
 - **Monorepo**: Turborepo
-- **Staging**: Cloudflare Workers
-- **Production**: AWS (ECS, RDS, ElastiCache, S3)
+- **Deployment**: Cloudflare Pages (web) + Workers (API)
+- **CI/CD**: GitHub Actions with auto-deploy
 
 ---
 
@@ -115,51 +116,36 @@ npm run dev
 ```
 c2-opraxius/
 ├── apps/
-│   ├── web/                      # Next.js frontend
+│   ├── web/                      # Next.js 14 frontend (Cloudflare Pages)
 │   │   ├── src/
-│   │   │   ├── app/             # App router pages
-│   │   │   │   ├── (dashboard)/  # Protected dashboard routes
-│   │   │   │   │   ├── layout.tsx
-│   │   │   │   │   ├── page.tsx
-│   │   │   │   │   └── map/page.tsx
-│   │   │   │   ├── auth/        # Auth pages
-│   │   │   │   └── api/auth/    # Auth.js v5 routes
-│   │   │   ├── components/
-│   │   │   │   └── map/         # 3D map components
-│   │   │   │       ├── VenueMap3D.tsx
-│   │   │   │       ├── VenueObject.tsx
-│   │   │   │       └── FeatureDetailPanel.tsx
-│   │   │   ├── hooks/           # RBAC hooks
-│   │   │   └── lib/             # Auth config
+│   │   │   ├── app/
+│   │   │   │   ├── dashboard/    # Protected dashboard routes
+│   │   │   │   ├── map-demo/     # Public 3D map demo
+│   │   │   │   ├── auth/         # Auth pages
+│   │   │   │   └── api/auth/     # NextAuth routes
+│   │   │   └── components/
+│   │   │       └── dashboard/    # ActivityFeed, CriticalItems, etc.
 │   │   └── package.json
-│   └── api/                      # Fastify backend
-│       ├── src/
-│       │   ├── routes/          # API routes
-│       │   ├── services/        # Business logic
-│       │   ├── middleware/      # Auth & RBAC
-│       │   └── server.ts
-│       └── package.json
+│   └── api-workers/              # Hono API (Cloudflare Workers)
+│       └── src/
+│           ├── routes/           # tasks, venues, activity, events
+│           └── index.ts          # Middleware stack
 ├── packages/
-│   ├── shared/                   # Shared types & constants
-│   │   ├── src/
-│   │   │   ├── types/           # TypeScript types
-│   │   │   └── constants/       # Workcenters, roles
-│   │   └── package.json
-│   ├── database/                 # Drizzle schema & migrations
-│   │   ├── src/schema/          # 7 table schemas
-│   │   └── drizzle.config.ts
-│   ├── gis/                      # GeoJSON utilities
-│   │   ├── src/
-│   │   │   ├── coordinates.ts   # Coordinate conversion
-│   │   │   ├── geojson-parser.ts # GeoJSON parsing
-│   │   │   └── cli/importer.ts  # Import CLI tool
-│   │   └── package.json
-│   ├── ui/                       # Shared UI components
-│   └── auth/                     # Auth utilities
-├── docker-compose.yml            # Dev services
+│   ├── shared/                   # TypeScript types & constants
+│   ├── database/                 # Drizzle ORM + seed scripts
+│   │   └── src/
+│   │       ├── seed.ts           # Event seeding
+│   │       └── seed-tasks.ts     # Task seeding (150 tasks)
+│   ├── map-3d/                   # Three.js 3D components (isolated)
+│   │   └── src/components/
+│   │       ├── VenueMap3D.tsx
+│   │       ├── VenueObject.tsx
+│   │       └── FeatureDetailPanel.tsx
+│   └── gis/                      # GeoJSON parser & CLI
+├── docs/                         # Documentation
+├── docker-compose.yml            # Local dev services
 ├── turbo.json                    # Turborepo config
-├── Makefile                      # Common commands
-└── README.md
+└── Makefile                      # Common commands
 ```
 
 ---
@@ -190,10 +176,11 @@ c2-opraxius/
 - Granular permission system (resource + action + workcenter)
 - RBAC middleware (backend) and hooks (frontend)
 
-**REST API** (Fastify):
+**REST API** (Hono on Cloudflare Workers):
 - `/api/events` - Event management
 - `/api/tasks` - Task CRUD with RBAC filtering
-- `/api/venues` - Venue features with RBAC filtering
+- `/api/venues` - Venue features (public endpoint available)
+- `/api/activity` - Live activity feed and stats
 - JWT authentication middleware
 - Permission-based route protection
 
@@ -226,37 +213,32 @@ c2-opraxius/
 - Full-screen 3D map view
 - User info display
 
-### 🚧 Phase 3: Workcenters & Dashboards (Planned)
+### ✅ Phase 3: Workcenters & Dashboards (Complete)
 
-- 8 specialized workcenter pages
+- 7 workcenter pages (Operations, Production, Security, Workforce, Vendors, Marketing, Finance)
 - Overall Readiness progress bar
 - Critical Items panel
 - Workstream Progress bars
-- Real-time Activity Feed (Pusher/Socket.IO)
-- Task CRUD operations
-- Task dependencies and critical path
 
-### 🚧 Phase 4: AI Agent Integration (Planned)
+### ✅ Phase 4: Task Management (Complete)
+
+- Task CRUD operations with RBAC
+- Task-to-venue feature linking (3D map integration)
+- Task completion tracking
+
+### ✅ Phase 5: Live Activity Feed (Complete)
+
+- Real-time activity feed with task updates
+- 150 seeded tasks across 7 workcenters
+- Live statistics by workcenter
+- Activity logging for all task operations
+
+### 🚧 Phase 6: AI Agent Integration (Planned)
 
 - Claude API integration
 - RBAC-scoped context
 - Chat interface
 - Proactive suggestions
-
-### 🚧 Phase 5: External Integrations (Planned)
-
-- IoT sensor integration
-- Ticketing system API
-- Vendor system sync
-- Stripe webhooks
-
-### 🚧 Phase 6: Production Readiness (Planned)
-
-- Performance optimization
-- Security audit
-- AWS infrastructure
-- CI/CD pipeline
-- Monitoring and logging
 
 ---
 
@@ -265,26 +247,29 @@ c2-opraxius/
 ### Running Locally
 
 ```bash
-# Start database services
+# Start local database services (Docker)
 make db-up
 
-# Terminal 1: Start API
-cd apps/api
-npm run dev
-
-# Terminal 2: Start frontend
+# Terminal 1: Start web frontend
 cd apps/web
 npm run dev
 
-# Or use make command to start everything
-make dev
+# Terminal 2: Start API workers
+cd apps/api-workers
+npm run dev
 ```
 
-**URLs**:
+**Local URLs**:
 - Frontend: http://localhost:3000
-- API: http://localhost:3001
-- Database: localhost:5432
-- Redis: localhost:6379
+- API: http://localhost:8787
+
+### Deployed URLs
+
+| Environment | Web | API |
+|-------------|-----|-----|
+| Development | https://dev.web.opraxius.com | https://dev.api.opraxius.com |
+| Staging | https://staging.web.opraxius.com | https://staging.api.opraxius.com |
+| Production | https://dashboard.opraxius.com | https://api.opraxius.com |
 
 ### Makefile Commands
 
@@ -328,8 +313,8 @@ npm install -D <package> -w root
 # Add to web app
 npm install <package> -w @c2/web
 
-# Add to API
-npm install <package> -w @c2/api
+# Add to API workers
+npm install <package> -w @c2/api-workers
 
 # Add to shared package
 npm install <package> -w @c2/shared

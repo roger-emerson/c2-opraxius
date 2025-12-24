@@ -157,7 +157,7 @@ This document provides comprehensive architectural diagrams and dependency maps 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    apps/web (Next.js 15)                        │
+│                    apps/web (Next.js 14)                        │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    APP ROUTER                            │   │

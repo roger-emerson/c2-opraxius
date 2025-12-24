@@ -2,7 +2,7 @@
 
 > **Complete documentation map for the c2-opraxius project**
 >
-> **Last Updated**: December 21, 2025
+> **Last Updated**: December 24, 2025 | **Phase**: 5 Complete
 
 ---
 
@@ -40,9 +40,9 @@
 
 | Document | Description |
 |----------|-------------|
-| [PHASE3_COMPLETE.md](PHASE3_COMPLETE.md) | **LATEST** - Phase 3 completion (Workcenters & Dashboards) |
-| [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) | Phase 2 status report (3D Map & Interaction) |
-| [PHASE2_COMPLETION_CHECKLIST.md](PHASE2_COMPLETION_CHECKLIST.md) | QA testing checklist for Phase 2 features |
+| [../CLAUDE_CONTEXT.md](../CLAUDE_CONTEXT.md) | **LATEST** - Phase 5 complete (Task Management & Live Feed) |
+| [archive/PHASE3_COMPLETE.md](archive/PHASE3_COMPLETE.md) | Phase 3 completion (Workcenters & Dashboards) |
+| [archive/PHASE2_COMPLETE.md](archive/PHASE2_COMPLETE.md) | Phase 2 status report (3D Map & Interaction) |
 
 ---
 
@@ -58,11 +58,10 @@
 ## Documentation Categories
 
 ### By Purpose
-- **Getting Started**: NEXT_STEPS.md, CLAUDE_CONTEXT.md, README.md
+- **Getting Started**: CLAUDE_CONTEXT.md, README.md, ENVIRONMENTS.md
 - **Architecture**: ARCHITECTURE.md, CLOUDFLARE_DEPLOYMENT.md
-- **Operations**: STAGING_SEED_INSTRUCTIONS.md, GITHUB_CLI_REFERENCE.md
-- **Development**: PHASE2_COMPLETE.md, PHASE2_COMPLETION_CHECKLIST.md
-- **Historical**: archive/PHASE1_COMPLETE.md
+- **Operations**: STAGING_SEED_INSTRUCTIONS.md, GITHUB_CLI_REFERENCE.md, AGENT_CI_CD_WORKFLOW.md
+- **Historical**: archive/PHASE1_COMPLETE.md, archive/PHASE2_COMPLETE.md, archive/PHASE3_COMPLETE.md
 
 ### By Audience
 - **Developers**: README.md → NEXT_STEPS.md → ARCHITECTURE.md
