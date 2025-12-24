@@ -70,6 +70,17 @@ export default function DashboardLayout({
             <span className="text-base">🗺️</span>
             <span>3D Map</span>
           </Link>
+          <Link
+            href="/dashboard/gaia"
+            className={`flex items-center gap-3 px-6 py-3 text-sm transition-colors ${
+              isActive('/dashboard/gaia')
+                ? 'text-foreground bg-background-subtle border-r-2 border-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background-subtle'
+            }`}
+          >
+            <span className="text-base">🛡️</span>
+            <span>GAIA™</span>
+          </Link>
 
           {/* Workcenters */}
           <div className="mt-6 px-6">
